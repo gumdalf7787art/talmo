@@ -19,6 +19,8 @@ export default function SignupPage() {
   const [agreePrivacy, setAgreePrivacy] = useState(false);
   const [emailStatus, setEmailStatus] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
+  const [nicknameStatus, setNicknameStatus] = useState("");
+  const [nicknameMessage, setNicknameMessage] = useState("");
 
   const validateEmailFormat = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -62,6 +64,41 @@ export default function SignupPage() {
       setEmailMessage(`오류: ${error.message}`);
     }
   };
+
+  const handleNicknameChange = (e) => {
+    const val = e.target.value;
+    setNickname(val);
+    if (!val) {
+      setNicknameStatus("");
+      setNicknameMessage("");
+    } else {
+      setNicknameStatus("valid");
+      setNicknameMessage("닉네임 중복확인을 진행해주세요.");
+    }
+  };
+
+  const handleCheckNickname = async () => {
+    if (nicknameStatus !== "valid" && nicknameStatus !== "available") return;
+    setNicknameStatus("checking");
+    setNicknameMessage("중복 확인 중...");
+    try {
+      const res = await fetch(`/api/user/check-nickname?nickname=${encodeURIComponent(nickname)}`);
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "서버 에러");
+      }
+      if (data.available) {
+        setNicknameStatus("available");
+        setNicknameMessage("사용 가능한 닉네임입니다.");
+      } else {
+        setNicknameStatus("duplicate");
+        setNicknameMessage("이미 사용 중인 닉네임입니다.");
+      }
+    } catch (error) {
+      setNicknameStatus("error");
+      setNicknameMessage(`오류: ${error.message}`);
+    }
+  };
   const handleAgreeAll = () => {
     const nextState = !agreeAll;
     setAgreeAll(nextState);
@@ -84,7 +121,7 @@ export default function SignupPage() {
   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
   const isPasswordValid = passwordRegex.test(password);
 
-  const isFormValid = emailStatus === "available" && isPasswordValid && password === passwordConfirm && nickname && agreeTerms && agreePrivacy;
+  const isFormValid = emailStatus === "available" && isPasswordValid && password === passwordConfirm && (!nickname || nicknameStatus === "available") && agreeTerms && agreePrivacy;
   const handleSignup = async (e) => {
     e.preventDefault();
     if (!isFormValid) return;
@@ -214,19 +251,35 @@ export default function SignupPage() {
 
           {/* Nickname */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-semibold text-gray-800 ml-1">닉네임</label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                <User className="w-4 h-4 text-gray-400" />
+            <label className="text-sm font-semibold text-gray-800 ml-1">닉네임 <span className="text-gray-400 font-normal">(선택)</span></label>
+            <div className="flex flex-col gap-1.5">
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <User className="w-4 h-4 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    value={nickname}
+                    onChange={handleNicknameChange}
+                    placeholder="미입력 시 랜덤 생성"
+                    className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all"
+                  />
+                </div>
+                <button 
+                  type="button" 
+                  onClick={handleCheckNickname}
+                  disabled={nicknameStatus !== 'valid'}
+                  className={`px-4 py-3.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-colors ${nicknameStatus === 'valid' ? 'bg-teal-600 text-white active:bg-teal-700' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
+                >
+                  중복확인
+                </button>
               </div>
-              <input
-                type="text"
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
-                placeholder="커뮤니티에서 사용할 닉네임 (ex. 득모가자)"
-                className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all"
-                required
-              />
+              {nicknameMessage && (
+                <span className={`text-xs ml-1 ${nicknameStatus === 'available' ? 'text-teal-600' : nicknameStatus === 'valid' ? 'text-gray-500' : 'text-red-500'}`}>
+                  {nicknameMessage}
+                </span>
+              )}
             </div>
           </div>
 

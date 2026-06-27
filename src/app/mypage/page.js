@@ -21,9 +21,10 @@ export default function MyPage() {
     familyHistory: "미설정"
   });
 
-  // Nickname edit state
   const [isEditingNickname, setIsEditingNickname] = useState(false);
   const [newNickname, setNewNickname] = useState("");
+  const [nicknameStatus, setNicknameStatus] = useState("");
+  const [nicknameMessage, setNicknameMessage] = useState("");
 
   // Password edit state
   const [isEditingPassword, setIsEditingPassword] = useState(false);
@@ -84,11 +85,55 @@ export default function MyPage() {
     }
   };
 
-  const handleSaveNickname = () => {
+  const handleCheckNickname = async () => {
     if (!newNickname.trim()) return;
-    setProfile(prev => ({ ...prev, nickname: newNickname }));
-    updateProfileInBackend({ nickname: newNickname });
-    setIsEditingNickname(false);
+    setNicknameStatus("checking");
+    setNicknameMessage("중복 확인 중...");
+    try {
+      const res = await fetch(`/api/user/check-nickname?nickname=${encodeURIComponent(newNickname)}`);
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "서버 에러");
+      }
+      if (data.available || newNickname === user.nickname) {
+        setNicknameStatus("available");
+        setNicknameMessage("사용 가능한 닉네임입니다.");
+      } else {
+        setNicknameStatus("duplicate");
+        setNicknameMessage("이미 사용 중인 닉네임입니다.");
+      }
+    } catch (error) {
+      setNicknameStatus("error");
+      setNicknameMessage(`오류: ${error.message}`);
+    }
+  };
+
+  const handleSaveNickname = async () => {
+    if (!newNickname.trim() || nicknameStatus !== "available") return;
+    
+    // update backend
+    try {
+      const res = await fetch('/api/user/update', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: user.id, nickname: newNickname })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setProfile(prev => ({ ...prev, nickname: newNickname }));
+        const updatedUser = { ...user, nickname: newNickname };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setUser(updatedUser);
+        setIsEditingNickname(false);
+        setNicknameStatus("");
+        setNicknameMessage("");
+      } else {
+        alert(data.error || "닉네임 변경 실패");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("오류가 발생했습니다.");
+    }
   };
 
   const handleSavePassword = async () => {
@@ -338,20 +383,43 @@ export default function MyPage() {
             
             <div className="flex flex-col gap-2 mb-8">
               <label className="text-[13px] font-medium text-gray-600">새로운 닉네임</label>
-              <div className="relative">
-                <input 
-                  type="text" 
-                  value={newNickname}
-                  onChange={(e) => setNewNickname(e.target.value)}
-                  placeholder="2~10자 이내로 입력해주세요"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-[15px] focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
-                  maxLength={10}
-                  autoFocus
-                />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[12px] text-gray-400 font-medium">
-                  {newNickname.length}/10
-                </span>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <input 
+                    type="text" 
+                    value={newNickname}
+                    onChange={(e) => {
+                      setNewNickname(e.target.value);
+                      if(e.target.value !== user?.nickname) {
+                        setNicknameStatus("valid");
+                        setNicknameMessage("중복확인을 진행해주세요.");
+                      } else {
+                        setNicknameStatus("available");
+                        setNicknameMessage("");
+                      }
+                    }}
+                    placeholder="2~10자 이내로 입력"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-[15px] focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                    maxLength={10}
+                    autoFocus
+                  />
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[12px] text-gray-400 font-medium">
+                    {newNickname.length}/10
+                  </span>
+                </div>
+                <button 
+                  onClick={handleCheckNickname}
+                  disabled={nicknameStatus !== 'valid'}
+                  className={`px-4 rounded-xl text-sm font-semibold whitespace-nowrap transition-colors ${nicknameStatus === 'valid' ? 'bg-teal-600 text-white hover:bg-teal-700' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
+                >
+                  중복확인
+                </button>
               </div>
+              {nicknameMessage && (
+                <span className={`text-[12px] ml-1 ${nicknameStatus === 'available' ? 'text-teal-600' : nicknameStatus === 'valid' ? 'text-gray-500' : 'text-red-500'}`}>
+                  {nicknameMessage}
+                </span>
+              )}
               <p className="text-[11px] text-gray-400 mt-1 pl-1">
                 욕설이나 부적절한 단어 사용 시 계정이 정지될 수 있습니다.
               </p>
@@ -366,7 +434,8 @@ export default function MyPage() {
               </button>
               <button 
                 onClick={handleSaveNickname}
-                className="w-full py-4 bg-teal-600 text-white rounded-xl font-bold text-[15px] shadow-sm hover:bg-teal-700 transition-colors"
+                disabled={nicknameStatus !== "available"}
+                className={`w-full py-4 rounded-xl font-bold text-[15px] shadow-sm transition-colors ${nicknameStatus === "available" ? "bg-teal-600 text-white hover:bg-teal-700" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
               >
                 변경하기
               </button>

@@ -14,6 +14,8 @@ export default function PCMyPage() {
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [aiProfileModalOpen, setAiProfileModalOpen] = useState(false);
   const [tempNickname, setTempNickname] = useState("");
+  const [nicknameStatus, setNicknameStatus] = useState("");
+  const [nicknameMessage, setNicknameMessage] = useState("");
   const [tempProfile, setTempProfile] = useState({ gender: "", birthYear: "", familyHistory: "" });
 
   const [currentPassword, setCurrentPassword] = useState("");
@@ -58,15 +60,59 @@ export default function PCMyPage() {
 
   const handleEditNickname = () => {
     setTempNickname(profile.nickname);
+    setNicknameStatus("");
+    setNicknameMessage("");
     setNicknameModalOpen(true);
   };
 
-  const handleSaveNickname = () => {
-    if (tempNickname && tempNickname.trim() !== "") {
+  const handleCheckNickname = async () => {
+    if (!tempNickname || tempNickname.trim() === "") return;
+    setNicknameStatus("checking");
+    setNicknameMessage("중복 확인 중...");
+    try {
+      const res = await fetch(`/api/user/check-nickname?nickname=${encodeURIComponent(tempNickname)}`);
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "서버 에러");
+      }
+      if (data.available || tempNickname === user.nickname) {
+        setNicknameStatus("available");
+        setNicknameMessage("사용 가능한 닉네임입니다.");
+      } else {
+        setNicknameStatus("duplicate");
+        setNicknameMessage("이미 사용 중인 닉네임입니다.");
+      }
+    } catch (error) {
+      setNicknameStatus("error");
+      setNicknameMessage(`오류: ${error.message}`);
+    }
+  };
+
+  const handleSaveNickname = async () => {
+    if (tempNickname && tempNickname.trim() !== "" && nicknameStatus === "available") {
       const newName = tempNickname.trim();
-      setProfile(prev => ({ ...prev, nickname: newName }));
-      updateProfileInBackend({ nickname: newName });
-      setNicknameModalOpen(false);
+      
+      // update backend first
+      try {
+        const res = await fetch('/api/user/update', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: user.id, nickname: newName })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setProfile(prev => ({ ...prev, nickname: newName }));
+          const updatedUser = { ...user, nickname: newName };
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+          setUser(updatedUser);
+          setNicknameModalOpen(false);
+        } else {
+          alert(data.error || "닉네임 변경 실패");
+        }
+      } catch (e) {
+        console.error(e);
+        alert("오류가 발생했습니다.");
+      }
     }
   };
 
@@ -229,18 +275,43 @@ export default function PCMyPage() {
       {/* Modals */}
       {nicknameModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-all">
-          <div className="bg-white rounded-2xl w-full max-w-[360px] p-6 shadow-xl animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-2xl w-full max-w-[400px] p-6 shadow-xl animate-in fade-in zoom-in-95 duration-200">
             <h3 className="font-bold text-gray-900 text-lg mb-4">닉네임 변경</h3>
-            <input 
-              type="text" 
-              value={tempNickname}
-              onChange={(e) => setTempNickname(e.target.value)}
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[14px] focus:outline-none focus:ring-2 focus:ring-teal-500 mb-6 font-medium"
-              placeholder="새로운 닉네임을 입력하세요"
-            />
+            <div className="flex flex-col gap-1.5 mb-6">
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  value={tempNickname}
+                  onChange={(e) => {
+                    setTempNickname(e.target.value);
+                    if(e.target.value !== user?.nickname) {
+                      setNicknameStatus("valid");
+                      setNicknameMessage("중복확인을 진행해주세요.");
+                    } else {
+                      setNicknameStatus("available");
+                      setNicknameMessage("");
+                    }
+                  }}
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[14px] focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium"
+                  placeholder="새로운 닉네임을 입력하세요"
+                />
+                <button 
+                  onClick={handleCheckNickname}
+                  disabled={nicknameStatus !== 'valid'}
+                  className={`px-4 py-3 rounded-xl text-[14px] font-bold whitespace-nowrap transition-colors ${nicknameStatus === 'valid' ? 'bg-teal-600 text-white hover:bg-teal-700' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
+                >
+                  중복확인
+                </button>
+              </div>
+              {nicknameMessage && (
+                <span className={`text-[12px] ml-1 ${nicknameStatus === 'available' ? 'text-teal-600' : nicknameStatus === 'valid' ? 'text-gray-500' : 'text-red-500'}`}>
+                  {nicknameMessage}
+                </span>
+              )}
+            </div>
             <div className="flex gap-2">
               <button onClick={() => setNicknameModalOpen(false)} className="flex-1 py-3 bg-gray-100 text-gray-700 font-bold text-[14px] rounded-xl hover:bg-gray-200 transition-colors">취소</button>
-              <button onClick={handleSaveNickname} className="flex-1 py-3 bg-teal-600 text-white font-bold text-[14px] rounded-xl hover:bg-teal-700 transition-colors shadow-sm">저장하기</button>
+              <button onClick={handleSaveNickname} disabled={nicknameStatus !== "available"} className={`flex-1 py-3 font-bold text-[14px] rounded-xl transition-colors shadow-sm ${nicknameStatus === 'available' ? 'bg-teal-600 text-white hover:bg-teal-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>저장하기</button>
             </div>
           </div>
         </div>

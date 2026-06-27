@@ -22,6 +22,18 @@ export async function onRequestPut(context) {
 
     const now = new Date().toISOString();
 
+    // Check nickname uniqueness
+    if (nickname) {
+      const nickCheckStmt = db.prepare('SELECT id FROM users WHERE nickname = ? AND id != ?').bind(nickname, id);
+      const nickCheckResult = await nickCheckStmt.all();
+      if (nickCheckResult.results && nickCheckResult.results.length > 0) {
+        return new Response(JSON.stringify({ error: '이미 사용 중인 닉네임입니다.' }), { 
+          status: 409,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
     const updateStmt = db.prepare(`
       UPDATE users 
       SET nickname = ?, profile_image = ?, gender = ?, birth_year = ?, family_history = ?, updated_at = ?
