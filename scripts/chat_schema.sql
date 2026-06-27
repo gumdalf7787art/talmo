@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS chat_rooms (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  clinic_id TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS messages (
+  id TEXT PRIMARY KEY,
+  room_id TEXT NOT NULL,
+  sender_id TEXT NOT NULL,
+  content TEXT,
+  image_url TEXT,
+  is_read BOOLEAN DEFAULT FALSE,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (room_id) REFERENCES chat_rooms(id)
+);
