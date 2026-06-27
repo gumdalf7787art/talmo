@@ -18,27 +18,23 @@ export default function ChatListPage() {
     if (savedUser) setUser(JSON.parse(savedUser));
   }, []);
 
-  // Mock chat list data for mobile
-  const chatRooms = [
-    {
-      id: 1,
-      clinicId: 2,
-      clinicName: "블랙라인 스튜디오",
-      lastMessage: "정수리 부위 사진을 2~3장 더 보내주실 수 있나요?",
-      time: "오전 11:30",
-      unreadCount: 2,
-      isClinic: true,
-    },
-    {
-      id: 2,
-      clinicId: "18763bdb-dd5b-4c2a-b996-1012039dc029",
-      clinicName: "모프로 탈모의원",
-      lastMessage: "네, 내원하시면 정확한 견적을 안내해 드리겠습니다.",
-      time: "어제",
-      unreadCount: 0,
-      isClinic: true,
-    }
-  ];
+  const [chatRooms, setChatRooms] = useState([]);
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchRooms = async () => {
+      try {
+        const res = await fetch(`/api/chat/list?userId=${user.id}`);
+        const data = await res.json();
+        if (data.success) {
+          setChatRooms(data.rooms);
+        }
+      } catch (err) {
+        console.error("Failed to fetch rooms", err);
+      }
+    };
+    fetchRooms();
+  }, [user]);
 
   if (isPC) {
     if (user?.role === 'hospital') {
@@ -69,7 +65,9 @@ export default function ChatListPage() {
           <button onClick={() => router.back()} className="p-1 -ml-1 text-gray-700">
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <h1 className="font-bold text-[18px] text-gray-900">나의 탈모톡</h1>
+          <h1 className="font-bold text-[18px] text-gray-900">
+            {user?.role === 'hospital' ? '상담 목록' : '나의 탈모톡'}
+          </h1>
         </div>
         <button className="p-1 -mr-1 text-gray-700">
           <Search className="w-5 h-5" />
@@ -82,8 +80,8 @@ export default function ChatListPage() {
           <div className="flex flex-col bg-white">
             {chatRooms.map((room) => (
               <Link 
-                key={room.id} 
-                href={`/consult/detail?id=${room.clinicId}`} 
+                key={room.id || room.clinicId} 
+                href={`/consult/detail?id=${user?.role === 'hospital' ? room.otherPartyId : room.clinicId}`} 
                 className="flex items-center gap-4 px-5 py-4 border-b border-gray-100 hover:bg-gray-50 transition-colors active:bg-gray-100"
               >
                 {/* Profile Image */}
@@ -94,7 +92,9 @@ export default function ChatListPage() {
                 {/* Content */}
                 <div className="flex flex-col flex-1 min-w-0">
                   <div className="flex justify-between items-center mb-1">
-                    <h3 className="font-bold text-[15px] text-gray-900 truncate pr-2">{room.clinicName}</h3>
+                    <h3 className="font-bold text-[15px] text-gray-900 truncate pr-2">
+                      {room.otherPartyName}
+                    </h3>
                     <span className="text-[12px] text-gray-400 shrink-0">{room.time}</span>
                   </div>
                   <div className="flex justify-between items-center">
