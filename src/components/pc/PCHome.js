@@ -9,10 +9,26 @@ export default function PCHome() {
   const [bannerType, setBannerType] = useState(null);
   const [mounted, setMounted] = useState(false);
 
+  const [popularPosts, setPopularPosts] = useState([]);
+  const [reviewPosts, setReviewPosts] = useState([]);
+  const [infoPosts, setInfoPosts] = useState([]);
+
   useEffect(() => {
     setMounted(true);
     const hasDiagnosed = localStorage.getItem("hasDiagnosed");
     setBannerType(hasDiagnosed ? "community" : "diagnosis");
+
+    fetch('/api/posts/list?sort=popular&limit=10')
+      .then(res => res.json())
+      .then(data => setPopularPosts(data.posts || []));
+      
+    fetch('/api/posts/list?category=리얼후기&limit=4')
+      .then(res => res.json())
+      .then(data => setReviewPosts(data.posts || []));
+      
+    fetch('/api/posts/list?category=정보&limit=4')
+      .then(res => res.json())
+      .then(data => setInfoPosts(data.posts || []));
   }, []);
 
   const handleDismissDiagnosis = () => {
@@ -20,35 +36,11 @@ export default function PCHome() {
     setBannerType("community");
   };
 
-  const popularPhotos = [
-    { id: 1, title: "3개월차 변화", imgUrl: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&h=200&fit=crop" },
-    { id: 2, title: "모발이식 1일차", imgUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop" },
-    { id: 3, title: "약 복용 후기", imgUrl: "https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?w=200&h=200&fit=crop" },
-    { id: 4, title: "정수리 밀도", imgUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop" },
-    { id: 5, title: "M자 득모중", imgUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop" },
-    { id: 6, title: "두피 스케일링", imgUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop" },
-  ];
+  const popularPhotos = popularPosts.filter(p => p.imageUrl).slice(0, 6);
+  const textPosts = popularPosts.filter(p => !p.imageUrl).slice(0, 4);
 
-  const textPosts = [
-    { id: 11, title: "M자 초기인데 모발이식 견적 봐주세요", comments: 12 },
-    { id: 12, title: "핀페시아 6개월 복용 솔직 후기 (사진有)", comments: 45 },
-    { id: 13, title: "미녹시딜 바르는 꿀팁 공유합니다", comments: 8 },
-    { id: 14, title: "두피문신 해보신 분 장단점 좀 알려주세요", comments: 23 },
-  ];
-
-  const reviewPhotos = [
-    { id: 301, subtitle: "비절개 / 3,000모", title: "3,000모 모발이식 1주차 경과 후 진행사항", imgUrl: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&h=200&fit=crop" },
-    { id: 302, subtitle: "절개 / 4,000모", title: "강남 ㅇㅇ의원에서 4,000모 이식후 6개월", imgUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop" },
-    { id: 303, subtitle: "비절개 / 2,500모", title: "M자 헤어라인 교정 3개월차 리얼 후기", imgUrl: "https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?w=200&h=200&fit=crop" },
-    { id: 304, subtitle: "절개 / 3,500모", title: "정수리 밀도 보강 수술 당일 붓기 및 통증", imgUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop" },
-  ];
-
-  const infoPhotos = [
-    { id: 101, title: "올바른 머리 감기", imgUrl: "https://images.unsplash.com/photo-1631549916768-4119b2e5f926?w=200&h=200&fit=crop" },
-    { id: 102, title: "미녹시딜 부작용", imgUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&h=200&fit=crop" },
-    { id: 103, title: "모발이식 시기", imgUrl: "https://images.unsplash.com/photo-1519415943484-9fa1873496d4?w=200&h=200&fit=crop" },
-    { id: 104, title: "맥주효모의 진실", imgUrl: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=200&h=200&fit=crop" },
-  ];
+  const reviewPhotos = reviewPosts.slice(0, 4);
+  const infoPhotos = infoPosts.slice(0, 4);
 
   const columnPhotos = [
     { id: 201, title: "절개 vs 비절개", imgUrl: "https://images.unsplash.com/photo-1620331311520-246422fd82f9?w=200&h=200&fit=crop" },
@@ -124,9 +116,9 @@ export default function PCHome() {
           </div>
           <div className="grid grid-cols-6 gap-3 mb-5">
             {popularPhotos.map((photo) => (
-              <Link key={photo.id} href={`/community/${photo.id}`} className="flex flex-col gap-2 group">
+              <Link key={photo.id} href={`/community/detail?id=${photo.id}`} className="flex flex-col gap-2 group">
                 <div className="w-full aspect-square rounded-xl overflow-hidden border border-gray-100 shadow-sm">
-                  <img src={photo.imgUrl} alt={photo.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <img src={photo.imageUrl} alt={photo.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 </div>
                 <h4 className="font-medium text-gray-800 text-[13px] line-clamp-1 group-hover:text-teal-600 transition-colors">{photo.title}</h4>
               </Link>
@@ -134,7 +126,7 @@ export default function PCHome() {
           </div>
           <div className="grid grid-cols-2 gap-x-6">
             {textPosts.map((post) => (
-              <Link key={post.id} href={`/community/${post.id}`} className="flex items-center justify-between py-2.5 border-b border-gray-100 last:border-0 group">
+              <Link key={post.id} href={`/community/detail?id=${post.id}`} className="flex items-center justify-between py-2.5 border-b border-gray-100 last:border-0 group">
                 <div className="flex items-center gap-2 overflow-hidden">
                   <span className="w-1.5 h-1.5 rounded-full bg-teal-500 shrink-0" />
                   <h4 className="font-medium text-gray-800 text-[14px] line-clamp-1 group-hover:text-teal-600 transition-colors">{post.title}</h4>
@@ -157,12 +149,16 @@ export default function PCHome() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               {reviewPhotos.map((photo) => (
-                <Link key={photo.id} href={`/reviews/${photo.id}`} className="flex flex-col gap-2 group">
-                  <div className="w-full aspect-square rounded-xl overflow-hidden border border-gray-100 shadow-sm">
-                    <img src={photo.imgUrl} alt={photo.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                <Link key={photo.id} href={`/community/detail?id=${photo.id}`} className="flex flex-col gap-2 group">
+                  <div className={`w-full aspect-square rounded-xl overflow-hidden border border-gray-100 shadow-sm flex items-center justify-center ${!photo.imageUrl && 'bg-gray-50'}`}>
+                    {photo.imageUrl ? (
+                      <img src={photo.imageUrl} alt={photo.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    ) : (
+                      <span className="text-gray-400 text-[10px]">사진 없음</span>
+                    )}
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[10px] text-gray-400 font-light">{photo.subtitle}</span>
+                    <span className="text-[10px] text-gray-400 font-light">{photo.author}</span>
                     <h4 className="font-medium text-gray-800 text-[12px] leading-snug line-clamp-2 mt-0.5">{photo.title}</h4>
                   </div>
                 </Link>
@@ -174,13 +170,17 @@ export default function PCHome() {
           <section className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-base text-gray-900">탈모 정보</h3>
-              <Link href="/information" className="text-xs font-medium text-teal-600 flex items-center">더보기 <ChevronRight className="w-3 h-3" /></Link>
+              <Link href="/community?category=정보" className="text-xs font-medium text-teal-600 flex items-center">더보기 <ChevronRight className="w-3 h-3" /></Link>
             </div>
             <div className="grid grid-cols-2 gap-3">
               {infoPhotos.map((photo) => (
-                <Link key={photo.id} href={`/information/${photo.id}`} className="flex flex-col gap-2 group">
-                  <div className="w-full aspect-square rounded-xl overflow-hidden border border-gray-100 shadow-sm">
-                    <img src={photo.imgUrl} alt={photo.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                <Link key={photo.id} href={`/community/detail?id=${photo.id}`} className="flex flex-col gap-2 group">
+                  <div className={`w-full aspect-square rounded-xl overflow-hidden border border-gray-100 shadow-sm flex items-center justify-center ${!photo.imageUrl && 'bg-gray-50'}`}>
+                    {photo.imageUrl ? (
+                      <img src={photo.imageUrl} alt={photo.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    ) : (
+                      <span className="text-gray-400 text-[10px]">사진 없음</span>
+                    )}
                   </div>
                   <h4 className="font-medium text-gray-800 text-[12px] line-clamp-1">{photo.title}</h4>
                 </Link>

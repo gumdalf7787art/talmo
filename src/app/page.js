@@ -41,6 +41,30 @@ export default function Home() {
     setBannerType("community");
   };
 
+  const [popularPosts, setPopularPosts] = useState([]);
+  const [reviewPosts, setReviewPosts] = useState([]);
+  const [infoPosts, setInfoPosts] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/posts/list?sort=popular&limit=10')
+      .then(res => res.json())
+      .then(data => setPopularPosts(data.posts || []));
+      
+    fetch('/api/posts/list?category=리얼후기&limit=6')
+      .then(res => res.json())
+      .then(data => setReviewPosts(data.posts || []));
+      
+    fetch('/api/posts/list?category=정보&limit=6')
+      .then(res => res.json())
+      .then(data => setInfoPosts(data.posts || []));
+  }, []);
+
+  const popularPhotos = popularPosts.filter(p => p.imageUrl).slice(0, 6);
+  const popularTextPosts = popularPosts.filter(p => !p.imageUrl).slice(0, 4);
+
+  const infoPhotos = infoPosts.filter(p => p.imageUrl).slice(0, 6);
+  const infoTextPosts = infoPosts.filter(p => !p.imageUrl).slice(0, 4);
+
   if (isPC) return <PCHome />;
 
   return (
@@ -126,92 +150,85 @@ export default function Home() {
         </div>
         
         {/* Photo Posts (6 items) */}
-        <div className="flex overflow-x-auto pb-2 -mx-4 snap-x hide-scrollbar">
-          {/* Left spacer matches parent px-4 (16px) and acts as snap target to prevent auto-scroll */}
-          <div className="w-4 shrink-0 snap-start" aria-hidden="true"></div>
-          {[
-            { id: 1, title: "3개월차 변화", imgUrl: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&h=200&fit=crop" },
-            { id: 2, title: "모발이식 1일차", imgUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop" },
-            { id: 3, title: "약 복용 후기", imgUrl: "https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?w=200&h=200&fit=crop" },
-            { id: 4, title: "정수리 밀도", imgUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop" },
-            { id: 5, title: "M자 득모중", imgUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop" },
-            { id: 6, title: "두피 스케일링", imgUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop" },
-          ].map((photo) => (
-            <Link 
-              key={`photo-${photo.id}`} 
-              href={`/community/${photo.id}`} 
-              className="flex-shrink-0 w-[25%] snap-start flex flex-col gap-1.5 group mr-1.5"
-            >
-              <div className={`w-full aspect-square rounded-md shadow-sm border border-gray-100 flex items-center justify-center overflow-hidden relative`}>
-                <img src={photo.imgUrl} alt={photo.title} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors"></div>
-              </div>
-              <h4 className="font-medium text-gray-800 text-xs line-clamp-1 px-0.5">{photo.title}</h4>
-            </Link>
-          ))}
-          {/* Right spacer to ensure 16px right padding */}
-          <div className="w-4 shrink-0 snap-end" aria-hidden="true"></div>
-        </div>
+        {popularPhotos.length > 0 && (
+          <div className="flex overflow-x-auto pb-2 -mx-4 snap-x hide-scrollbar">
+            {/* Left spacer matches parent px-4 (16px) and acts as snap target to prevent auto-scroll */}
+            <div className="w-4 shrink-0 snap-start" aria-hidden="true"></div>
+            {popularPhotos.map((photo) => (
+              <Link 
+                key={`photo-${photo.id}`} 
+                href={`/community/detail?id=${photo.id}`} 
+                className="flex-shrink-0 w-[25%] snap-start flex flex-col gap-1.5 group mr-1.5"
+              >
+                <div className={`w-full aspect-square rounded-md shadow-sm border border-gray-100 flex items-center justify-center overflow-hidden relative`}>
+                  <img src={photo.imageUrl} alt={photo.title} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors"></div>
+                </div>
+                <h4 className="font-medium text-gray-800 text-xs line-clamp-1 px-0.5">{photo.title}</h4>
+              </Link>
+            ))}
+            {/* Right spacer to ensure 16px right padding */}
+            <div className="w-4 shrink-0 snap-end" aria-hidden="true"></div>
+          </div>
+        )}
 
         {/* Traditional Text Posts (4 items) */}
-        <div className="flex flex-col">
-          {[
-            { id: 11, title: "M자 초기인데 모발이식 견적 봐주세요", comments: 12 },
-            { id: 12, title: "핀페시아 6개월 복용 솔직 후기 (사진有)", comments: 45 },
-            { id: 13, title: "미녹시딜 바르는 꿀팁 공유합니다", comments: 8 },
-            { id: 14, title: "두피문신 해보신 분 장단점 좀 알려주세요", comments: 23 },
-          ].map((post) => (
-            <Link key={`post-${post.id}`} href={`/community/${post.id}`} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0 group">
-              <div className="flex items-center gap-2 overflow-hidden">
-                <span className="w-1 h-1 rounded-full bg-teal-500 shrink-0"></span>
-                <h4 className="font-medium text-gray-800 text-[13px] leading-tight line-clamp-1 group-hover:text-teal-600 transition-colors">{post.title}</h4>
-              </div>
-              <div className="flex items-center gap-1 text-gray-400 text-xs shrink-0 ml-4">
-                <MessageCircle className="w-3.5 h-3.5" />
-                {post.comments}
-              </div>
-            </Link>
-          ))}
-        </div>
+        {popularTextPosts.length > 0 && (
+          <div className="flex flex-col">
+            {popularTextPosts.map((post) => (
+              <Link key={`post-${post.id}`} href={`/community/detail?id=${post.id}`} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0 group">
+                <div className="flex items-center gap-2 overflow-hidden">
+                  <span className="w-1 h-1 rounded-full bg-teal-500 shrink-0"></span>
+                  <h4 className="font-medium text-gray-800 text-[13px] leading-tight line-clamp-1 group-hover:text-teal-600 transition-colors">{post.title}</h4>
+                </div>
+                <div className="flex items-center gap-1 text-gray-400 text-xs shrink-0 ml-4">
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  {post.comments}
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Hair Loss Real Reviews */}
       <section className="flex flex-col gap-1 mt-4">
         <div className="flex items-center justify-between">
           <h3 className="font-bold text-base text-gray-900">탈모 리얼후기</h3>
-          <Link href="/reviews" className="text-xs font-medium text-teal-600 flex items-center">
+          <Link href="/community?category=리얼후기" className="text-xs font-medium text-teal-600 flex items-center">
             더보기 <ChevronRight className="w-3 h-3" />
           </Link>
         </div>
         
         {/* Review Photos (6 items) */}
-        <div className="flex overflow-x-auto pb-2 -mx-4 snap-x hide-scrollbar">
-          <div className="w-4 shrink-0 snap-start" aria-hidden="true"></div>
-          {[
-            { id: 301, subtitle: "비절개 / 3,000모", title: "3,000모 모발이식 1주차 경과 후 진행사항", imgUrl: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&h=200&fit=crop" },
-            { id: 302, subtitle: "절개 / 4,000모", title: "강남 ㅇㅇ의원에서 4,000모 이식후 6개월 지난", imgUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop" },
-            { id: 303, subtitle: "비절개 / 2,500모", title: "M자 헤어라인 교정 3개월차 리얼 후기입니다", imgUrl: "https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?w=200&h=200&fit=crop" },
-            { id: 304, subtitle: "절개 / 3,500모", title: "정수리 밀도 보강 수술 당일 붓기 및 통증", imgUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop" },
-            { id: 305, subtitle: "비절개 / 4,500모", title: "대량 이식 1년 경과, 완전히 달라진 인상", imgUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop" },
-            { id: 306, subtitle: "절개 / 3,000모", title: "여성 헤어라인 이식 후 흉터 관리법 공유", imgUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop" },
-          ].map((photo) => (
-            <Link 
-              key={`review-photo-${photo.id}`} 
-              href={`/reviews/${photo.id}`} 
-              className="flex-shrink-0 w-[26%] snap-start flex flex-col gap-1.5 group mr-2"
-            >
-              <div className={`w-full aspect-square rounded-md shadow-sm border border-gray-100 flex items-center justify-center overflow-hidden relative`}>
-                <img src={photo.imgUrl} alt={photo.title} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors"></div>
-              </div>
-              <div className="flex flex-col px-0.5">
-                <span className="text-[9px] text-gray-400 font-light leading-none tracking-tight">{photo.subtitle}</span>
-                <h4 className="font-medium text-gray-800 text-[11px] leading-snug line-clamp-2 mt-1 break-keep">{photo.title}</h4>
-              </div>
-            </Link>
-          ))}
-          <div className="w-4 shrink-0 snap-end" aria-hidden="true"></div>
-        </div>
+        {reviewPosts.length > 0 ? (
+          <div className="flex overflow-x-auto pb-2 -mx-4 snap-x hide-scrollbar">
+            <div className="w-4 shrink-0 snap-start" aria-hidden="true"></div>
+            {reviewPosts.map((photo) => (
+              <Link 
+                key={`review-photo-${photo.id}`} 
+                href={`/community/detail?id=${photo.id}`} 
+                className="flex-shrink-0 w-[26%] snap-start flex flex-col gap-1.5 group mr-2"
+              >
+                <div className={`w-full aspect-square rounded-md shadow-sm border border-gray-100 flex items-center justify-center overflow-hidden relative ${!photo.imageUrl && 'bg-gray-50'}`}>
+                  {photo.imageUrl ? (
+                    <img src={photo.imageUrl} alt={photo.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-gray-400 text-[10px]">사진 없음</span>
+                  )}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors"></div>
+                </div>
+                <div className="flex flex-col px-0.5">
+                  <span className="text-[9px] text-gray-400 font-light leading-none tracking-tight">{photo.author}</span>
+                  <h4 className="font-medium text-gray-800 text-[11px] leading-snug line-clamp-2 mt-1 break-keep">{photo.title}</h4>
+                </div>
+              </Link>
+            ))}
+            <div className="w-4 shrink-0 snap-end" aria-hidden="true"></div>
+          </div>
+        ) : (
+          <div className="py-4 text-center text-sm text-gray-500 bg-gray-50 rounded-lg border border-gray-100">등록된 후기가 없습니다.</div>
+        )}
       </section>
 
       {/* Quote Banner */}
@@ -232,59 +249,55 @@ export default function Home() {
       <section className="flex flex-col gap-1 mt-2.5">
         <div className="flex items-center justify-between">
           <h3 className="font-bold text-base text-gray-900">탈모 정보</h3>
-          <Link href="/information" className="text-xs font-medium text-teal-600 flex items-center">
+          <Link href="/community?category=정보" className="text-xs font-medium text-teal-600 flex items-center">
             더보기 <ChevronRight className="w-3 h-3" />
           </Link>
         </div>
         
         {/* Info Photos (6 items) */}
-        <div className="flex overflow-x-auto pb-2 -mx-4 snap-x hide-scrollbar">
-          {/* Left spacer acts as snap target */}
-          <div className="w-4 shrink-0 snap-start" aria-hidden="true"></div>
-          {[
-            { id: 101, title: "올바른 머리 감기", imgUrl: "https://images.unsplash.com/photo-1631549916768-4119b2e5f926?w=200&h=200&fit=crop" },
-            { id: 102, title: "미녹시딜 부작용", imgUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&h=200&fit=crop" },
-            { id: 103, title: "모발이식 시기", imgUrl: "https://images.unsplash.com/photo-1519415943484-9fa1873496d4?w=200&h=200&fit=crop" },
-            { id: 104, title: "맥주효모의 진실", imgUrl: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=200&h=200&fit=crop" },
-            { id: 105, title: "탈모약과 피로도", imgUrl: "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=200&h=200&fit=crop" },
-            { id: 106, title: "유전 탈모 예방", imgUrl: "https://images.unsplash.com/photo-1532073995572-c5145b2064dc?w=200&h=200&fit=crop" },
-          ].map((photo) => (
-            <Link 
-              key={`info-photo-${photo.id}`} 
-              href={`/information/${photo.id}`} 
-              className="flex-shrink-0 w-[25%] snap-start flex flex-col gap-1.5 group mr-1.5"
-            >
-              <div className={`w-full aspect-square rounded-md shadow-sm border border-gray-100 flex items-center justify-center overflow-hidden relative`}>
-                <img src={photo.imgUrl} alt={photo.title} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors"></div>
-              </div>
-              <h4 className="font-medium text-gray-800 text-[11px] line-clamp-1 px-0.5">{photo.title}</h4>
-            </Link>
-          ))}
-          {/* Right spacer */}
-          <div className="w-4 shrink-0 snap-end" aria-hidden="true"></div>
-        </div>
+        {infoPhotos.length > 0 && (
+          <div className="flex overflow-x-auto pb-2 -mx-4 snap-x hide-scrollbar">
+            {/* Left spacer acts as snap target */}
+            <div className="w-4 shrink-0 snap-start" aria-hidden="true"></div>
+            {infoPhotos.map((photo) => (
+              <Link 
+                key={`info-photo-${photo.id}`} 
+                href={`/community/detail?id=${photo.id}`} 
+                className="flex-shrink-0 w-[30%] snap-start flex flex-col gap-1.5 group mr-2"
+              >
+                <div className={`w-full aspect-square rounded-xl shadow-sm border border-gray-100 flex items-center justify-center overflow-hidden relative ${!photo.imageUrl && 'bg-gray-50'}`}>
+                  {photo.imageUrl ? (
+                    <img src={photo.imageUrl} alt={photo.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-gray-400 text-[10px]">사진 없음</span>
+                  )}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors"></div>
+                </div>
+                <h4 className="font-medium text-gray-800 text-xs leading-snug line-clamp-2 px-0.5 break-keep">{photo.title}</h4>
+              </Link>
+            ))}
+            {/* Right spacer */}
+            <div className="w-4 shrink-0 snap-end" aria-hidden="true"></div>
+          </div>
+        )}
 
         {/* Info Text Posts (4 items) */}
-        <div className="flex flex-col">
-          {[
-            { id: 111, title: "20대 M자 탈모, 프로페시아 vs 아보다트", comments: 34 },
-            { id: 112, title: "병원 가기 전 꼭 알아야 할 모발이식 비용", comments: 56 },
-            { id: 113, title: "탈모 샴푸가 정말 효과가 있을까? 팩트체크", comments: 19 },
-            { id: 114, title: "두피열 내리는 생활 습관 5가지", comments: 42 },
-          ].map((post) => (
-            <Link key={`info-post-${post.id}`} href={`/information/${post.id}`} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0 group">
-              <div className="flex items-center gap-2 overflow-hidden">
-                <span className="w-1 h-1 rounded-full bg-teal-500 shrink-0"></span>
-                <h4 className="font-medium text-gray-800 text-[13px] leading-tight line-clamp-1 group-hover:text-teal-600 transition-colors">{post.title}</h4>
-              </div>
-              <div className="flex items-center gap-1 text-gray-400 text-xs shrink-0 ml-4">
-                <MessageCircle className="w-3.5 h-3.5" />
-                {post.comments}
-              </div>
-            </Link>
-          ))}
-        </div>
+        {infoTextPosts.length > 0 && (
+          <div className="flex flex-col">
+            {infoTextPosts.map((post) => (
+              <Link key={`info-post-${post.id}`} href={`/community/detail?id=${post.id}`} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0 group">
+                <div className="flex items-center gap-2 overflow-hidden">
+                  <span className="w-1 h-1 rounded-full bg-teal-500 shrink-0"></span>
+                  <h4 className="font-medium text-gray-800 text-[13px] leading-tight line-clamp-1 group-hover:text-teal-600 transition-colors">{post.title}</h4>
+                </div>
+                <div className="flex items-center gap-1 text-gray-400 text-xs shrink-0 ml-4">
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  {post.comments}
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Ad Banner */}

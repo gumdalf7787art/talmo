@@ -1,16 +1,17 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { MessageCircle, TrendingUp, MapPin, ChevronRight, Camera } from "lucide-react";
 
 export default function PCSidebar() {
-  const hotPosts = [
-    { id: 1, title: "M자 초기인데 모발이식 견적 봐주세요", comments: 12 },
-    { id: 2, title: "핀페시아 6개월 복용 솔직 후기", comments: 45 },
-    { id: 3, title: "미녹시딜 바르는 꿀팁 공유합니다", comments: 8 },
-    { id: 4, title: "두피문신 해보신 분 장단점", comments: 23 },
-    { id: 5, title: "절개 vs 비절개 고민중입니다", comments: 34 },
-  ];
+  const [hotPosts, setHotPosts] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/posts/list?sort=popular&limit=5')
+      .then(res => res.json())
+      .then(data => setHotPosts(data.posts || []));
+  }, []);
 
   const hotKeywords = ["모발이식 비용", "핀페시아", "미녹시딜", "두피문신", "강남 병원"];
 
@@ -23,10 +24,10 @@ export default function PCSidebar() {
           <h3 className="font-bold text-[15px] text-gray-900">실시간 인기글</h3>
         </div>
         <div className="flex flex-col gap-0.5">
-          {hotPosts.map((post, idx) => (
+          {hotPosts.length > 0 ? hotPosts.map((post, idx) => (
             <Link
               key={post.id}
-              href={`/community/${post.id}`}
+              href={`/community/detail?id=${post.id}`}
               className="flex items-center gap-3 py-2 group hover:bg-gray-50 -mx-2 px-2 rounded-lg transition-colors"
             >
               <span className={`text-[13px] font-black w-5 text-center ${idx < 3 ? 'text-teal-600' : 'text-gray-400'}`}>
@@ -36,7 +37,9 @@ export default function PCSidebar() {
                 {post.title}
               </span>
             </Link>
-          ))}
+          )) : (
+            <div className="text-sm text-gray-400 py-2 text-center">인기글이 없습니다.</div>
+          )}
         </div>
       </div>
 

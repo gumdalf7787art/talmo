@@ -13,7 +13,13 @@ export async function onRequestGet(context) {
     // Fetch posts and join with users to get the author's nickname
     // Also parse a single image for thumbnail if available (from base64 content)
     // We will select id, title, category, content, created_at, user nickname, email, views, comments_count
-    const stmt = db.prepare(`
+    const url = new URL(request.url);
+    const sort = url.searchParams.get('sort') || 'latest';
+    const category = url.searchParams.get('category') || 'all';
+    const limitStr = url.searchParams.get('limit');
+    const limit = limitStr ? parseInt(limitStr) : 100;
+
+    let query = `
       SELECT 
         p.id, 
         p.title, 
@@ -26,9 +32,27 @@ export async function onRequestGet(context) {
         u.email as email
       FROM posts p
       LEFT JOIN users u ON p.user_id = u.id
-      ORDER BY p.created_at DESC
-      LIMIT 100
-    `);
+    `;
+
+    const params = [];
+
+    if (category !== 'all') {
+      query += ` WHERE p.category = ? `;
+      params.push(category);
+    }
+
+    if (sort === 'popular') {
+      // Time-decay popular algorithm: (views + comments * 2) / ((hours_since_created) + 2)
+      // julianday('now') - julianday(created_at) gives the difference in days. Multiply by 24 for hours.
+      query += ` ORDER BY ((p.views + (p.comments_count * 2)) / ((julianday('now') - julianday(p.created_at)) * 24 + 2)) DESC, p.created_at DESC `;
+    } else {
+      query += ` ORDER BY p.created_at DESC `;
+    }
+
+    query += ` LIMIT ?`;
+    params.push(limit);
+
+    const stmt = db.prepare(query).bind(...params);
 
     const { results, success } = await stmt.all();
 
