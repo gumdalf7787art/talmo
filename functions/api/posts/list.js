@@ -18,6 +18,7 @@ export async function onRequestGet(context) {
     const category = url.searchParams.get('category') || 'all';
     const limitStr = url.searchParams.get('limit');
     const q = url.searchParams.get('q');
+    const author = url.searchParams.get('author');
     const limit = limitStr ? parseInt(limitStr) : 100;
 
     let query = `
@@ -46,6 +47,11 @@ export async function onRequestGet(context) {
     if (q) {
       query += ` AND (p.title LIKE ? OR p.content LIKE ?) `;
       params.push(`%${q}%`, `%${q}%`);
+    }
+
+    if (author) {
+      query += ` AND u.email = ? `;
+      params.push(author);
     }
 
     if (sort === 'popular') {
