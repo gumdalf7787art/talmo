@@ -26,7 +26,7 @@ export default function PCHome() {
       .then(res => res.json())
       .then(data => setReviewPosts(data.posts || []));
       
-    fetch('/api/posts/list?category=정보&limit=4')
+    fetch('/api/posts/list?category=탈모정보&limit=4')
       .then(res => res.json())
       .then(data => setInfoPosts(data.posts || []));
   }, []);
