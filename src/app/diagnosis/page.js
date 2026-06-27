@@ -118,6 +118,9 @@ function DiagnosisContent() {
 
     const formData = new FormData();
     formData.append("image", imageFile);
+    if (user && user.id) {
+      formData.append("userId", user.id);
+    }
 
     try {
       const response = await fetch("/api/diagnosis", {

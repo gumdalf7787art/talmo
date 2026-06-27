@@ -1,46 +1,100 @@
 "use client";
 
+import { useEffect, useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, Calendar, TrendingDown, TrendingUp, Minus } from "lucide-react";
+import { ChevronLeft, Calendar, TrendingDown, TrendingUp, Minus, Activity } from "lucide-react";
+import useMediaQuery from "@/hooks/useMediaQuery";
+import PCDiagnosisHistory from "@/components/pc/PCDiagnosisHistory";
 
-export default function DiagnosisHistoryPage() {
+function DiagnosisHistoryContent() {
   const router = useRouter();
+  const isPC = useMediaQuery("(min-width: 1024px)");
+  const [historyList, setHistoryList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock history data
-  const historyList = [
-    {
-      id: 1,
-      date: "2026.06.20",
-      score: 65,
-      severity: "진행: 초기",
-      trend: "down",
-      summary: "M자 헤어라인 후퇴 관찰됨",
-      image: "https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?w=100&h=100&fit=crop"
-    },
-    {
-      id: 2,
-      date: "2026.03.15",
-      score: 72,
-      severity: "정상 범위",
-      trend: "same",
-      summary: "정수리 밀도 다소 감소, 관리 필요",
-      image: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop"
-    },
-    {
-      id: 3,
-      date: "2025.12.01",
-      score: 74,
-      severity: "정상 범위",
-      trend: "up",
-      summary: "두피 및 모발 상태 전반적 양호",
-      image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop"
-    }
-  ];
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const savedUser = localStorage.getItem('user');
+        if (!savedUser) {
+          alert("로그인이 필요합니다.");
+          router.push('/login');
+          return;
+        }
+        const user = JSON.parse(savedUser);
+        
+        const response = await fetch(`/api/diagnosis-history?userId=${user.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setHistoryList(data);
+        } else {
+          console.error("Failed to fetch history");
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, [router]);
+
+  if (loading) {
+    return <div className="flex h-screen items-center justify-center">Loading...</div>;
+  }
+
+  // If PC, render the PCDiagnosisHistory layout
+  if (isPC) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        {/* Header (reusing general PC header layout if needed, or simple title) */}
+        <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+          <div className="max-w-[1000px] mx-auto flex items-center justify-between h-16 px-4">
+            <h1 className="font-bold text-xl text-gray-900">AI 분석 기록 모아보기</h1>
+            <button onClick={() => router.push('/mypage')} className="text-sm font-medium text-gray-500 hover:text-gray-900">
+              마이페이지로 돌아가기
+            </button>
+          </div>
+        </header>
+        <div className="flex-1 px-4">
+          <PCDiagnosisHistory historyList={historyList} />
+        </div>
+      </div>
+    );
+  }
+
+  // Mobile layout
+  if (!historyList || historyList.length === 0) {
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-50">
+        <header className="sticky top-0 z-50 bg-white flex items-center justify-between px-4 h-14 border-b border-gray-100 shadow-sm">
+          <div className="flex items-center gap-2">
+            <button onClick={() => router.back()} className="p-1 -ml-1 text-gray-700">
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <h1 className="font-bold text-[18px] text-gray-900">AI 분석 기록 모아보기</h1>
+          </div>
+        </header>
+        <div className="flex-1 flex flex-col items-center justify-center text-gray-500 pb-20">
+          <Activity className="w-10 h-10 text-gray-300 mb-3" />
+          <p className="text-sm">AI 분석 기록이 없습니다.</p>
+          <Link href="/diagnosis" className="mt-4 px-5 py-2 bg-teal-600 text-white rounded-lg font-bold text-sm">
+            새 분석 시작하기
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const latestScore = historyList[0]?.score || 0;
+  const previousScore = historyList.length > 1 ? historyList[1].score : latestScore;
+  const diff = latestScore - previousScore;
+  const trend = diff > 0 ? 'up' : diff < 0 ? 'down' : 'same';
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 pb-safe">
-      {/* Header */}
       <header className="sticky top-0 z-50 bg-white flex items-center justify-between px-4 h-14 border-b border-gray-100 shadow-sm">
         <div className="flex items-center gap-2">
           <button onClick={() => router.back()} className="p-1 -ml-1 text-gray-700">
@@ -54,18 +108,22 @@ export default function DiagnosisHistoryPage() {
       <div className="bg-gradient-to-br from-teal-500 to-teal-700 px-5 py-7">
         <div className="flex justify-between items-end text-white">
           <div className="flex flex-col gap-1.5">
-            <span className="text-teal-100 text-[13px] font-medium">최근 분석 점수 (6/20 기준)</span>
+            <span className="text-teal-100 text-[13px] font-medium">최근 분석 점수 ({new Date(historyList[0].created_at).toLocaleDateString()})</span>
             <div className="flex items-baseline gap-1">
-              <span className="text-5xl font-black tracking-tighter">65</span>
+              <span className="text-5xl font-black tracking-tighter">{latestScore}</span>
               <span className="text-teal-100 text-[15px] font-bold">/ 100점</span>
             </div>
           </div>
-          <div className="flex flex-col items-end gap-1.5">
-            <span className="bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded text-[12px] font-bold text-white flex items-center gap-1">
-              <TrendingDown className="w-3.5 h-3.5" />
-              지난 검사 대비 -7점
-            </span>
-          </div>
+          {historyList.length > 1 && (
+            <div className="flex flex-col items-end gap-1.5">
+              <span className="bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded text-[12px] font-bold text-white flex items-center gap-1">
+                {trend === 'up' && <TrendingUp className="w-3.5 h-3.5" />}
+                {trend === 'down' && <TrendingDown className="w-3.5 h-3.5" />}
+                {trend === 'same' && <Minus className="w-3.5 h-3.5" />}
+                지난 검사 대비 {trend === 'up' ? `+${diff}` : trend === 'down' ? diff : '동일'}점
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -77,44 +135,62 @@ export default function DiagnosisHistoryPage() {
         </div>
 
         <div className="flex flex-col gap-3">
-          {historyList.map((item) => (
-            <Link key={item.id} href="/diagnosis?history=true" className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex gap-4 items-center transition-transform active:scale-[0.98] cursor-pointer">
-              {/* Thumbnail */}
-              <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-gray-100 border border-gray-200">
-                <img src={item.image} alt="분석 사진" className="w-full h-full object-cover" />
-              </div>
-              
-              {/* Content */}
-              <div className="flex flex-col flex-1 min-w-0">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-[12px] text-gray-400 font-medium">{item.date}</span>
-                  <div className="flex items-center gap-1">
-                    {item.trend === 'down' && <TrendingDown className="w-3.5 h-3.5 text-red-500" />}
-                    {item.trend === 'up' && <TrendingUp className="w-3.5 h-3.5 text-teal-500" />}
-                    {item.trend === 'same' && <Minus className="w-3.5 h-3.5 text-gray-400" />}
-                    <span className={`text-[13px] font-black ${item.trend === 'down' ? 'text-red-500' : item.trend === 'up' ? 'text-teal-600' : 'text-gray-500'}`}>
-                      {item.score}점
-                    </span>
+          {historyList.map((item) => {
+            const details = item.details ? JSON.parse(item.details) : null;
+            const summaryText = details?.analysis?.[0] || item.severity || "분석 내용이 없습니다.";
+            // Compare with next item to get trend
+            const currentIndex = historyList.findIndex(h => h.id === item.id);
+            const prevItem = historyList[currentIndex + 1];
+            const itemDiff = prevItem ? item.score - prevItem.score : 0;
+            const itemTrend = itemDiff > 0 ? 'up' : itemDiff < 0 ? 'down' : 'same';
+
+            return (
+              <Link key={item.id} href={`/diagnosis?history=true&id=${item.id}`} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex gap-4 items-center transition-transform active:scale-[0.98] cursor-pointer">
+                {/* Thumbnail */}
+                <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-gray-100 border border-gray-200">
+                  <img src={item.image_url && item.image_url !== 'placeholder_url' ? item.image_url : "https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?w=100&h=100&fit=crop"} alt="분석 사진" className="w-full h-full object-cover" />
+                </div>
+                
+                {/* Content */}
+                <div className="flex flex-col flex-1 min-w-0">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-[12px] text-gray-400 font-medium">{new Date(item.created_at).toLocaleDateString()}</span>
+                    <div className="flex items-center gap-1">
+                      {itemTrend === 'down' && <TrendingDown className="w-3.5 h-3.5 text-red-500" />}
+                      {itemTrend === 'up' && <TrendingUp className="w-3.5 h-3.5 text-teal-500" />}
+                      {itemTrend === 'same' && <Minus className="w-3.5 h-3.5 text-gray-400" />}
+                      <span className={`text-[13px] font-black ${itemTrend === 'down' ? 'text-red-500' : itemTrend === 'up' ? 'text-teal-600' : 'text-gray-500'}`}>
+                        {item.score}점
+                      </span>
+                    </div>
                   </div>
+                  
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <span className="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-bold rounded shrink-0">
+                      {item.severity}
+                    </span>
+                    <p className="text-[13px] font-bold text-gray-900 truncate">
+                      {summaryText}
+                    </p>
+                  </div>
+                  
+                  <button className="text-[11px] text-teal-600 font-bold text-left hover:text-teal-700 w-max">
+                    상세 리포트 보기 &rarr;
+                  </button>
                 </div>
-                
-                <div className="flex items-center gap-2 mb-1.5">
-                  <span className="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-bold rounded">
-                    {item.severity}
-                  </span>
-                  <p className="text-[13px] font-bold text-gray-900 truncate">
-                    {item.summary}
-                  </p>
-                </div>
-                
-                <button className="text-[11px] text-teal-600 font-bold text-left hover:text-teal-700 w-max">
-                  상세 리포트 보기 &rarr;
-                </button>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            )
+          })}
         </div>
       </main>
     </div>
+  );
+}
+
+export default function DiagnosisHistoryPage() {
+  return (
+    <Suspense fallback={<div className="p-4">Loading...</div>}>
+      <DiagnosisHistoryContent />
+    </Suspense>
   );
 }

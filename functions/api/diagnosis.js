@@ -4,6 +4,7 @@ export async function onRequestPost(context) {
   try {
     const formData = await request.formData();
     const image = formData.get('image');
+    const userId = formData.get('userId');
 
     if (!image) {
       return new Response(JSON.stringify({ error: '이미지가 없습니다.' }), { 
@@ -59,6 +60,17 @@ export async function onRequestPost(context) {
         ]
       }
     };
+
+    const db = env.DB;
+    if (db && userId) {
+      const id = crypto.randomUUID();
+      const now = new Date().toISOString();
+      const insertStmt = db.prepare(`
+        INSERT INTO diagnostics (id, user_id, score, severity, image_url, details, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `).bind(id, userId, mockResponse.diagnosis.score, mockResponse.diagnosis.severity, "placeholder_url", JSON.stringify(mockResponse.diagnosis), now);
+      await insertStmt.run();
+    }
 
     return new Response(JSON.stringify(mockResponse), {
       headers: { 'Content-Type': 'application/json' }

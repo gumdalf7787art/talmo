@@ -74,8 +74,13 @@ function PCDiagnosisContent() {
     }
 
     setIsAnalyzing(true); setResult(null);
-    const formData = new FormData(); formData.append("image", imageFile);
     try {
+      const formData = new FormData();
+      formData.append("image", imageFile);
+      if (user && user.id) {
+        formData.append("userId", user.id);
+      }
+
       const response = await fetch("/api/diagnosis", { method: "POST", body: formData });
       if (response.ok) { const data = await response.json(); setResult(data.diagnosis); } else { alert("분석 중 오류가 발생했습니다."); }
     } catch (error) { alert("서버와 통신할 수 없습니다."); }
