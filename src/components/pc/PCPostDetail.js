@@ -14,7 +14,10 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
     e.preventDefault();
     if (!comment.trim()) return;
     
-    const userId = localStorage.getItem('userId');
+    const userStr = localStorage.getItem('user');
+    const user = userStr ? JSON.parse(userStr) : null;
+    const userId = user ? user.id : null;
+
     if (!userId) {
       alert("로그인이 필요합니다.");
       return;
