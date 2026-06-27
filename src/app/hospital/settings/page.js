@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Camera, MapPin, Check } from "lucide-react";
+import { compressImage } from "@/lib/imageUtils";
 
 export default function HospitalSettingsPage() {
   const router = useRouter();
@@ -12,10 +13,27 @@ export default function HospitalSettingsPage() {
   const [hospitalInfo, setHospitalInfo] = useState({
     name: "",
     description: "",
+    detail_description: "",
     address: "",
     category: "모발이식",
     contact: "",
+    image_url: "",
   });
+
+  const fileInputRef = useRef(null);
+
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    try {
+      const compressedBase64 = await compressImage(files[0], 500, 0.7);
+      setHospitalInfo(prev => ({ ...prev, image_url: compressedBase64 }));
+    } catch (err) {
+      console.error("Image compression failed:", err);
+      alert("이미지 업로드에 실패했습니다.");
+    }
+  };
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -89,15 +107,33 @@ export default function HospitalSettingsPage() {
           <div className="flex flex-col gap-2">
             <span className="font-bold text-gray-900 text-sm">병원 로고 / 대표 이미지</span>
             <div className="flex items-center gap-4 mt-2">
-              <div className="w-20 h-20 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center relative overflow-hidden">
-                <Camera className="w-6 h-6 text-gray-400" />
-                <div className="absolute inset-0 bg-black/5 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer">
+              <input 
+                type="file" 
+                accept="image/*" 
+                className="hidden" 
+                ref={fileInputRef} 
+                onChange={handleImageUpload} 
+              />
+              <div 
+                className="w-20 h-20 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center relative overflow-hidden cursor-pointer"
+                onClick={() => fileInputRef.current.click()}
+              >
+                {hospitalInfo.image_url ? (
+                  <img src={hospitalInfo.image_url} alt="hospital logo" className="w-full h-full object-cover" />
+                ) : (
+                  <Camera className="w-6 h-6 text-gray-400" />
+                )}
+                <div className="absolute inset-0 bg-black/5 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                   <span className="text-[10px] text-gray-700 font-bold bg-white/80 px-2 py-1 rounded">변경</span>
                 </div>
               </div>
               <div className="flex-1">
                 <p className="text-[12px] text-gray-500 mb-1">환자들에게 보여질 병원의 대표 로고나 이미지를 등록해주세요.</p>
-                <button type="button" className="text-[12px] font-bold text-teal-600 bg-teal-50 px-3 py-1.5 rounded-lg hover:bg-teal-100">
+                <button 
+                  type="button" 
+                  onClick={() => fileInputRef.current.click()}
+                  className="text-[12px] font-bold text-teal-600 bg-teal-50 px-3 py-1.5 rounded-lg hover:bg-teal-100"
+                >
                   이미지 업로드
                 </button>
               </div>
@@ -148,6 +184,8 @@ export default function HospitalSettingsPage() {
               <label className="font-bold text-gray-900 text-sm">상세 소개 (환자 안내용)</label>
               <textarea 
                 rows={4}
+                value={hospitalInfo.detail_description || ""}
+                onChange={e => setHospitalInfo({...hospitalInfo, detail_description: e.target.value})}
                 className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[14px] focus:outline-none focus:border-teal-500 focus:bg-white transition-colors resize-none"
                 placeholder="병원의 특장점, 진료 철학, 보유 장비 등을 상세히 적어주세요."
               ></textarea>
