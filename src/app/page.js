@@ -41,14 +41,19 @@ export default function Home() {
     setBannerType("community");
   };
 
-  const [popularPosts, setPopularPosts] = useState([]);
+  const [popularPhotos, setPopularPhotos] = useState([]);
+  const [popularTextPosts, setPopularTextPosts] = useState([]);
   const [reviewPosts, setReviewPosts] = useState([]);
   const [infoPosts, setInfoPosts] = useState([]);
 
   useEffect(() => {
-    fetch('/api/posts/list?sort=popular&limit=30')
+    fetch('/api/posts/list?sort=popular&hasImage=true&limit=6')
       .then(res => res.json())
-      .then(data => setPopularPosts(data.posts || []));
+      .then(data => setPopularPhotos(data.posts || []));
+      
+    fetch('/api/posts/list?sort=popular&hasImage=false&limit=4')
+      .then(res => res.json())
+      .then(data => setPopularTextPosts(data.posts || []));
       
     fetch('/api/posts/list?category=리얼후기&limit=6')
       .then(res => res.json())
@@ -59,8 +64,7 @@ export default function Home() {
       .then(data => setInfoPosts(data.posts || []));
   }, []);
 
-  const popularPhotos = popularPosts.filter(p => p.imageUrl).slice(0, 6);
-  const popularTextPosts = popularPosts.filter(p => !p.imageUrl).slice(0, 4);
+
 
   const infoPhotos = infoPosts.filter(p => p.imageUrl).slice(0, 6);
   const infoTextPosts = infoPosts.filter(p => !p.imageUrl).slice(0, 4);

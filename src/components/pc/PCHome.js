@@ -9,7 +9,8 @@ export default function PCHome() {
   const [bannerType, setBannerType] = useState(null);
   const [mounted, setMounted] = useState(false);
 
-  const [popularPosts, setPopularPosts] = useState([]);
+  const [popularPhotos, setPopularPhotos] = useState([]);
+  const [textPosts, setTextPosts] = useState([]);
   const [reviewPosts, setReviewPosts] = useState([]);
   const [infoPosts, setInfoPosts] = useState([]);
 
@@ -18,9 +19,13 @@ export default function PCHome() {
     const hasDiagnosed = localStorage.getItem("hasDiagnosed");
     setBannerType(hasDiagnosed ? "community" : "diagnosis");
 
-    fetch('/api/posts/list?sort=popular&limit=30')
+    fetch('/api/posts/list?sort=popular&hasImage=true&limit=6')
       .then(res => res.json())
-      .then(data => setPopularPosts(data.posts || []));
+      .then(data => setPopularPhotos(data.posts || []));
+
+    fetch('/api/posts/list?sort=popular&hasImage=false&limit=4')
+      .then(res => res.json())
+      .then(data => setTextPosts(data.posts || []));
       
     fetch('/api/posts/list?category=리얼후기&limit=4')
       .then(res => res.json())
@@ -36,8 +41,7 @@ export default function PCHome() {
     setBannerType("community");
   };
 
-  const popularPhotos = popularPosts.filter(p => p.imageUrl).slice(0, 6);
-  const textPosts = popularPosts.filter(p => !p.imageUrl).slice(0, 4);
+
 
   const reviewPhotos = reviewPosts.slice(0, 4);
   const infoPhotos = infoPosts.slice(0, 4);

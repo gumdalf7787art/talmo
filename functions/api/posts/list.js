@@ -20,6 +20,7 @@ export async function onRequestGet(context) {
     const q = url.searchParams.get('q');
     const author = url.searchParams.get('author');
     const bookmarkedBy = url.searchParams.get('bookmarkedBy');
+    const hasImage = url.searchParams.get('hasImage');
     const limit = limitStr ? parseInt(limitStr) : 100;
 
     let query = `
@@ -59,6 +60,12 @@ export async function onRequestGet(context) {
     if (bookmarkedBy) {
       query += ` AND bu.email = ? `;
       params.push(bookmarkedBy);
+    }
+
+    if (hasImage === 'true') {
+      query += ` AND p.content LIKE '%<img%src="%' `;
+    } else if (hasImage === 'false') {
+      query += ` AND p.content NOT LIKE '%<img%src="%' `;
     }
 
     if (sort === 'popular') {
