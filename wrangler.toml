@@ -1,0 +1,13 @@
+name = "talmo"
+pages_build_output_dir = ".vercel/output/static"
+compatibility_date = "2024-03-20"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "talmo-db"
+database_id = "f234a687-2d22-40d9-b235-65fcde165d76"
+
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "talmo-storage"

@@ -1,0 +1,207 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { ChevronLeft, Mail, Lock, User, CheckCircle2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import useMediaQuery from "@/hooks/useMediaQuery";
+import PCSignup from "@/components/pc/PCSignup";
+
+export default function SignupPage() {
+  const isPC = useMediaQuery("(min-width: 1024px)");
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [agreeAll, setAgreeAll] = useState(false);
+  const [agreeTerms, setAgreeTerms] = useState(false);
+  const [agreePrivacy, setAgreePrivacy] = useState(false);
+
+  const handleAgreeAll = () => {
+    const nextState = !agreeAll;
+    setAgreeAll(nextState);
+    setAgreeTerms(nextState);
+    setAgreePrivacy(nextState);
+  };
+
+  const handleAgreeItem = (type) => {
+    if (type === "terms") {
+      setAgreeTerms(!agreeTerms);
+      if (agreeAll && agreeTerms) setAgreeAll(false);
+      if (!agreeTerms && agreePrivacy) setAgreeAll(true);
+    } else {
+      setAgreePrivacy(!agreePrivacy);
+      if (agreeAll && agreePrivacy) setAgreeAll(false);
+      if (agreeTerms && !agreePrivacy) setAgreeAll(true);
+    }
+  };
+
+  const isFormValid = email && password && password === passwordConfirm && nickname && agreeTerms && agreePrivacy;
+
+  const handleSignup = (e) => {
+    e.preventDefault();
+    if (!isFormValid) return;
+    // TODO: Implement actual signup logic
+    console.log("Signup with:", { email, password, nickname });
+    router.push("/login");
+  };
+
+  if (isPC) return <PCSignup />;
+
+  return (
+    <div className="flex flex-col min-h-screen bg-white pb-20">
+      {/* Header */}
+      <header className="sticky top-0 z-50 w-full bg-white flex items-center justify-center px-4 h-14 border-b border-gray-100">
+        <button onClick={() => router.back()} className="absolute left-4 p-1 -ml-1 text-gray-700">
+          <ChevronLeft className="w-6 h-6" />
+        </button>
+        <h1 className="font-bold text-lg text-gray-900">회원가입</h1>
+      </header>
+
+      <div className="flex flex-col flex-1 px-5 pt-8">
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 leading-tight">
+            탈모톡에 오신 것을<br />환영합니다!
+          </h2>
+          <p className="text-sm text-gray-500 mt-2">
+            기본 정보만 입력하고 바로 시작해보세요.
+          </p>
+        </div>
+
+        <form onSubmit={handleSignup} className="flex flex-col gap-6 w-full">
+          {/* Email */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-semibold text-gray-800 ml-1">이메일</label>
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                  <Mail className="w-4 h-4 text-gray-400" />
+                </div>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="example@talmotalk.com"
+                  className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all"
+                  required
+                />
+              </div>
+              <button 
+                type="button" 
+                className="px-4 py-3.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold whitespace-nowrap active:bg-gray-200 transition-colors"
+              >
+                중복확인
+              </button>
+            </div>
+          </div>
+
+          {/* Password */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-semibold text-gray-800 ml-1">비밀번호</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                <Lock className="w-4 h-4 text-gray-400" />
+              </div>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="영문, 숫자, 특수문자 조합 8자 이상"
+                className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Password Confirm */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-semibold text-gray-800 ml-1">비밀번호 확인</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                <Lock className="w-4 h-4 text-gray-400" />
+              </div>
+              <input
+                type="password"
+                value={passwordConfirm}
+                onChange={(e) => setPasswordConfirm(e.target.value)}
+                placeholder="비밀번호를 다시 한 번 입력해주세요"
+                className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all"
+                required
+              />
+            </div>
+            {password && passwordConfirm && password !== passwordConfirm && (
+              <span className="text-xs text-red-500 ml-1 mt-1">비밀번호가 일치하지 않습니다.</span>
+            )}
+            {password && passwordConfirm && password === passwordConfirm && (
+              <span className="text-xs text-teal-600 ml-1 mt-1">비밀번호가 일치합니다.</span>
+            )}
+          </div>
+
+          {/* Nickname */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-semibold text-gray-800 ml-1">닉네임</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                <User className="w-4 h-4 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                placeholder="커뮤니티에서 사용할 닉네임 (ex. 득모가자)"
+                className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all"
+                required
+              />
+            </div>
+          </div>
+
+          <hr className="border-gray-100 my-2" />
+
+          {/* Terms */}
+          <div className="flex flex-col gap-3">
+            <div 
+              className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-200 cursor-pointer"
+              onClick={handleAgreeAll}
+            >
+              <CheckCircle2 className={`w-5 h-5 transition-colors ${agreeAll ? 'text-teal-600' : 'text-gray-300'}`} />
+              <span className="font-bold text-sm text-gray-900">약관 전체 동의</span>
+            </div>
+            
+            <div className="flex flex-col gap-2.5 px-3 py-1">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleAgreeItem("terms")}>
+                  <CheckCircle2 className={`w-4 h-4 transition-colors ${agreeTerms ? 'text-teal-600' : 'text-gray-300'}`} />
+                  <span className="text-sm text-gray-600 font-medium">[필수] 서비스 이용약관 동의</span>
+                </div>
+                <Link href="/terms" className="text-xs text-gray-400 underline underline-offset-2">보기</Link>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleAgreeItem("privacy")}>
+                  <CheckCircle2 className={`w-4 h-4 transition-colors ${agreePrivacy ? 'text-teal-600' : 'text-gray-300'}`} />
+                  <span className="text-sm text-gray-600 font-medium">[필수] 개인정보 수집 및 이용 동의</span>
+                </div>
+                <Link href="/privacy" className="text-xs text-gray-400 underline underline-offset-2">보기</Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Fixed Bottom Button (or just at bottom of form) */}
+          <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-4 bg-white border-t border-gray-100">
+            <button
+              type="submit"
+              disabled={!isFormValid}
+              className={`w-full py-4 rounded-xl font-bold text-[15px] shadow-sm transition-all ${
+                isFormValid 
+                  ? 'bg-teal-600 text-white active:bg-teal-700' 
+                  : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              }`}
+            >
+              가입하기
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}

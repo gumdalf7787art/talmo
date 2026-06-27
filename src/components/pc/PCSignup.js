@@ -1,0 +1,99 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { Mail, Lock, User, CheckCircle2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+export default function PCSignup() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [agreeAll, setAgreeAll] = useState(false);
+  const [agreeTerms, setAgreeTerms] = useState(false);
+  const [agreePrivacy, setAgreePrivacy] = useState(false);
+
+  const handleAgreeAll = () => { const n = !agreeAll; setAgreeAll(n); setAgreeTerms(n); setAgreePrivacy(n); };
+  const isFormValid = email && password && password === passwordConfirm && nickname && agreeTerms && agreePrivacy;
+
+  const handleSignup = (e) => { e.preventDefault(); if (!isFormValid) return; router.push("/login"); };
+
+  return (
+    <div className="flex items-center justify-center min-h-[70vh] py-8">
+      <div className="w-full max-w-lg bg-white rounded-2xl border border-gray-200 shadow-lg p-10">
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 leading-tight">탈모톡에 오신 것을<br />환영합니다!</h2>
+          <p className="text-sm text-gray-500 mt-2">기본 정보만 입력하고 바로 시작해보세요.</p>
+        </div>
+
+        <form onSubmit={handleSignup} className="flex flex-col gap-5">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-semibold text-gray-800 ml-1">이메일</label>
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="example@talmotalk.com" className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all" required />
+              </div>
+              <button type="button" className="px-4 py-3.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold whitespace-nowrap hover:bg-gray-200 transition-colors">중복확인</button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-semibold text-gray-800 ml-1">비밀번호</label>
+              <div className="relative">
+                <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="영문, 숫자, 특수문자 8자 이상" className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all" required />
+              </div>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-semibold text-gray-800 ml-1">비밀번호 확인</label>
+              <div className="relative">
+                <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input type="password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} placeholder="비밀번호 재입력" className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all" required />
+              </div>
+              {password && passwordConfirm && password !== passwordConfirm && <span className="text-xs text-red-500 ml-1">비밀번호가 일치하지 않습니다.</span>}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-semibold text-gray-800 ml-1">닉네임</label>
+            <div className="relative">
+              <User className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)} placeholder="커뮤니티에서 사용할 닉네임" className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all" required />
+            </div>
+          </div>
+
+          <hr className="border-gray-100 my-1" />
+
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-200 cursor-pointer" onClick={handleAgreeAll}>
+              <CheckCircle2 className={`w-5 h-5 ${agreeAll ? 'text-teal-600' : 'text-gray-300'}`} />
+              <span className="font-bold text-sm text-gray-900">약관 전체 동의</span>
+            </div>
+            <div className="flex flex-col gap-2 px-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 cursor-pointer" onClick={() => { setAgreeTerms(!agreeTerms); if(!agreeTerms && agreePrivacy) setAgreeAll(true); else setAgreeAll(false); }}>
+                  <CheckCircle2 className={`w-4 h-4 ${agreeTerms ? 'text-teal-600' : 'text-gray-300'}`} />
+                  <span className="text-sm text-gray-600 font-medium">[필수] 서비스 이용약관 동의</span>
+                </div>
+                <Link href="/terms" className="text-xs text-gray-400 underline underline-offset-2">보기</Link>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 cursor-pointer" onClick={() => { setAgreePrivacy(!agreePrivacy); if(agreeTerms && !agreePrivacy) setAgreeAll(true); else setAgreeAll(false); }}>
+                  <CheckCircle2 className={`w-4 h-4 ${agreePrivacy ? 'text-teal-600' : 'text-gray-300'}`} />
+                  <span className="text-sm text-gray-600 font-medium">[필수] 개인정보 수집 및 이용 동의</span>
+                </div>
+                <Link href="/privacy" className="text-xs text-gray-400 underline underline-offset-2">보기</Link>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" disabled={!isFormValid} className={`w-full py-4 rounded-xl font-bold text-[15px] shadow-sm transition-all mt-2 ${isFormValid ? 'bg-teal-600 text-white hover:bg-teal-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>가입하기</button>
+        </form>
+      </div>
+    </div>
+  );
+}
