@@ -1,5 +1,5 @@
 export async function onRequestGet(context) {
-  const { env } = context;
+  const { request, env } = context;
 
   try {
     const db = env.DB;
@@ -44,7 +44,7 @@ export async function onRequestGet(context) {
     if (sort === 'popular') {
       // Time-decay popular algorithm: (views + comments * 2) / ((hours_since_created) + 2)
       // julianday('now') - julianday(created_at) gives the difference in days. Multiply by 24 for hours.
-      query += ` ORDER BY ((p.views + (p.comments_count * 2)) / ((julianday('now') - julianday(p.created_at)) * 24 + 2)) DESC, p.created_at DESC `;
+      query += ` ORDER BY ((COALESCE(p.views, 0) + (COALESCE(p.comments_count, 0) * 2)) / ((julianday('now') - julianday(p.created_at)) * 24 + 2)) DESC, p.created_at DESC `;
     } else {
       query += ` ORDER BY p.created_at DESC `;
     }
