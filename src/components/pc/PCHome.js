@@ -110,39 +110,6 @@ export default function PCHome() {
           </section>
         )}
 
-        {/* 실시간 인기글 - Grid */}
-        <section className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-5">
-            <h3 className="font-bold text-lg text-gray-900">실시간 인기글</h3>
-            <Link href="/community" className="text-sm font-medium text-teal-600 flex items-center hover:text-teal-700">
-              더보기 <ChevronRight className="w-4 h-4" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-6 gap-3 mb-5">
-            {popularPhotos.map((photo) => (
-              <Link key={photo.id} href={`/community/detail?id=${photo.id}`} className="flex flex-col gap-2 group">
-                <div className="w-full aspect-square rounded-xl overflow-hidden border border-gray-100 shadow-sm">
-                  <img src={photo.imageUrl} alt={photo.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                </div>
-                <h4 className="font-medium text-gray-800 text-[13px] line-clamp-1 group-hover:text-teal-600 transition-colors">{photo.title}</h4>
-              </Link>
-            ))}
-          </div>
-          <div className="grid grid-cols-2 gap-x-6">
-            {textPosts.map((post) => (
-              <Link key={post.id} href={`/community/detail?id=${post.id}`} className="flex items-center justify-between py-2.5 border-b border-gray-100 last:border-0 group">
-                <div className="flex items-center gap-2 overflow-hidden">
-                  <span className="w-1.5 h-1.5 rounded-full bg-teal-500 shrink-0" />
-                  <h4 className="font-medium text-gray-800 text-[14px] line-clamp-1 group-hover:text-teal-600 transition-colors">{post.title}</h4>
-                </div>
-                <div className="flex items-center gap-1 text-gray-400 text-[13px] shrink-0 ml-4">
-                  <MessageCircle className="w-3.5 h-3.5" /> {post.comments}
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-
         {/* 탈모 리얼후기 + 탈모 정보 - 2열 */}
         <div className="grid grid-cols-2 gap-6">
           {/* 리얼후기 */}
@@ -192,6 +159,39 @@ export default function PCHome() {
             </div>
           </section>
         </div>
+
+        {/* 실시간 인기글 - Grid */}
+        <section className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="font-bold text-lg text-gray-900">실시간 인기글</h3>
+            <Link href="/community" className="text-sm font-medium text-teal-600 flex items-center hover:text-teal-700">
+              더보기 <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-6 gap-3 mb-5">
+            {popularPhotos.map((photo) => (
+              <Link key={photo.id} href={`/community/detail?id=${photo.id}`} className="flex flex-col gap-2 group">
+                <div className="w-full aspect-square rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+                  <img src={photo.imageUrl} alt={photo.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                </div>
+                <h4 className="font-medium text-gray-800 text-[13px] line-clamp-1 group-hover:text-teal-600 transition-colors">{photo.title}</h4>
+              </Link>
+            ))}
+          </div>
+          <div className="grid grid-cols-2 gap-x-6">
+            {textPosts.map((post) => (
+              <Link key={post.id} href={`/community/detail?id=${post.id}`} className="flex items-center justify-between py-2.5 border-b border-gray-100 last:border-0 group">
+                <div className="flex items-center gap-2 overflow-hidden">
+                  <span className="w-1.5 h-1.5 rounded-full bg-teal-500 shrink-0" />
+                  <h4 className="font-medium text-gray-800 text-[14px] line-clamp-1 group-hover:text-teal-600 transition-colors">{post.title}</h4>
+                </div>
+                <div className="flex items-center gap-1 text-gray-400 text-[13px] shrink-0 ml-4">
+                  <MessageCircle className="w-3.5 h-3.5" /> {post.comments}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
 
         {/* 견적 배너 */}
         <Link href="/quote" className="flex items-center justify-between bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl py-6 px-8 shadow-lg group relative overflow-hidden">
