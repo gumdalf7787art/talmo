@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS posts (
   title TEXT,
   content TEXT,
   images TEXT,
+  views INTEGER DEFAULT 0,
+  comments_count INTEGER DEFAULT 0,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );

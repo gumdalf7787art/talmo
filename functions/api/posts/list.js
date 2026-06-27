@@ -12,7 +12,7 @@ export async function onRequestGet(context) {
 
     // Fetch posts and join with users to get the author's nickname
     // Also parse a single image for thumbnail if available (from base64 content)
-    // We will select id, title, category, content, created_at, user nickname
+    // We will select id, title, category, content, created_at, user nickname, email, views, comments_count
     const stmt = db.prepare(`
       SELECT 
         p.id, 
@@ -20,7 +20,10 @@ export async function onRequestGet(context) {
         p.category, 
         p.content, 
         p.created_at, 
-        u.nickname as author
+        p.views,
+        p.comments_count,
+        u.nickname as author,
+        u.email as email
       FROM posts p
       LEFT JOIN users u ON p.user_id = u.id
       ORDER BY p.created_at DESC
@@ -53,14 +56,16 @@ export async function onRequestGet(context) {
           timeStr = `${diffDays}일 전`;
         }
 
+        const fallbackAuthor = post.email ? post.email.split('@')[0] : "익명 사용자";
+
         return {
           id: post.id,
           title: post.title,
           category: post.category,
-          author: post.author || "탈퇴한 사용자",
+          author: post.author || fallbackAuthor,
           time: timeStr,
-          comments: 0, // Mock for now until we have comments table
-          views: Math.floor(Math.random() * 100), // Mock views
+          comments: post.comments_count || 0,
+          views: post.views || 0,
           imageUrl: imageUrl,
           content: post.content.replace(/<[^>]*>?/gm, '').substring(0, 50) + "..." // Strip HTML for summary
         };
