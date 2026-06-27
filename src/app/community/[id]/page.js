@@ -6,10 +6,6 @@ import { ChevronLeft, MoreVertical, Heart, MessageCircle, Share2, Send } from "l
 import useMediaQuery from "@/hooks/useMediaQuery";
 import PCPostDetail from "@/components/pc/PCPostDetail";
 
-export function generateStaticParams() {
-  return [{ id: '1' }, { id: '2' }, { id: '3' }];
-}
-
 export default function PostDetailPage() {
   const isPC = useMediaQuery("(min-width: 1024px)");
   const router = useRouter();
