@@ -19,6 +19,7 @@ export async function onRequestGet(context) {
     const limitStr = url.searchParams.get('limit');
     const q = url.searchParams.get('q');
     const author = url.searchParams.get('author');
+    const bookmarkedBy = url.searchParams.get('bookmarkedBy');
     const limit = limitStr ? parseInt(limitStr) : 100;
 
     let query = `
@@ -34,6 +35,7 @@ export async function onRequestGet(context) {
         u.email as email
       FROM posts p
       LEFT JOIN users u ON p.user_id = u.id
+      ${bookmarkedBy ? 'INNER JOIN bookmarks b ON p.id = b.post_id INNER JOIN users bu ON b.user_id = bu.id' : ''}
       WHERE 1=1
     `;
 
@@ -52,6 +54,11 @@ export async function onRequestGet(context) {
     if (author) {
       query += ` AND u.email = ? `;
       params.push(author);
+    }
+
+    if (bookmarkedBy) {
+      query += ` AND bu.email = ? `;
+      params.push(bookmarkedBy);
     }
 
     if (sort === 'popular') {
