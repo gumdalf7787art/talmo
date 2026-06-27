@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Search, MoreVertical, Send, Image as ImageIcon, Camera } from "lucide-react";
 
 export default function PCHospitalDashboard({ user }) {
@@ -8,6 +8,7 @@ export default function PCHospitalDashboard({ user }) {
   const [activeRoom, setActiveRoom] = useState(null);
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
+  const scrollRef = useRef(null);
 
   // Fetch chat rooms
   useEffect(() => {
@@ -26,28 +27,32 @@ export default function PCHospitalDashboard({ user }) {
     fetchRooms();
   }, [user]);
 
+  const fetchMessages = async () => {
+    if (!activeRoom || !user) return;
+    try {
+      const res = await fetch(`/api/chat/messages?userId=${activeRoom.otherPartyId}&clinicId=${user.id}&viewerId=${user.id}`);
+      const data = await res.json();
+      if (data.success) {
+        setMessages(data.messages);
+      }
+    } catch (err) {
+      console.error("Failed to fetch messages", err);
+    }
+  };
+
   // Fetch messages when a room is selected
   useEffect(() => {
     if (!activeRoom || !user) return;
-    const fetchMessages = async () => {
-      try {
-        // Here we pass the other party's ID as patientId to our existing /api/chat/messages
-        // wait, the API requires userId and clinicId.
-        // If we are the clinic, user.id is clinicId, activeRoom.otherPartyId is userId.
-        const res = await fetch(`/api/chat/messages?userId=${activeRoom.otherPartyId}&clinicId=${user.id}`);
-        const data = await res.json();
-        if (data.success) {
-          setMessages(data.messages);
-        }
-      } catch (err) {
-        console.error("Failed to fetch messages", err);
-      }
-    };
     fetchMessages();
-    // Setting up a basic interval for mock real-time
-    const interval = setInterval(fetchMessages, 5000);
+    const interval = setInterval(fetchMessages, 3000);
     return () => clearInterval(interval);
   }, [activeRoom, user]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -61,7 +66,8 @@ export default function PCHospitalDashboard({ user }) {
       id: "temp-" + Date.now(),
       sender_id: user.id,
       content: textToSend,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
+      is_read: 0
     }]);
 
     try {
@@ -75,7 +81,7 @@ export default function PCHospitalDashboard({ user }) {
           content: textToSend
         })
       });
-      // Will fix the send API next!
+      fetchMessages();
     } catch (err) {
       console.error("Send failed", err);
     }
@@ -157,21 +163,30 @@ export default function PCHospitalDashboard({ user }) {
             </div>
 
             {/* Chat Messages */}
-            <div className="flex-1 overflow-y-auto px-5 py-6 flex flex-col gap-4">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-6 flex flex-col gap-4 scroll-smooth">
               {messages.map((msg) => {
                 const isMine = msg.sender_id === user.id;
                 return (
                   <div key={msg.id} className={`flex flex-col gap-1 max-w-[75%] ${isMine ? 'items-end self-end' : 'items-start self-start'}`}>
-                    <div className={`px-4 py-3 rounded-2xl shadow-sm text-[14px] leading-relaxed ${
-                      isMine 
-                        ? 'bg-teal-600 text-white rounded-tr-sm' 
-                        : 'bg-white border border-gray-100 text-gray-800 rounded-tl-sm'
-                    }`}>
-                      {msg.content}
+                    <div className={`flex items-end gap-1.5 ${isMine ? 'flex-row-reverse' : 'flex-row'}`}>
+                      <div className={`px-4 py-3 rounded-2xl shadow-sm text-[14px] leading-relaxed break-words ${
+                        isMine 
+                          ? 'bg-teal-600 text-white rounded-tr-sm' 
+                          : 'bg-white border border-gray-100 text-gray-800 rounded-tl-sm'
+                      }`}>
+                        {msg.content}
+                      </div>
+                      
+                      {/* Time and Unread */}
+                      <div className={`flex flex-col mb-1 ${isMine ? 'items-end' : 'items-start'}`}>
+                        {isMine && msg.is_read === 0 && (
+                          <span className="text-[11px] text-teal-600 font-bold leading-none mb-0.5">1</span>
+                        )}
+                        <span className="text-[10px] text-gray-400 whitespace-nowrap">
+                          {new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        </span>
+                      </div>
                     </div>
-                    <span className="text-[10px] text-gray-400 mt-0.5">
-                      {new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                    </span>
                   </div>
                 );
               })}
