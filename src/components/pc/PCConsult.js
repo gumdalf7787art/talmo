@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Search, MoreVertical, Plus, Send, Image as ImageIcon, Camera } from "lucide-react";
 
@@ -10,6 +10,7 @@ export default function PCConsult({ clinicId, clinicName }) {
   const [messages, setMessages] = useState([]);
   const [user, setUser] = useState(null);
   const [chatRooms, setChatRooms] = useState([]);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
@@ -47,20 +48,28 @@ export default function PCConsult({ clinicId, clinicName }) {
       });
   }, [user]);
 
+  const fetchMessages = () => {
+    if (!user || !clinicId) return;
+    fetch(`/api/chat/messages?userId=${user.id}&clinicId=${clinicId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) setMessages(data.messages);
+      });
+  };
+
   // Fetch messages
   useEffect(() => {
     if (!user || !clinicId) return;
-    const fetchMessages = () => {
-      fetch(`/api/chat/messages?userId=${user.id}&clinicId=${clinicId}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) setMessages(data.messages);
-        });
-    };
     fetchMessages();
-    const interval = setInterval(fetchMessages, 5000);
+    const interval = setInterval(fetchMessages, 3000);
     return () => clearInterval(interval);
   }, [user, clinicId]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -73,7 +82,8 @@ export default function PCConsult({ clinicId, clinicName }) {
       id: "temp-" + Date.now(),
       sender_id: user.id,
       content: textToSend,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
+      is_read: 0
     }]);
 
     try {
@@ -87,6 +97,8 @@ export default function PCConsult({ clinicId, clinicName }) {
           content: textToSend
         })
       });
+      // Fetch immediately after sending
+      fetchMessages();
     } catch (err) {
       console.error(err);
     }
@@ -168,7 +180,7 @@ export default function PCConsult({ clinicId, clinicName }) {
         </div>
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto px-5 py-6 flex flex-col gap-4">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-6 flex flex-col gap-4 scroll-smooth">
           <div className="flex justify-center my-2">
             <span className="bg-gray-200/70 text-gray-500 text-[11px] px-3 py-1 rounded-full font-medium">
               2026년 6월 27일 토요일
@@ -180,22 +192,32 @@ export default function PCConsult({ clinicId, clinicName }) {
             const isMine = msg.sender_id === user?.id;
             return (
               <div key={msg.id} className={`flex flex-col gap-1 max-w-[75%] ${isMine ? 'items-end self-end' : 'items-start self-start'}`}>
-                {msg.image_url ? (
-                   <div className="rounded-xl overflow-hidden shadow-sm border border-gray-200 bg-gray-100 max-w-[60%]">
-                     <img src={msg.image_url} alt="attached" className="w-full h-auto object-cover" />
-                   </div>
-                ) : (
-                  <div className={`px-4 py-3 rounded-2xl shadow-sm text-[14px] leading-relaxed ${
-                    isMine 
-                      ? 'bg-teal-600 text-white rounded-tr-sm' 
-                      : 'bg-white border border-gray-100 text-gray-800 rounded-tl-sm'
-                  }`}>
-                    {msg.content}
+                <div className={`flex items-end gap-1.5 ${isMine ? 'flex-row-reverse' : 'flex-row'}`}>
+                  {/* Bubble */}
+                  {msg.image_url ? (
+                     <div className="rounded-xl overflow-hidden shadow-sm border border-gray-200 bg-gray-100 max-w-full">
+                       <img src={msg.image_url} alt="attached" className="w-full h-auto object-cover" />
+                     </div>
+                  ) : (
+                    <div className={`px-4 py-3 rounded-2xl shadow-sm text-[14px] leading-relaxed break-words ${
+                      isMine 
+                        ? 'bg-teal-600 text-white rounded-tr-sm' 
+                        : 'bg-white border border-gray-100 text-gray-800 rounded-tl-sm'
+                    }`}>
+                      {msg.content}
+                    </div>
+                  )}
+                  
+                  {/* Time and Unread */}
+                  <div className={`flex flex-col mb-1 ${isMine ? 'items-end' : 'items-start'}`}>
+                    {isMine && msg.is_read === 0 && (
+                      <span className="text-[11px] text-teal-600 font-bold leading-none mb-0.5">1</span>
+                    )}
+                    <span className="text-[10px] text-gray-400 whitespace-nowrap">
+                      {new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    </span>
                   </div>
-                )}
-                <span className="text-[10px] text-gray-400 mt-0.5">
-                  {new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                </span>
+                </div>
               </div>
             );
           })}
