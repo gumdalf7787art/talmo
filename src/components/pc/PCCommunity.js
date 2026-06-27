@@ -2,14 +2,23 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { MessageCircle, Search, Edit3, Bell, ChevronUp, ChevronDown } from "lucide-react";
 import PCSidebar from "@/components/pc/PCSidebar";
 
 export default function PCCommunity({ initialTab }) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState(initialTab || "전체");
   const [isNoticeOpen, setIsNoticeOpen] = useState(true);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (e) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
   
   const tabs = ["전체", "탈모수다", "리얼후기", "탈모정보", "닥터칼럼"];
 
@@ -51,7 +60,14 @@ export default function PCCommunity({ initialTab }) {
         <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
           <div className="relative mb-4">
             <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input type="text" placeholder="관심있는 탈모 키워드를 검색해보세요" className="w-full bg-gray-100 rounded-xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-teal-100 transition-shadow" />
+            <input 
+              type="text" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleSearch}
+              placeholder="관심있는 탈모 키워드를 검색해보세요" 
+              className="w-full bg-gray-100 rounded-xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-teal-100 transition-shadow" 
+            />
           </div>
           <div className="flex gap-2">
             {tabs.map((tab) => (

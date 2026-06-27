@@ -1,25 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Search, ArrowLeft, MessageCircle, Star, MapPin } from "lucide-react";
 
 export default function SearchPage() {
-  const [query, setQuery] = useState("");
-  const [isSearched, setIsSearched] = useState(false);
+  const router = useRouter();
+  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+  const initialQuery = searchParams ? searchParams.get('q') : "";
+
+  const [query, setQuery] = useState(initialQuery || "");
+  const [isSearched, setIsSearched] = useState(!!initialQuery);
+  const [communityResults, setCommunityResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (isSearched && query) {
+      setIsLoading(true);
+      fetch(`/api/posts/list?q=${encodeURIComponent(query)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            setCommunityResults(data.posts);
+          }
+        })
+        .finally(() => setIsLoading(false));
+    }
+  }, [isSearched, query]);
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (query.trim()) {
       setIsSearched(true);
+      router.push(`/search?q=${encodeURIComponent(query)}`);
     }
   };
 
-  // Mock Data
-  const communityResults = [
-    { id: 1, title: "M자 모발이식 3000모 후기 (강남)", category: "노하우", comments: 24, time: "어제" },
-    { id: 2, title: "모발이식 생착률 높이는 방법 질문이요", category: "질문", comments: 5, time: "2일 전" },
-  ];
 
   const hospitalResults = [
     { id: 1, name: "강남 득모의원", address: "서울 강남구 역삼동", tags: ["모발이식", "비대면진료"], rating: 4.8, reviews: 124 },
@@ -58,7 +75,11 @@ export default function SearchPage() {
               {["모발이식 비용", "핀페시아", "미녹시딜", "두피문신", "강남 병원"].map(keyword => (
                 <button 
                   key={keyword}
-                  onClick={() => { setQuery(keyword); setIsSearched(true); }}
+                  onClick={() => { 
+                    setQuery(keyword); 
+                    setIsSearched(true);
+                    router.push(`/search?q=${encodeURIComponent(keyword)}`);
+                  }}
                   className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-xs text-gray-600 hover:border-teal-500 hover:text-teal-600 transition-colors"
                 >
                   {keyword}
@@ -77,8 +98,13 @@ export default function SearchPage() {
                 <button className="text-xs text-gray-500 hover:text-gray-900">더보기</button>
               </div>
               <div className="flex flex-col gap-2">
-                {communityResults.map(post => (
-                  <Link key={post.id} href={`/community/${post.id}`} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex flex-col gap-2 hover:border-teal-100">
+                {isLoading ? (
+                  <div className="py-10 text-center text-sm text-gray-500">검색 중입니다...</div>
+                ) : communityResults.length === 0 ? (
+                  <div className="py-10 text-center text-sm text-gray-500">검색 결과가 없습니다.</div>
+                ) : (
+                  communityResults.map(post => (
+                  <Link key={post.id} href={`/community/detail?id=${post.id}`} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex flex-col gap-2 hover:border-teal-100">
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded-sm">
                         {post.category}
@@ -90,7 +116,8 @@ export default function SearchPage() {
                       <MessageCircle className="w-3.5 h-3.5" /> 댓글 {post.comments}
                     </div>
                   </Link>
-                ))}
+                  ))
+                )}
               </div>
             </section>
 

@@ -14,9 +14,10 @@ export async function onRequestGet(context) {
     // Also parse a single image for thumbnail if available (from base64 content)
     // We will select id, title, category, content, created_at, user nickname, email, views, comments_count
     const url = new URL(request.url);
-    const sort = url.searchParams.get('sort') || 'latest';
+    const sort = url.searchParams.get('sort') || 'recent';
     const category = url.searchParams.get('category') || 'all';
     const limitStr = url.searchParams.get('limit');
+    const q = url.searchParams.get('q');
     const limit = limitStr ? parseInt(limitStr) : 100;
 
     let query = `
@@ -32,13 +33,19 @@ export async function onRequestGet(context) {
         u.email as email
       FROM posts p
       LEFT JOIN users u ON p.user_id = u.id
+      WHERE 1=1
     `;
 
     const params = [];
 
     if (category !== 'all') {
-      query += ` WHERE p.category = ? `;
+      query += ` AND p.category = ? `;
       params.push(category);
+    }
+
+    if (q) {
+      query += ` AND (p.title LIKE ? OR p.content LIKE ?) `;
+      params.push(`%${q}%`, `%${q}%`);
     }
 
     if (sort === 'popular') {
