@@ -1,12 +1,15 @@
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
   email TEXT UNIQUE,
+  password TEXT,
   nickname TEXT,
   profile_image TEXT,
   gender TEXT,
   birth_year TEXT,
   family_history TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  role TEXT DEFAULT 'user',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME
 );
 
 CREATE TABLE IF NOT EXISTS posts (

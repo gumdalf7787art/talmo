@@ -41,7 +41,7 @@ export async function onRequestPost(context) {
 
     // Insert into DB
     const insertStmt = db.prepare(`
-      INSERT INTO users (id, email, password, name, role, created_at, updated_at) 
+      INSERT INTO users (id, email, password, nickname, role, created_at, updated_at) 
       VALUES (?, ?, ?, ?, 'user', ?, ?)
     `).bind(id, email, hashedPassword, nickname, now, now);
 
