@@ -62,14 +62,31 @@ function DiagnosisContent() {
   const isHistory = searchParams.get("history") === "true";
   
   useEffect(() => {
-    if (isHistory) {
-      setResult({
-        score: 65,
-        severity: "진행: 초기",
-      });
-      setImagePreview("https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?w=500&h=500&fit=crop");
-    }
-  }, [searchParams]);
+    const fetchHistoryDetail = async () => {
+      const id = searchParams.get("id");
+      if (isHistory && id) {
+        try {
+          const res = await fetch(`/api/diagnosis-detail?id=${id}`);
+          if (res.ok) {
+            const data = await res.json();
+            const details = JSON.parse(data.details);
+            setResult(details);
+            setImagePreview(data.image_url && data.image_url !== 'placeholder_url' ? data.image_url : "https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?w=500&h=500&fit=crop");
+          }
+        } catch (e) {
+          console.error("Failed to fetch diagnosis detail", e);
+        }
+      } else if (isHistory) {
+        // Fallback for missing id
+        setResult({
+          score: 65,
+          severity: "진행: 초기",
+        });
+        setImagePreview("https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?w=500&h=500&fit=crop");
+      }
+    };
+    fetchHistoryDetail();
+  }, [searchParams, isHistory]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
