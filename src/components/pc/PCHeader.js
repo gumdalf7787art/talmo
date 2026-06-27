@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search, User, Bell } from "lucide-react";
@@ -13,6 +14,14 @@ export default function PCHeader() {
     { href: "/diagnosis", label: "AI 분석" },
     { href: "/consult", label: "1:1 상담" },
   ];
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setIsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
+  }, [pathname]);
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-200 shadow-sm">
@@ -65,19 +74,31 @@ export default function PCHeader() {
             <Search className="w-4 h-4" />
             <span className="text-sm">검색</span>
           </Link>
-          <Link
-            href="/mypage"
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <User className="w-5 h-5" />
-            <span className="text-sm font-medium">마이페이지</span>
-          </Link>
-          <Link
-            href="/login"
-            className="bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm px-5 py-2 rounded-lg transition-colors shadow-sm"
-          >
-            로그인
-          </Link>
+          
+          {mounted && isLoggedIn ? (
+            <>
+              <button className="flex items-center justify-center w-10 h-10 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-full transition-colors relative">
+                <Bell className="w-5 h-5" />
+                <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+              </button>
+              <Link
+                href="/mypage"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <User className="w-5 h-5" />
+                <span className="text-sm font-medium">마이페이지</span>
+              </Link>
+            </>
+          ) : mounted && !isLoggedIn ? (
+            <Link
+              href="/login"
+              className="bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm px-5 py-2 rounded-lg transition-colors shadow-sm"
+            >
+              로그인
+            </Link>
+          ) : (
+            <div className="w-16 h-9"></div>
+          )}
         </div>
       </div>
     </header>

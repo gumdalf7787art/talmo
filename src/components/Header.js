@@ -1,7 +1,8 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { User } from "lucide-react";
+import { User, Bell } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 export default function Header() {
@@ -13,6 +14,14 @@ export default function Header() {
   const isHistory = pathname === "/diagnosis-history";
   const isMyPosts = pathname === "/my-posts" || pathname === "/my-bookmarks";
   
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setIsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
+  }, [pathname]);
+
   if (hideRoutes.includes(pathname) || isPostDetail || isChatRoom || isChatList || isHistory || isMyPosts) return null;
 
   return (
@@ -32,9 +41,23 @@ export default function Header() {
           </div>
         </Link>
         <div className="flex items-center gap-4">
-          <Link href="/login" className="text-teal-50 hover:text-white transition-colors">
-            <User className="w-5 h-5" />
-          </Link>
+          {mounted && isLoggedIn ? (
+            <>
+              <button className="text-teal-50 hover:text-white transition-colors relative">
+                <Bell className="w-5 h-5" />
+                <span className="absolute top-0 right-0 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+              </button>
+              <Link href="/mypage" className="text-teal-50 hover:text-white transition-colors">
+                <User className="w-5 h-5" />
+              </Link>
+            </>
+          ) : mounted && !isLoggedIn ? (
+            <Link href="/login" className="text-teal-50 hover:text-white transition-colors text-xs font-semibold px-2 py-1 bg-teal-600/50 rounded-md border border-teal-400/30">
+              로그인
+            </Link>
+          ) : (
+            <div className="w-5 h-5"></div>
+          )}
         </div>
       </div>
     </header>
