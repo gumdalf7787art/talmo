@@ -30,7 +30,13 @@ export default function LoginPage() {
       if (res.ok) {
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('user', JSON.stringify(data.user));
-        router.push("/");
+        if (data.user.role === 'admin') {
+          router.push("/admin/dashboard");
+        } else if (data.user.role === 'hospital') {
+          router.push("/hospital/dashboard");
+        } else {
+          router.push("/");
+        }
       } else {
         setErrorMsg(data.error || "로그인에 실패했습니다.");
       }

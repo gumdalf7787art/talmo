@@ -1,38 +1,95 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Search, MoreVertical, Plus, Send, Image as ImageIcon, Camera } from "lucide-react";
 
 export default function PCConsult({ clinicId, clinicName }) {
   const [message, setMessage] = useState("");
   const [showAttachMenu, setShowAttachMenu] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [user, setUser] = useState(null);
+  const [chatRooms, setChatRooms] = useState([]);
 
-  // Mock chat list data
-  const chatRooms = [
-    {
-      id: 1,
-      clinicId: "2",
-      clinicName: "블랙라인 스튜디오",
-      lastMessage: "정수리 부위 사진을 2~3장 더 보내주실 수 있나요?",
-      time: "오전 11:30",
-      unreadCount: 2,
-    },
-    {
-      id: 2,
-      clinicId: "1",
-      clinicName: "모프로 탈모의원",
-      lastMessage: "네, 내원하시면 정확한 견적을 안내해 드리겠습니다.",
-      time: "어제",
-      unreadCount: 0,
-    }
-  ];
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) setUser(JSON.parse(savedUser));
+  }, []);
 
-  const handleSend = (e) => {
+  // Fetch chat rooms
+  useEffect(() => {
+    if (!user) return;
+    fetch(`/api/chat/list?userId=${user.id}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          // Add default dummy rooms if real ones don't exist yet for visual demo
+          const realRooms = data.rooms;
+          setChatRooms(realRooms.length > 0 ? realRooms : [
+            {
+              id: 1,
+              clinicId: "2",
+              otherPartyName: "블랙라인 스튜디오",
+              lastMessage: "정수리 부위 사진을 2~3장 더 보내주실 수 있나요?",
+              time: "오전 11:30",
+              unreadCount: 2,
+            },
+            {
+              id: 2,
+              clinicId: "18763bdb-dd5b-4c2a-b996-1012039dc029",
+              otherPartyName: "모프로 탈모의원",
+              lastMessage: "네, 내원하시면 정확한 견적을 안내해 드리겠습니다.",
+              time: "어제",
+              unreadCount: 0,
+            }
+          ]);
+        }
+      });
+  }, [user]);
+
+  // Fetch messages
+  useEffect(() => {
+    if (!user || !clinicId) return;
+    const fetchMessages = () => {
+      fetch(`/api/chat/messages?userId=${user.id}&clinicId=${clinicId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) setMessages(data.messages);
+        });
+    };
+    fetchMessages();
+    const interval = setInterval(fetchMessages, 5000);
+    return () => clearInterval(interval);
+  }, [user, clinicId]);
+
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (!message.trim()) return;
-    console.log("Sent:", message);
+    if (!message.trim() || !user) return;
+    
+    const textToSend = message;
     setMessage("");
+
+    setMessages(prev => [...prev, {
+      id: "temp-" + Date.now(),
+      sender_id: user.id,
+      content: textToSend,
+      created_at: new Date().toISOString()
+    }]);
+
+    try {
+      await fetch('/api/chat/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          clinicId: clinicId,
+          senderId: user.id,
+          content: textToSend
+        })
+      });
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -69,9 +126,11 @@ export default function PCConsult({ clinicId, clinicName }) {
                 <div className="flex flex-col flex-1 min-w-0">
                   <div className="flex justify-between items-center mb-0.5">
                     <h3 className={`font-bold text-[14px] truncate pr-2 ${isActive ? 'text-teal-700' : 'text-gray-900'}`}>
-                      {room.clinicName}
+                      {room.otherPartyName || room.clinicName}
                     </h3>
-                    <span className="text-[11px] text-gray-400 shrink-0">{room.time}</span>
+                    <span className="text-[11px] text-gray-400 shrink-0">
+                      {room.time && room.time.length > 10 ? new Date(room.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : room.time}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <p className={`text-[12px] truncate pr-2 ${room.unreadCount > 0 ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
@@ -116,37 +175,30 @@ export default function PCConsult({ clinicId, clinicName }) {
             </span>
           </div>
 
-          {/* System / Auto Reply Message */}
-          <div className="flex gap-2.5">
-            <div className="w-9 h-9 rounded-full bg-white border border-gray-200 shrink-0 flex items-center justify-center overflow-hidden shadow-sm">
-              <img src="/logo.png" alt="clinic" className="w-5 h-5 opacity-50 grayscale" />
-            </div>
-            <div className="flex flex-col gap-1 items-start max-w-[75%]">
-              <span className="text-[12px] text-gray-600 font-medium">{clinicName}</span>
-              <div className="bg-white px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100 text-[14px] text-gray-800 leading-relaxed">
-                안녕하세요! 대한민국 리얼 탈모 커뮤니티 탈모톡 공식 제휴병원 <b>{clinicName}</b>입니다.<br/><br/>
-                현재 고민이신 부위의 <b>사진 2~3장</b>과 함께 고민 내용을 남겨주시면, 대표원장님이 직접 확인 후 꼼꼼하게 1:1 정밀 상담을 도와드리겠습니다.
+          {/* Chat Messages */}
+          {messages.map((msg) => {
+            const isMine = msg.sender_id === user?.id;
+            return (
+              <div key={msg.id} className={`flex flex-col gap-1 max-w-[75%] ${isMine ? 'items-end self-end' : 'items-start self-start'}`}>
+                {msg.image_url ? (
+                   <div className="rounded-xl overflow-hidden shadow-sm border border-gray-200 bg-gray-100 max-w-[60%]">
+                     <img src={msg.image_url} alt="attached" className="w-full h-auto object-cover" />
+                   </div>
+                ) : (
+                  <div className={`px-4 py-3 rounded-2xl shadow-sm text-[14px] leading-relaxed ${
+                    isMine 
+                      ? 'bg-teal-600 text-white rounded-tr-sm' 
+                      : 'bg-white border border-gray-100 text-gray-800 rounded-tl-sm'
+                  }`}>
+                    {msg.content}
+                  </div>
+                )}
+                <span className="text-[10px] text-gray-400 mt-0.5">
+                  {new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                </span>
               </div>
-              <span className="text-[10px] text-gray-400 mt-0.5">오전 10:00</span>
-            </div>
-          </div>
-
-          {/* User Message */}
-          <div className="flex flex-col gap-1 items-end self-end max-w-[75%] mt-2">
-            <div className="bg-teal-600 px-4 py-3 rounded-2xl rounded-tr-sm shadow-sm text-[14px] text-white leading-relaxed">
-              안녕하세요, 20대 후반 남성입니다.<br/>
-              최근 M자 라인이 눈에 띄게 밀리는 것 같아서 모발이식을 고려중입니다. 대략 3000모 정도 비절개로 하면 견적이 어떻게 될까요?
-            </div>
-            <span className="text-[10px] text-gray-400 mt-0.5">오전 10:15</span>
-          </div>
-
-          {/* User Image Message */}
-          <div className="flex flex-col gap-1 items-end self-end max-w-[50%]">
-            <div className="rounded-xl rounded-tr-sm overflow-hidden shadow-sm border border-gray-200 bg-gray-100">
-              <img src="https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?w=400&h=400&fit=crop" alt="attached" className="w-full h-auto object-cover" />
-            </div>
-            <span className="text-[10px] text-gray-400 mt-0.5">오전 10:15</span>
-          </div>
+            );
+          })}
         </div>
 
         {/* Chat Input Box */}

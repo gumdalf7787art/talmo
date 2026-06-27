@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ChevronLeft, MoreVertical, Plus, Send, Image as ImageIcon, Camera } from "lucide-react";
 import useMediaQuery from "@/hooks/useMediaQuery";
@@ -12,15 +12,59 @@ export default function ChatPage() {
   const [message, setMessage] = useState("");
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   const isPC = useMediaQuery("(min-width: 1024px)");
+  const [messages, setMessages] = useState([]);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) setUser(JSON.parse(savedUser));
+  }, []);
+
+  useEffect(() => {
+    if (!user || !params.id) return;
+    const fetchMessages = () => {
+      fetch(`/api/chat/messages?userId=${user.id}&clinicId=${params.id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) setMessages(data.messages);
+        });
+    };
+    fetchMessages();
+    const interval = setInterval(fetchMessages, 5000);
+    return () => clearInterval(interval);
+  }, [user, params.id]);
 
   // Mock clinic data (In a real app, fetch based on params.id)
   const clinicName = params.id === "2" ? "블랙라인 스튜디오" : "모프로 탈모의원";
 
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (!message.trim()) return;
-    console.log("Sent:", message);
+    if (!message.trim() || !user) return;
+    
+    const textToSend = message;
     setMessage("");
+
+    setMessages(prev => [...prev, {
+      id: "temp-" + Date.now(),
+      sender_id: user.id,
+      content: textToSend,
+      created_at: new Date().toISOString()
+    }]);
+
+    try {
+      await fetch('/api/chat/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          clinicId: params.id,
+          senderId: user.id,
+          content: textToSend
+        })
+      });
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   if (isPC) {
@@ -54,37 +98,30 @@ export default function ChatPage() {
           </span>
         </div>
 
-        {/* System / Auto Reply Message */}
-        <div className="flex gap-2.5">
-          <div className="w-9 h-9 rounded-full bg-white border border-gray-200 shrink-0 flex items-center justify-center overflow-hidden shadow-sm">
-            <img src="/logo.png" alt="clinic" className="w-5 h-5 opacity-50 grayscale" />
-          </div>
-          <div className="flex flex-col gap-1 items-start max-w-[75%]">
-            <span className="text-[12px] text-gray-600 font-medium">{clinicName}</span>
-            <div className="bg-white px-3.5 py-2.5 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100 text-[14px] text-gray-800 leading-snug">
-              안녕하세요! 대한민국 리얼 탈모 커뮤니티 탈모톡 공식 제휴병원 <b>{clinicName}</b>입니다.<br/><br/>
-              현재 고민이신 부위의 <b>사진 2~3장</b>과 함께 고민 내용을 남겨주시면, 대표원장님이 직접 확인 후 꼼꼼하게 1:1 정밀 상담을 도와드리겠습니다.
+        {/* Chat Messages */}
+        {messages.map((msg) => {
+          const isMine = msg.sender_id === user?.id;
+          return (
+            <div key={msg.id} className={`flex flex-col gap-1 max-w-[75%] ${isMine ? 'items-end self-end' : 'items-start self-start'}`}>
+              {msg.image_url ? (
+                 <div className="rounded-xl overflow-hidden shadow-sm border border-gray-200 bg-gray-100 max-w-[60%]">
+                   <img src={msg.image_url} alt="attached" className="w-full h-auto object-cover" />
+                 </div>
+              ) : (
+                <div className={`px-3.5 py-2.5 rounded-2xl shadow-sm text-[14px] leading-snug ${
+                  isMine 
+                    ? 'bg-teal-600 text-white rounded-tr-sm' 
+                    : 'bg-white border border-gray-100 text-gray-800 rounded-tl-sm'
+                }`}>
+                  {msg.content}
+                </div>
+              )}
+              <span className="text-[10px] text-gray-400 mt-0.5">
+                {new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+              </span>
             </div>
-            <span className="text-[10px] text-gray-400 mt-0.5">오전 10:00</span>
-          </div>
-        </div>
-
-        {/* User Message */}
-        <div className="flex flex-col gap-1 items-end self-end max-w-[75%] mt-2">
-          <div className="bg-teal-600 px-3.5 py-2.5 rounded-2xl rounded-tr-sm shadow-sm text-[14px] text-white leading-snug">
-            안녕하세요, 20대 후반 남성입니다.<br/>
-            최근 M자 라인이 눈에 띄게 밀리는 것 같아서 모발이식을 고려중입니다. 대략 3000모 정도 비절개로 하면 견적이 어떻게 될까요?
-          </div>
-          <span className="text-[10px] text-gray-400 mt-0.5">오전 10:15</span>
-        </div>
-
-        {/* User Image Message */}
-        <div className="flex flex-col gap-1 items-end self-end max-w-[60%]">
-          <div className="rounded-xl rounded-tr-sm overflow-hidden shadow-sm border border-gray-200 bg-gray-100">
-            <img src="https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?w=300&h=300&fit=crop" alt="attached" className="w-full h-auto object-cover" />
-          </div>
-          <span className="text-[10px] text-gray-400 mt-0.5">오전 10:15</span>
-        </div>
+          );
+        })}
       </main>
 
       {/* Sticky Input Bar */}

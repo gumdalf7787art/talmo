@@ -1,0 +1,15 @@
+CREATE TABLE IF NOT EXISTS site_visits (
+  id TEXT PRIMARY KEY,
+  ip_address TEXT NOT NULL,
+  user_agent TEXT,
+  visited_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS banners (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  image_url TEXT NOT NULL,
+  link_url TEXT,
+  is_active INTEGER DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);

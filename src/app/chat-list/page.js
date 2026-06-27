@@ -20,7 +20,7 @@ export default function ChatListPage() {
     },
     {
       id: 2,
-      clinicId: 1,
+      clinicId: "18763bdb-dd5b-4c2a-b996-1012039dc029",
       clinicName: "모프로 탈모의원",
       lastMessage: "네, 내원하시면 정확한 견적을 안내해 드리겠습니다.",
       time: "어제",

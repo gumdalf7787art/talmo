@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
@@ -7,6 +8,13 @@ import PCHeader from "@/components/pc/PCHeader";
 
 export default function LayoutShell({ children }) {
   const isPC = useMediaQuery("(min-width: 1024px)");
+
+  useEffect(() => {
+    if (!sessionStorage.getItem('tracked')) {
+      fetch('/api/track', { method: 'POST' }).catch(() => {});
+      sessionStorage.setItem('tracked', 'true');
+    }
+  }, []);
 
   if (isPC) {
     return (
