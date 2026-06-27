@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, ChevronRight } from "lucide-react";
+import RadarChart from "../RadarChart";
 
 function PCDiagnosisContent() {
   const [imageFile, setImageFile] = useState(null);
@@ -187,17 +188,25 @@ function PCDiagnosisContent() {
                 </div>
                 <h4 className="font-bold text-[15px] text-gray-900 mb-4">항목별 상세 지표</h4>
                 <div className="flex flex-col gap-4">
-                  {(result.breakdown || [{ label: "모발 밀도 (정수리)", score: 65, color: "orange", status: "주의" }, { label: "헤어라인 (M자) 후퇴도", score: 32, color: "red", status: "위험" }, { label: "모발 굵기 약화", score: 75, color: "yellow", status: "양호" }, { label: "두피 상태 (각질/홍반)", score: 90, color: "teal", status: "우수" }]).map((m) => (
+                  {(result.breakdown || [{ label: "모발 밀도 (정수리)", score: 65, avgScore: 68, color: "orange", status: "주의" }, { label: "헤어라인 (M자) 후퇴도", score: 32, avgScore: 72, color: "red", status: "위험" }, { label: "모발 굵기 약화", score: 75, avgScore: 75, color: "yellow", status: "양호" }, { label: "두피 상태 (각질/홍반)", score: 90, avgScore: 80, color: "teal", status: "우수" }]).map((m) => (
                     <div key={m.label} className="flex flex-col gap-1.5">
                       <div className="flex justify-between items-center text-[13px]">
-                        <span className="text-gray-700 font-medium">{m.label}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-700 font-medium">{m.label}</span>
+                          <span className="text-[11px] text-gray-400 font-medium bg-gray-100 px-1.5 rounded">평균 {m.avgScore || 70}점</span>
+                        </div>
                         <span className={`text-${m.color}-500 font-bold`}>{m.status} ({m.score}점)</span>
                       </div>
-                      <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
-                        <div className={`bg-gradient-to-r from-${m.color}-400 to-${m.color}-500 h-full rounded-full`} style={{ width: `${m.score}%` }} />
+                      <div className="relative w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                        <div className={`bg-gradient-to-r from-${m.color}-400 to-${m.color}-500 h-full rounded-full relative z-0`} style={{ width: `${m.score}%` }} />
+                        <div className="absolute top-0 bottom-0 w-[2px] bg-gray-400 z-10 opacity-70" style={{ left: `${m.avgScore || 70}%` }} title={`연령대 평균: ${m.avgScore || 70}점`} />
                       </div>
                     </div>
                   ))}
+                </div>
+                <div className="mt-8 bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex flex-col items-center">
+                  <h5 className="font-bold text-[14px] text-gray-800 mb-4">항목별 종합 밸런스</h5>
+                  <RadarChart breakdown={result.breakdown} />
                 </div>
               </div>
 

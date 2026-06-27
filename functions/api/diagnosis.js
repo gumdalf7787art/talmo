@@ -42,10 +42,10 @@ export async function onRequestPost(context) {
         score: overallScore,
         severity: severity,
         breakdown: [
-          { label: "모발 밀도 (정수리)", score: Math.round(densityScore), ...getStatus(densityScore) },
-          { label: "헤어라인 (M자) 후퇴도", score: Math.round(hairlineScore), ...getStatus(hairlineScore) },
-          { label: "모발 굵기 약화", score: Math.round(thicknessScore), ...getStatus(thicknessScore) },
-          { label: "두피 상태 (각질/홍반)", score: Math.round(scalpScore), ...getStatus(scalpScore) }
+          { label: "모발 밀도 (정수리)", score: Math.round(densityScore), avgScore: 68, ...getStatus(densityScore) },
+          { label: "헤어라인 (M자) 후퇴도", score: Math.round(hairlineScore), avgScore: 72, ...getStatus(hairlineScore) },
+          { label: "모발 굵기 약화", score: Math.round(thicknessScore), avgScore: 75, ...getStatus(thicknessScore) },
+          { label: "두피 상태 (각질/홍반)", score: Math.round(scalpScore), avgScore: 80, ...getStatus(scalpScore) }
         ],
         analysis: [
           '동일 연령대 평균 대비 모발 밀도가 다소 감소했습니다.',
