@@ -43,8 +43,10 @@ export default function PCSignup() {
     setEmailMessage("중복 확인 중...");
     try {
       const res = await fetch(`/api/auth/check-email?email=${encodeURIComponent(email)}`);
-      if (!res.ok) throw new Error("서버 에러");
       const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "서버 에러");
+      }
       if (data.available) {
         setEmailStatus("available");
         setEmailMessage("사용 가능한 이메일입니다.");
@@ -54,7 +56,7 @@ export default function PCSignup() {
       }
     } catch (error) {
       setEmailStatus("error");
-      setEmailMessage("중복 확인 중 오류가 발생했습니다.");
+      setEmailMessage(`오류: ${error.message}`);
     }
   };
 
