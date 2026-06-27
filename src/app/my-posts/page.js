@@ -50,7 +50,7 @@ export default function MyPostsPage() {
 
         <div className="flex flex-col gap-3">
           {posts.map((post) => (
-            <Link href={`/community/${post.id}`} key={post.id} className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex flex-col gap-2">
+            <Link href={`/community/detail?id=${post.id}`} key={post.id} className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-[11px] font-bold rounded">{post.category}</span>
                 <span className="text-[12px] text-gray-400">{post.time}</span>

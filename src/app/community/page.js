@@ -106,7 +106,7 @@ export default function CommunityPage() {
         ) : filteredPosts.length === 0 ? (
           <div className="py-10 text-center text-gray-500 text-sm">등록된 게시글이 없습니다.</div>
         ) : filteredPosts.map((post) => (
-          <Link key={post.id} href={`/community/${post.id}`} className="py-3 px-4 border-b border-gray-100 active:bg-gray-50 transition-colors flex items-start gap-2">
+          <Link key={post.id} href={`/community/detail?id=${post.id}`} className="py-3 px-4 border-b border-gray-100 active:bg-gray-50 transition-colors flex items-start gap-2">
             <span className={`text-[11px] font-medium shrink-0 pt-[2px] w-[52px] ${
               post.category === '탈모수다' ? 'text-orange-500' :
               post.category === '리얼후기' ? 'text-teal-500' :

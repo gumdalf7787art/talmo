@@ -1,25 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Heart, MessageCircle, Share2, Send, ChevronLeft } from "lucide-react";
 import PCSidebar from "@/components/pc/PCSidebar";
 
-export default function PCPostDetail() {
+export default function PCPostDetail({ post, loading }) {
   const router = useRouter();
   const [isLiked, setIsLiked] = useState(false);
   const [comment, setComment] = useState("");
-
-  const post = {
-    category: "리얼후기",
-    title: "비절개 3000모 이식 6개월 경과 (사진有)",
-    author: "탈모요정",
-    time: "1시간 전",
-    views: 128,
-    content: `벌써 수술한 지 6개월이 지났네요. 처음에는 암흑기(쉐딩) 때문에 거울 볼 때마다 정말 우울하고 '이게 맞나?' 싶었는데, 4개월 차부터 솜털이 굵어지기 시작하더니 지금은 바람 불어도 당당하게 다닙니다! ㅠㅠ\n\n모프로 의원에서 비절개로 3000모 진행했고요, 원장님이 디자인을 너무 자연스럽게 잘 잡아주셔서 대만족입니다.\n\n약은 프로페시아 꾸준히 먹고 있고 미녹시딜도 꼬박꼬박 바르고 있습니다. 수술 고민하시는 분들 하루라도 빨리 하시는 걸 추천드립니다! 질문 있으시면 댓글 달아주세요~`,
-    likes: 45,
-    comments: 12,
-  };
 
   const comments = [
     { id: 1, author: "득모기원", time: "50분 전", content: "와 대박이네요! 혹시 비용이 어느 정도 들었는지 쪽지 가능할까요?", isAuthor: false },
@@ -32,6 +21,31 @@ export default function PCPostDetail() {
     if (!comment.trim()) return;
     setComment("");
   };
+
+  if (loading) {
+    return (
+      <div className="flex gap-6">
+        <div className="flex-1 min-w-0 flex flex-col gap-4 items-center justify-center py-20 bg-white rounded-2xl border border-gray-200 shadow-sm">
+          <div className="text-gray-500">게시글을 불러오는 중입니다...</div>
+        </div>
+        <PCSidebar />
+      </div>
+    );
+  }
+
+  if (!post) {
+    return (
+      <div className="flex gap-6">
+        <div className="flex-1 min-w-0 flex flex-col gap-4 items-center justify-center py-20 bg-white rounded-2xl border border-gray-200 shadow-sm">
+          <div className="text-gray-500 mb-4">게시글을 찾을 수 없습니다.</div>
+          <button onClick={() => router.back()} className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors">
+            목록으로 돌아가기
+          </button>
+        </div>
+        <PCSidebar />
+      </div>
+    );
+  }
 
   return (
     <div className="flex gap-6">
@@ -58,10 +72,10 @@ export default function PCPostDetail() {
 
           {/* Body */}
           <div className="px-8 py-8">
-            <div className="w-full h-64 bg-gray-100 rounded-xl mb-8 flex items-center justify-center border border-gray-200">
-              <span className="text-gray-400 text-sm font-medium">첨부된 이미지 (후기 사진)</span>
-            </div>
-            <p className="text-gray-800 text-[16px] leading-relaxed whitespace-pre-wrap">{post.content}</p>
+            <div 
+              className="text-gray-800 text-[16px] leading-relaxed whitespace-pre-wrap post-content"
+              dangerouslySetInnerHTML={{ __html: post.content }}
+            />
           </div>
 
           {/* Actions */}

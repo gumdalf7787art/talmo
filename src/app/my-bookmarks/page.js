@@ -50,7 +50,7 @@ export default function MyBookmarksPage() {
 
         <div className="flex flex-col gap-3">
           {posts.map((post) => (
-            <Link href={`/community/${post.id}`} key={post.id} className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex flex-col gap-2 relative">
+            <Link href={`/community/detail?id=${post.id}`} key={post.id} className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex flex-col gap-2 relative">
               <div className="absolute top-4 right-4 text-purple-500">
                 <BookmarkIcon className="w-5 h-5 fill-current" />
               </div>

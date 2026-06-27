@@ -1,28 +1,35 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, MoreVertical, Heart, MessageCircle, Share2, Send } from "lucide-react";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import PCPostDetail from "@/components/pc/PCPostDetail";
 
-export default function PostDetailPage() {
+function PostDetailContent() {
   const isPC = useMediaQuery("(min-width: 1024px)");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
+
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
   const [comment, setComment] = useState("");
 
-  // Mock Data
-  const post = {
-    category: "리얼후기",
-    title: "비절개 3000모 이식 6개월 경과 (사진有)",
-    author: "탈모요정",
-    time: "1시간 전",
-    views: 128,
-    content: `벌써 수술한 지 6개월이 지났네요. 처음에는 암흑기(쉐딩) 때문에 거울 볼 때마다 정말 우울하고 '이게 맞나?' 싶었는데, 4개월 차부터 솜털이 굵어지기 시작하더니 지금은 바람 불어도 당당하게 다닙니다! ㅠㅠ\n\n모프로 의원에서 비절개로 3000모 진행했고요, 원장님이 디자인을 너무 자연스럽게 잘 잡아주셔서 대만족입니다.\n\n약은 프로페시아 꾸준히 먹고 있고 미녹시딜도 꼬박꼬박 바르고 있습니다. 수술 고민하시는 분들 하루라도 빨리 하시는 걸 추천드립니다! 질문 있으시면 댓글 달아주세요~`,
-    likes: 45,
-    comments: 12
-  };
+  useEffect(() => {
+    if (!id) return;
+    
+    fetch(`/api/posts/detail?id=${id}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setPost(data.post);
+        }
+      })
+      .catch(err => console.error("Failed to fetch post:", err))
+      .finally(() => setLoading(false));
+  }, [id]);
 
   const comments = [
     { id: 1, author: "득모기원", time: "50분 전", content: "와 대박이네요! 혹시 비용이 어느 정도 들었는지 쪽지 가능할까요?", isAuthor: false },
@@ -37,7 +44,24 @@ export default function PostDetailPage() {
     setComment("");
   };
 
-  if (isPC) return <PCPostDetail />;
+  if (isPC) return <PCPostDetail post={post} loading={loading} />;
+
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen bg-white items-center justify-center">
+        <div className="text-gray-500">게시글을 불러오는 중입니다...</div>
+      </div>
+    );
+  }
+
+  if (!post) {
+    return (
+      <div className="flex flex-col min-h-screen bg-white items-center justify-center">
+        <div className="text-gray-500">게시글을 찾을 수 없습니다.</div>
+        <button onClick={() => router.back()} className="mt-4 px-4 py-2 bg-teal-600 text-white rounded-lg">돌아가기</button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -77,13 +101,10 @@ export default function PostDetailPage() {
 
         {/* Post Body */}
         <div className="px-5 py-6 min-h-[200px]">
-          {/* Mock Image Placeholder */}
-          <div className="w-full h-48 bg-gray-100 rounded-xl mb-6 flex items-center justify-center border border-gray-200">
-            <span className="text-gray-400 text-sm font-medium">첨부된 이미지 (후기 사진)</span>
-          </div>
-          <p className="text-gray-800 text-[15px] leading-relaxed whitespace-pre-wrap">
-            {post.content}
-          </p>
+          <div 
+            className="text-gray-800 text-[15px] leading-relaxed whitespace-pre-wrap post-content"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          />
         </div>
 
         {/* Post Actions */}
@@ -151,5 +172,17 @@ export default function PostDetailPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function PostDetailPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-col min-h-screen bg-white items-center justify-center">
+        <div className="text-gray-500">페이지를 불러오는 중입니다...</div>
+      </div>
+    }>
+      <PostDetailContent />
+    </Suspense>
   );
 }

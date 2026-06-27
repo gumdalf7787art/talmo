@@ -99,7 +99,7 @@ export default function PCCommunity() {
           ) : filteredPosts.length === 0 ? (
             <div className="py-10 text-center text-gray-500 text-sm">등록된 게시글이 없습니다.</div>
           ) : filteredPosts.map((post) => (
-            <Link key={post.id} href={`/community/${post.id}`} className="grid grid-cols-[80px_1fr_120px_80px_60px] items-center px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
+            <Link key={post.id} href={`/community/detail?id=${post.id}`} className="grid grid-cols-[80px_1fr_120px_80px_60px] items-center px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
               <span className={`text-[12px] font-bold px-2 py-0.5 rounded w-fit ${categoryColor(post.category)}`}>{post.category}</span>
               <div className="flex items-center gap-3 min-w-0 pr-4">
                 <h3 className="font-semibold text-gray-900 text-[14px] line-clamp-1 group-hover:text-teal-600 transition-colors">{post.title}</h3>
