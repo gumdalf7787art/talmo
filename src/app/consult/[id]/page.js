@@ -3,12 +3,15 @@
 import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ChevronLeft, MoreVertical, Plus, Send, Image as ImageIcon, Camera } from "lucide-react";
+import useMediaQuery from "@/hooks/useMediaQuery";
+import PCConsult from "@/components/pc/PCConsult";
 
 export default function ChatPage() {
   const router = useRouter();
   const params = useParams();
   const [message, setMessage] = useState("");
   const [showAttachMenu, setShowAttachMenu] = useState(false);
+  const isPC = useMediaQuery("(min-width: 1024px)");
 
   // Mock clinic data (In a real app, fetch based on params.id)
   const clinicName = params.id === "2" ? "블랙라인 스튜디오" : "모프로 탈모의원";
@@ -19,6 +22,10 @@ export default function ChatPage() {
     console.log("Sent:", message);
     setMessage("");
   };
+
+  if (isPC) {
+    return <PCConsult clinicId={params.id} clinicName={clinicName} />;
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F5F6F8]">
