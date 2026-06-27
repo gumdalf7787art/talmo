@@ -222,10 +222,7 @@ export default function Home() {
                   )}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors"></div>
                 </div>
-                <div className="flex flex-col px-0.5">
-                  <span className="text-[9px] text-gray-400 font-light leading-none tracking-tight">{photo.author}</span>
-                  <h4 className="font-medium text-gray-800 text-[11px] leading-snug line-clamp-2 mt-1 break-keep">{photo.title}</h4>
-                </div>
+                <h4 className="font-medium text-gray-800 text-[11px] leading-snug line-clamp-2 mt-1 break-keep px-0.5">{photo.title}</h4>
               </Link>
             ))}
             <div className="w-4 shrink-0 snap-end" aria-hidden="true"></div>
