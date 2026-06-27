@@ -56,7 +56,7 @@ export async function onRequestGet(context) {
           timeStr = `${diffDays}일 전`;
         }
 
-        const fallbackAuthor = post.email ? post.email.split('@')[0] : "익명 사용자";
+        const fallbackAuthor = "익명 사용자";
 
         return {
           id: post.id,
