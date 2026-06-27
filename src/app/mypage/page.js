@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { Camera, User, FileText, MessageCircle, Heart, Lock, LogOut, ChevronRight, Activity, Users, X, Bookmark } from "lucide-react";
 import useMediaQuery from "@/hooks/useMediaQuery";
@@ -10,19 +10,57 @@ export default function MyPage() {
   const isPC = useMediaQuery("(min-width: 1024px)");
   const [profileImage, setProfileImage] = useState(null);
   const fileInputRef = useRef(null);
+  const [user, setUser] = useState(null);
 
   // Mock profile data
   const [profile, setProfile] = useState({
-    nickname: "득모기원",
-    email: "talmo_user@gmail.com",
-    gender: "남성",
-    birthYear: "1992",
-    familyHistory: "있음 (부계)"
+    nickname: "",
+    email: "",
+    gender: "미설정",
+    birthYear: "미설정",
+    familyHistory: "미설정"
   });
 
   // Nickname edit state
   const [isEditingNickname, setIsEditingNickname] = useState(false);
-  const [newNickname, setNewNickname] = useState("득모기원");
+  const [newNickname, setNewNickname] = useState("");
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      const parsed = JSON.parse(savedUser);
+      setProfile({
+        nickname: parsed.nickname || "닉네임 없음",
+        email: parsed.email || "이메일 없음",
+        gender: parsed.gender || "미설정",
+        birthYear: parsed.birth_year || "미설정",
+        familyHistory: parsed.family_history || "미설정"
+      });
+      if (parsed.profile_image) {
+        setProfileImage(parsed.profile_image);
+      }
+      setNewNickname(parsed.nickname || "");
+      setUser(parsed);
+    }
+  }, []);
+
+  const updateProfileInBackend = async (updates) => {
+    if (!user) return;
+    try {
+      const res = await fetch('/api/user/update', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: user.id, ...updates })
+      });
+      if (res.ok) {
+        const updatedUser = { ...user, ...updates };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setUser(updatedUser);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   // AI Profile edit state
   const [editProfileField, setEditProfileField] = useState(null); // 'gender' | 'birthYear' | 'familyHistory'
@@ -30,18 +68,27 @@ export default function MyPage() {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setProfileImage(URL.createObjectURL(file));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result;
+        setProfileImage(base64String);
+        updateProfileInBackend({ profile_image: base64String });
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   const handleSaveNickname = () => {
     if (!newNickname.trim()) return;
     setProfile(prev => ({ ...prev, nickname: newNickname }));
+    updateProfileInBackend({ nickname: newNickname });
     setIsEditingNickname(false);
   };
 
   const handleProfileFieldChange = (field, value) => {
     setProfile(prev => ({ ...prev, [field]: value }));
+    const backendField = field === 'birthYear' ? 'birth_year' : field === 'familyHistory' ? 'family_history' : field;
+    updateProfileInBackend({ [backendField]: value });
     setEditProfileField(null);
   };
 

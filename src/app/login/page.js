@@ -12,13 +12,31 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // TODO: Implement actual login logic
-    localStorage.setItem('isLoggedIn', 'true');
-    console.log("Login with:", email, password);
-    router.push("/");
+    setErrorMsg("");
+    
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('user', JSON.stringify(data.user));
+        router.push("/");
+      } else {
+        setErrorMsg(data.error || "로그인에 실패했습니다.");
+      }
+    } catch (e) {
+      setErrorMsg("서버 통신 중 오류가 발생했습니다.");
+    }
   };
 
   if (isPC) return <PCLogin />;
@@ -94,6 +112,7 @@ export default function LoginPage() {
               />
             </div>
           </div>
+          {errorMsg && <div className="text-red-500 text-sm mt-1">{errorMsg}</div>}
           <button
             type="submit"
             className="w-full py-4 mt-2 bg-teal-600 text-white rounded-lg font-bold text-[15px] shadow-sm active:bg-teal-700 transition-colors"

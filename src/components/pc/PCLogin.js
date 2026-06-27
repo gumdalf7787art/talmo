@@ -10,10 +10,31 @@ export default function PCLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = (e) => {
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    localStorage.setItem('isLoggedIn', 'true');
-    router.push("/");
+    setErrorMsg("");
+    
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('user', JSON.stringify(data.user));
+        router.push("/");
+      } else {
+        setErrorMsg(data.error || "로그인에 실패했습니다.");
+      }
+    } catch (e) {
+      setErrorMsg("서버 통신 중 오류가 발생했습니다.");
+    }
   };
 
   return (
@@ -49,6 +70,7 @@ export default function PCLogin() {
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="비밀번호를 입력해주세요" className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all" required />
             </div>
           </div>
+          {errorMsg && <div className="text-red-500 text-sm mt-1">{errorMsg}</div>}
           <button type="submit" className="w-full py-4 mt-2 bg-teal-600 text-white rounded-lg font-bold text-[15px] shadow-sm hover:bg-teal-700 transition-colors">이메일로 로그인</button>
         </form>
 
