@@ -537,19 +537,21 @@ export default function MyPage() {
               {editProfileField === 'birthYear' && (
                 <>
                   <div className="relative mb-4">
-                    <input 
-                      type="number" 
-                      defaultValue={profile.birthYear}
+                    <select 
+                      defaultValue={profile.birthYear === "미설정" ? "" : profile.birthYear}
                       id="birthYearInput"
-                      placeholder="예: 1990"
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-[15px] focus:outline-none focus:ring-2 focus:ring-teal-500"
-                      autoFocus
-                    />
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-[15px] focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900"
+                    >
+                      <option value="" disabled>출생 연도를 선택해주세요</option>
+                      {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                        <option key={year} value={year}>{year}년</option>
+                      ))}
+                    </select>
                   </div>
                   <button 
                     onClick={() => {
                       const val = document.getElementById('birthYearInput').value;
-                      if(val && val.length === 4) handleProfileFieldChange('birthYear', val);
+                      if(val) handleProfileFieldChange('birthYear', val);
                     }}
                     className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 rounded-xl transition-colors shadow-sm"
                   >

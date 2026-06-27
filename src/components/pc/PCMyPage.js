@@ -367,7 +367,16 @@ export default function PCMyPage() {
               </div>
               <div className="flex flex-col gap-2.5">
                 <span className="text-[13px] text-gray-500 font-medium">출생 연도</span>
-                <input type="number" value={tempProfile.birthYear} onChange={(e) => setTempProfile(prev => ({ ...prev, birthYear: e.target.value.slice(0, 4) }))} placeholder="예: 1990" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[14px] focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium placeholder-gray-400" />
+                <select 
+                  value={tempProfile.birthYear === "미설정" ? "" : tempProfile.birthYear} 
+                  onChange={(e) => setTempProfile(prev => ({ ...prev, birthYear: e.target.value }))}
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[14px] focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium text-gray-900"
+                >
+                  <option value="" disabled>연도 선택</option>
+                  {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                    <option key={year} value={year}>{year}년</option>
+                  ))}
+                </select>
               </div>
               <div className="flex flex-col gap-2.5">
                 <span className="text-[13px] text-gray-500 font-medium">유전적 가족력</span>
