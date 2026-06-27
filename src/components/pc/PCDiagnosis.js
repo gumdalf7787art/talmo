@@ -11,7 +11,22 @@ function PCDiagnosisContent() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState(null);
   const fileInputRef = useRef(null);
-  const [profile, setProfile] = useState({ gender: "남성", birthYear: "1992", familyHistory: "있음" });
+  const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState({ gender: "", birthYear: "", familyHistory: "" });
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      const parsed = JSON.parse(savedUser);
+      setUser(parsed);
+      setProfile({
+        gender: parsed.gender || "",
+        birthYear: parsed.birth_year || "",
+        familyHistory: parsed.family_history || ""
+      });
+    }
+  }, []);
+
   const isProfileComplete = profile.gender !== "" && profile.birthYear.length === 4 && profile.familyHistory !== "";
   const searchParams = useSearchParams();
   const isHistory = searchParams.get("history") === "true";
@@ -26,7 +41,37 @@ function PCDiagnosisContent() {
   const handleImageChange = (e) => { const file = e.target.files[0]; if (file) { setImageFile(file); setImagePreview(URL.createObjectURL(file)); setResult(null); } };
 
   const handleAnalyze = async () => {
-    if (!imageFile) return;
+    if (!imageFile || !isProfileComplete) return;
+
+    if (user) {
+      const isUpdated = 
+        user.gender !== profile.gender || 
+        user.birth_year !== profile.birthYear || 
+        user.family_history !== profile.familyHistory;
+        
+      if (isUpdated) {
+        try {
+          const updates = { 
+            gender: profile.gender, 
+            birth_year: profile.birthYear, 
+            family_history: profile.familyHistory 
+          };
+          const res = await fetch('/api/user/update', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: user.id, ...updates })
+          });
+          if (res.ok) {
+            const updatedUser = { ...user, ...updates };
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+            setUser(updatedUser);
+          }
+        } catch (e) {
+          console.error("Failed to sync profile", e);
+        }
+      }
+    }
+
     setIsAnalyzing(true); setResult(null);
     const formData = new FormData(); formData.append("image", imageFile);
     try {
@@ -75,13 +120,29 @@ function PCDiagnosisContent() {
                 </div>
                 <div className="flex items-center gap-4">
                   <span className="text-[13px] text-gray-500 font-medium w-14">출생</span>
-                  <input type="number" placeholder="예: 1990" value={profile.birthYear} onChange={(e) => setProfile(prev => ({ ...prev, birthYear: e.target.value.slice(0, 4) }))} className="flex-1 bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-4 text-[13px] font-bold focus:outline-none focus:ring-1 focus:ring-teal-500" />
+                  <select 
+                    value={profile.birthYear}
+                    onChange={(e) => setProfile(prev => ({ ...prev, birthYear: e.target.value }))}
+                    className="flex-1 bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-4 text-[13px] font-bold focus:outline-none focus:ring-1 focus:ring-teal-500 text-gray-900"
+                  >
+                    <option value="" disabled>선택</option>
+                    {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                      <option key={year} value={year}>{year}년</option>
+                    ))}
+                  </select>
                 </div>
                 <div className="flex items-center gap-4">
                   <span className="text-[13px] text-gray-500 font-medium w-14">가족력</span>
-                  <div className="flex gap-2 flex-1">
-                    {["있음", "없음", "모름"].map(h => (<button key={h} onClick={() => setProfile(prev => ({ ...prev, familyHistory: h }))} className={`flex-1 py-2.5 rounded-lg text-[12px] font-bold transition-colors ${profile.familyHistory === h ? 'bg-teal-600 text-white' : 'bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100'}`}>{h}</button>))}
-                  </div>
+                  <select 
+                    value={profile.familyHistory}
+                    onChange={(e) => setProfile(prev => ({ ...prev, familyHistory: e.target.value }))}
+                    className="flex-1 bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-4 text-[13px] font-bold focus:outline-none focus:ring-1 focus:ring-teal-500 text-gray-900"
+                  >
+                    <option value="" disabled>선택</option>
+                    {["있음 (부계)", "있음 (모계)", "있음 (양가 모두)", "없음", "모름"].map(h => (
+                      <option key={h} value={h}>{h}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>
