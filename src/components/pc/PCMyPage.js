@@ -16,6 +16,10 @@ export default function PCMyPage() {
   const [tempNickname, setTempNickname] = useState("");
   const [tempProfile, setTempProfile] = useState({ gender: "", birthYear: "", familyHistory: "" });
 
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
@@ -67,12 +71,42 @@ export default function PCMyPage() {
   };
 
   const handleChangePassword = () => {
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
     setPasswordModalOpen(true);
   };
 
-  const handleSavePassword = () => {
-    alert("비밀번호가 성공적으로 변경되었습니다.");
-    setPasswordModalOpen(false);
+  const handleSavePassword = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      alert("모든 필드를 입력해주세요.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      alert("새 비밀번호가 일치하지 않습니다.");
+      return;
+    }
+    if (!user) return;
+    
+    try {
+      const res = await fetch('/api/user/password', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: user.id, currentPassword, newPassword })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert(data.message || "비밀번호가 성공적으로 변경되었습니다.");
+        setPasswordModalOpen(false);
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        alert(data.error || "비밀번호 변경에 실패했습니다.");
+      }
+    } catch (e) {
+      alert("서버 오류가 발생했습니다.");
+    }
   };
 
   const handleEditAiProfile = () => {
@@ -219,16 +253,22 @@ export default function PCMyPage() {
             <div className="flex flex-col gap-3 mb-6">
               <input 
                 type="password" 
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[14px] focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium placeholder-gray-400"
                 placeholder="현재 비밀번호"
               />
               <input 
                 type="password" 
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[14px] focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium placeholder-gray-400"
                 placeholder="새 비밀번호"
               />
               <input 
                 type="password" 
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[14px] focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium placeholder-gray-400"
                 placeholder="새 비밀번호 확인"
               />

@@ -25,6 +25,12 @@ export default function MyPage() {
   const [isEditingNickname, setIsEditingNickname] = useState(false);
   const [newNickname, setNewNickname] = useState("");
 
+  // Password edit state
+  const [isEditingPassword, setIsEditingPassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
@@ -83,6 +89,38 @@ export default function MyPage() {
     setProfile(prev => ({ ...prev, nickname: newNickname }));
     updateProfileInBackend({ nickname: newNickname });
     setIsEditingNickname(false);
+  };
+
+  const handleSavePassword = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      alert("모든 필드를 입력해주세요.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      alert("새 비밀번호가 일치하지 않습니다.");
+      return;
+    }
+    if (!user) return;
+    
+    try {
+      const res = await fetch('/api/user/password', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: user.id, currentPassword, newPassword })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert(data.message || "비밀번호가 성공적으로 변경되었습니다.");
+        setIsEditingPassword(false);
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        alert(data.error || "비밀번호 변경에 실패했습니다.");
+      }
+    } catch (e) {
+      alert("서버 오류가 발생했습니다.");
+    }
   };
 
   const handleProfileFieldChange = (field, value) => {
@@ -254,7 +292,7 @@ export default function MyPage() {
       <div className="bg-white border-y border-gray-100 py-3">
         <h3 className="font-bold text-gray-900 text-[16px] px-5 mb-2 pt-2">계정 관리</h3>
         <div className="flex flex-col">
-          <button className="flex items-center justify-between px-5 py-3.5 hover:bg-gray-50 transition-colors active:bg-gray-100">
+          <button onClick={() => setIsEditingPassword(true)} className="flex items-center justify-between px-5 py-3.5 hover:bg-gray-50 transition-colors active:bg-gray-100">
             <div className="flex items-center gap-3">
               <Lock className="w-5 h-5 text-gray-400" />
               <span className="text-[15px] font-medium text-gray-800">비밀번호 변경</span>
@@ -319,13 +357,77 @@ export default function MyPage() {
               </p>
             </div>
 
-            <button 
-              onClick={handleSaveNickname}
-              disabled={!newNickname.trim() || newNickname === profile.nickname}
-              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 rounded-xl disabled:bg-gray-200 disabled:text-gray-400 transition-colors shadow-sm"
-            >
-              변경 완료
-            </button>
+            <div className="flex flex-col gap-2">
+              <button 
+                onClick={() => setIsEditingNickname(false)}
+                className="w-full py-4 bg-gray-100 text-gray-700 rounded-xl font-bold text-[15px] hover:bg-gray-200 transition-colors"
+              >
+                취소
+              </button>
+              <button 
+                onClick={handleSaveNickname}
+                className="w-full py-4 bg-teal-600 text-white rounded-xl font-bold text-[15px] shadow-sm hover:bg-teal-700 transition-colors"
+              >
+                변경하기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Password Edit Modal (Bottom Sheet) */}
+      {isEditingPassword && (
+        <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="absolute inset-0" onClick={() => setIsEditingPassword(false)}></div>
+          
+          <div className="relative bg-white w-full max-w-md rounded-t-3xl p-6 pb-8 shadow-2xl animate-in slide-in-from-bottom-full duration-300">
+            <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6"></div>
+            
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-[18px] font-bold text-gray-900">비밀번호 변경</h3>
+              <button onClick={() => setIsEditingPassword(false)} className="p-1 -mr-1 text-gray-400 hover:text-gray-600 transition-colors">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <div className="flex flex-col gap-3 mb-8">
+              <input 
+                type="password" 
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="현재 비밀번호 입력"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-[15px] focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+              />
+              <input 
+                type="password" 
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="새 비밀번호 입력"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-[15px] focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+              />
+              <input 
+                type="password" 
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="새 비밀번호 확인"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-[15px] focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+              />
+            </div>
+            
+            <div className="flex flex-col gap-2">
+              <button 
+                onClick={() => setIsEditingPassword(false)}
+                className="w-full py-4 bg-gray-100 text-gray-700 rounded-xl font-bold text-[15px] hover:bg-gray-200 transition-colors"
+              >
+                취소
+              </button>
+              <button 
+                onClick={handleSavePassword}
+                className="w-full py-4 bg-teal-600 text-white rounded-xl font-bold text-[15px] shadow-sm hover:bg-teal-700 transition-colors"
+              >
+                변경하기
+              </button>
+            </div>
           </div>
         </div>
       )}
