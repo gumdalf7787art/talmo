@@ -29,21 +29,53 @@ export default function WritePage() {
     }
 
     files.forEach(file => {
-      const url = URL.createObjectURL(file);
-      // Use negative margin to break out of the px-5 container and be full-width
-      const imgHtml = `<img src="${url}" style="width: calc(100% + 40px); max-width: none; margin-left: -20px; margin-top: 16px; margin-bottom: 16px; display: block;" alt="uploaded" /><p><br></p>`;
-      document.execCommand("insertHTML", false, imgHtml);
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64Url = reader.result;
+        // Use negative margin to break out of the px-5 container and be full-width
+        const imgHtml = `<img src="${base64Url}" style="width: calc(100% + 40px); max-width: none; margin-left: -20px; margin-top: 16px; margin-bottom: 16px; display: block;" alt="uploaded" /><p><br></p>`;
+        document.execCommand("insertHTML", false, imgHtml);
+        setContent(editorRef.current.innerHTML);
+      };
+      reader.readAsDataURL(file);
     });
 
-    setContent(editorRef.current.innerHTML);
     e.target.value = ''; // Reset input
   };
 
-  const handlePost = () => {
-    if (!category || !title.trim() || !content.trim()) return;
-    // TODO: Implement actual post submission logic
-    console.log("Post submitted:", { category, title, content });
-    router.back();
+  const handlePost = async () => {
+    if (!category || !title.trim() || !content.trim() || content === "<p><br></p>") return;
+    
+    try {
+      const savedUser = localStorage.getItem('user');
+      if (!savedUser) {
+        alert("로그인이 필요합니다.");
+        router.push("/login");
+        return;
+      }
+      const user = JSON.parse(savedUser);
+
+      const res = await fetch('/api/posts/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          category,
+          title,
+          content
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert("게시글이 성공적으로 등록되었습니다.");
+        router.push("/community");
+      } else {
+        alert(data.error || "게시글 등록에 실패했습니다.");
+      }
+    } catch (e) {
+      alert("오류가 발생했습니다. 다시 시도해주세요.");
+    }
   };
 
   const isFormValid = category && title.trim() && content.trim();

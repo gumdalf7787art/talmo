@@ -23,13 +23,15 @@ export default function PCWrite() {
     input.onchange = async () => {
       const file = input.files[0];
       if (file) {
-        // In a real app, you would upload this to your server/S3/R2 and get a URL.
-        // For now, we'll use a local object URL to demonstrate the WYSIWYG feature.
-        const url = URL.createObjectURL(file);
-        const quill = quillRef.current.getEditor();
-        const range = quill.getSelection(true);
-        quill.insertEmbed(range.index, "image", url);
-        quill.setSelection(range.index + 1);
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64Url = reader.result;
+          const quill = quillRef.current.getEditor();
+          const range = quill.getSelection(true);
+          quill.insertEmbed(range.index, "image", base64Url);
+          quill.setSelection(range.index + 1);
+        };
+        reader.readAsDataURL(file);
       }
     };
   };
@@ -72,11 +74,39 @@ export default function PCWrite() {
     "video",
   ];
 
-  const handlePost = () => {
+  const handlePost = async () => {
     if (!category || !title.trim() || !content.trim() || content === "<p><br></p>") return;
-    // TODO: Implement actual post submission logic to backend API
-    console.log("Post submitted:", { category, title, content });
-    router.push("/community");
+    
+    try {
+      const savedUser = localStorage.getItem('user');
+      if (!savedUser) {
+        alert("로그인이 필요합니다.");
+        router.push("/login");
+        return;
+      }
+      const user = JSON.parse(savedUser);
+
+      const res = await fetch('/api/posts/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          category,
+          title,
+          content
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert("게시글이 성공적으로 등록되었습니다.");
+        router.push("/community");
+      } else {
+        alert(data.error || "게시글 등록에 실패했습니다.");
+      }
+    } catch (e) {
+      alert("오류가 발생했습니다. 다시 시도해주세요.");
+    }
   };
 
   const isFormValid = category && title.trim() && content.trim() && content !== "<p><br></p>";
