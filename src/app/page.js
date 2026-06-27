@@ -12,12 +12,7 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [currentDoctorSlide, setCurrentDoctorSlide] = useState(0);
 
-  const doctors = [
-    { id: 1, name: "김원장", hospital: "강남 모발 의원", reviews: 156, desc: "15년 이상 비절개 집중 진료", imgUrl: "/doctor1.png" },
-    { id: 2, name: "이원장", hospital: "신촌 두피 센터", reviews: 89, desc: "여성 헤어라인 교정 전문", imgUrl: "/doctor2.png" },
-    { id: 3, name: "박원장", hospital: "압구정 이식 의원", reviews: 210, desc: "맞춤형 헤어라인 디자인 설계", imgUrl: "/doctor3.png" },
-    { id: 4, name: "최원장", hospital: "홍대 탈모 피부과", reviews: 134, desc: "꼼꼼한 디자인과 철저한 사후관리", imgUrl: "/doctor4.png" }
-  ];
+  const [doctors, setDoctors] = useState([]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -62,6 +57,14 @@ export default function Home() {
     fetch('/api/posts/list?category=탈모정보&limit=6')
       .then(res => res.json())
       .then(data => setInfoPosts(data.posts || []));
+      
+    fetch('/api/hospital/list')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setDoctors(data.clinics || []);
+        }
+      });
   }, []);
 
 
@@ -395,19 +398,23 @@ export default function Home() {
               <div key={`doctor-page-${pageIndex}`} className="w-full shrink-0 flex gap-2">
                 {doctors.slice(pageIndex * 2, pageIndex * 2 + 2).map((doc) => (
                   <Link key={`doc-${doc.id}`} href={`/consult/${doc.id}`} className="flex-1 flex flex-col gap-2 group">
-                    <div className="w-full aspect-square rounded-xl overflow-hidden relative shadow-sm border border-gray-100">
-                      <img src={doc.imgUrl} alt={doc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <div className="w-full aspect-square rounded-xl overflow-hidden relative shadow-sm border border-gray-100 flex items-center justify-center bg-gray-50">
+                      {doc.image_url ? (
+                        <img src={doc.image_url} alt={doc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      ) : (
+                        <img src="/logo.png" alt="logo" className="w-1/2 h-1/2 opacity-20 grayscale group-hover:scale-105 transition-transform duration-500" />
+                      )}
                     </div>
                     <div className="flex flex-col">
                       <div className="flex items-center gap-1.5">
                         <h4 className="font-bold text-gray-900 text-[13px]">{doc.name}</h4>
-                        <span className="text-[10px] text-gray-500 line-clamp-1">{doc.hospital}</span>
+                        <span className="text-[10px] text-gray-500 line-clamp-1">{doc.category}</span>
                       </div>
                       <div className="flex items-center gap-1 text-[10px] font-medium text-teal-600 mt-0.5">
-                        <MessageCircle className="w-3 h-3" /> 후기 {doc.reviews}개
+                        <MessageCircle className="w-3 h-3" /> 누적상담 {doc.consults}건
                       </div>
                       <p className="text-[11px] text-gray-600 line-clamp-2 leading-snug mt-1 break-keep">
-                        {doc.desc}
+                        {doc.description || "등록된 소개가 없습니다."}
                       </p>
                     </div>
                   </Link>

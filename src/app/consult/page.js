@@ -1,71 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Search, MapPin, MessageCircle, Star, ChevronRight } from "lucide-react";
-import useMediaQuery from "@/hooks/useMediaQuery";
-import PCConsult from "@/components/pc/PCConsult";
-
 export default function ConsultPage() {
-  const isPC = useMediaQuery("(min-width: 1024px)");
   const [activeTab, setActiveTab] = useState("전체");
 
   const categories = ["전체", "모발이식", "두피문신(SMP)", "탈모치료"];
 
-  const clinics = [
-    {
-      id: 1,
-      name: "모프로 탈모의원",
-      location: "서울 강남구",
-      description: "비절개 모발이식 1만 건 이상, 대표원장 1:1 책임진료",
-      category: "모발이식",
-      consults: 1540,
-      reviews: 128,
-      isPremium: true,
-      wait_time: "보통"
-    },
-    {
-      id: 2,
-      name: "블랙라인 스튜디오",
-      location: "서울 서초구",
-      description: "자연스러운 헤어라인 교정, 무통증 두피문신 전문",
-      category: "두피문신(SMP)",
-      consults: 890,
-      reviews: 85,
-      isPremium: true,
-      wait_time: "원활"
-    },
-    {
-      id: 3,
-      name: "풍성한 내과의원",
-      location: "서울 종로구",
-      description: "여성 탈모 및 스트레스성 탈모 집중 치료",
-      category: "탈모치료",
-      consults: 2100,
-      reviews: 210,
-      isPremium: false,
-      wait_time: "혼잡"
-    },
-    {
-      id: 4,
-      name: "뉴헤어 모발이식센터",
-      location: "부산 서면",
-      description: "절개/비절개 맞춤형 디자인, 20년 경력 전문의",
-      category: "모발이식",
-      consults: 3250,
-      reviews: 342,
-      isPremium: true,
-      wait_time: "보통"
-    }
-  ];
+  const [clinics, setClinics] = useState([]);
+  
+  useEffect(() => {
+    fetch('/api/hospital/list')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setClinics(data.clinics || []);
+        }
+      });
+  }, []);
 
   const filteredClinics = activeTab === "전체" ? clinics : clinics.filter(c => c.category === activeTab);
 
-  if (isPC) return <PCConsult />;
-
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 pb-20">
-      {/* Header */}
+    <div className="flex flex-col min-h-screen bg-gray-50 pb-20 items-center">
+      <div className="w-full max-w-5xl bg-white min-h-screen border-x border-gray-100">
+        {/* Header */}
       <div className="bg-white px-5 py-4 border-b border-gray-100 sticky top-0 z-40">
         <h1 className="text-xl font-bold text-gray-900 mb-4">1:1 맞춤 상담</h1>
         <div className="relative">
@@ -123,15 +83,19 @@ export default function ConsultPage() {
                 </div>
                 <div className="flex items-center gap-1 text-[12px] text-gray-500 mb-2">
                   <MapPin className="w-3.5 h-3.5" />
-                  <span>{clinic.location}</span>
+                  <span>{clinic.address || "주소 미등록"}</span>
                   <span className="mx-1 text-gray-300">|</span>
                   <span className="text-teal-600 font-medium">{clinic.category}</span>
                 </div>
-                <p className="text-[13px] text-gray-700 line-clamp-1">{clinic.description}</p>
+                <p className="text-[13px] text-gray-700 line-clamp-1">{clinic.description || "등록된 한줄 소개가 없습니다."}</p>
               </div>
               
-              <div className="w-14 h-14 bg-gray-50 rounded-full flex items-center justify-center shrink-0 border border-gray-100">
-                <img src="/logo.png" alt="hospital logo" className="w-8 h-8 opacity-40 grayscale" />
+              <div className="w-14 h-14 bg-gray-50 rounded-full flex items-center justify-center shrink-0 border border-gray-100 overflow-hidden">
+                {clinic.image_url ? (
+                  <img src={clinic.image_url} alt="hospital logo" className="w-full h-full object-cover" />
+                ) : (
+                  <img src="/logo.png" alt="hospital logo" className="w-8 h-8 opacity-40 grayscale" />
+                )}
               </div>
             </div>
 
@@ -156,6 +120,7 @@ export default function ConsultPage() {
             </div>
           </div>
         ))}
+      </div>
       </div>
     </div>
   );

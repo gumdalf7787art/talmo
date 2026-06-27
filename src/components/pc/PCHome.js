@@ -33,7 +33,17 @@ export default function PCHome() {
       
     fetch('/api/posts/list?category=탈모정보&limit=4')
       .then(res => res.json())
+    fetch('/api/posts/list?category=탈모정보&limit=4')
+      .then(res => res.json())
       .then(data => setInfoPosts(data.posts || []));
+      
+    fetch('/api/hospital/list')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setDoctors(data.clinics || []);
+        }
+      });
   }, []);
 
   const handleDismissDiagnosis = () => {
@@ -53,12 +63,7 @@ export default function PCHome() {
     { id: 204, title: "병원 고르는 꿀팁", imgUrl: "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=200&h=200&fit=crop" },
   ];
 
-  const doctors = [
-    { id: 1, name: "김원장", hospital: "강남 모발 의원", reviews: 156, desc: "15년 이상 비절개 집중 진료", imgUrl: "/doctor1.png" },
-    { id: 2, name: "이원장", hospital: "신촌 두피 센터", reviews: 89, desc: "여성 헤어라인 교정 전문", imgUrl: "/doctor2.png" },
-    { id: 3, name: "박원장", hospital: "압구정 이식 의원", reviews: 210, desc: "맞춤형 헤어라인 디자인 설계", imgUrl: "/doctor3.png" },
-    { id: 4, name: "최원장", hospital: "홍대 탈모 피부과", reviews: 134, desc: "꼼꼼한 디자인과 철저한 사후관리", imgUrl: "/doctor4.png" },
-  ];
+  const [doctors, setDoctors] = useState([]);
 
   return (
     <div className="flex gap-6">
@@ -231,20 +236,24 @@ export default function PCHome() {
             <Link href="/consult" className="text-sm font-medium text-teal-600 flex items-center">전체보기 <ChevronRight className="w-4 h-4" /></Link>
           </div>
           <div className="grid grid-cols-4 gap-4">
-            {doctors.map((doc) => (
+            {doctors.slice(0, 4).map((doc) => (
               <Link key={doc.id} href={`/consult/${doc.id}`} className="flex flex-col gap-3 group p-3 rounded-xl border border-gray-100 hover:border-teal-200 hover:shadow-md transition-all">
-                <div className="w-full aspect-square rounded-xl overflow-hidden border border-gray-100">
-                  <img src={doc.imgUrl} alt={doc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="w-full aspect-square rounded-xl overflow-hidden border border-gray-100 flex items-center justify-center bg-gray-50">
+                  {doc.image_url ? (
+                    <img src={doc.image_url} alt={doc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <img src="/logo.png" alt="logo" className="w-1/2 h-1/2 opacity-20 grayscale group-hover:scale-105 transition-transform duration-500" />
+                  )}
                 </div>
                 <div className="flex flex-col">
                   <div className="flex items-center gap-1.5">
                     <h4 className="font-bold text-gray-900 text-[14px]">{doc.name}</h4>
-                    <span className="text-[11px] text-gray-500">{doc.hospital}</span>
+                    <span className="text-[11px] text-gray-500 line-clamp-1">{doc.category}</span>
                   </div>
                   <div className="flex items-center gap-1 text-[11px] font-medium text-teal-600 mt-1">
-                    <MessageCircle className="w-3 h-3" /> 후기 {doc.reviews}개
+                    <MessageCircle className="w-3 h-3" /> 누적상담 {doc.consults}건
                   </div>
-                  <p className="text-[12px] text-gray-600 line-clamp-1 mt-1">{doc.desc}</p>
+                  <p className="text-[12px] text-gray-600 line-clamp-1 mt-1">{doc.description || "소개가 없습니다."}</p>
                 </div>
               </Link>
             ))}

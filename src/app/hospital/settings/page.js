@@ -23,11 +23,21 @@ export default function HospitalSettingsPage() {
       const parsed = JSON.parse(savedUser);
       if (parsed.role === "hospital") {
         setUser(parsed);
-        // Initialize with default or user data
-        setHospitalInfo(prev => ({
-          ...prev,
-          name: parsed.nickname || "",
-        }));
+        // Fetch existing data
+        fetch(`/api/hospital/settings?userId=${parsed.id}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.success && data.data) {
+              setHospitalInfo(prev => ({ ...prev, ...data.data }));
+            } else {
+              // fallback default
+              setHospitalInfo(prev => ({ ...prev, name: parsed.nickname || "" }));
+            }
+          })
+          .catch(err => {
+            console.error("Failed to fetch hospital info:", err);
+            setHospitalInfo(prev => ({ ...prev, name: parsed.nickname || "" }));
+          });
       } else {
         router.replace("/");
       }
@@ -36,10 +46,28 @@ export default function HospitalSettingsPage() {
     }
   }, [router]);
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    alert("병원 정보가 성공적으로 저장되었습니다.");
-    router.back();
+    try {
+      const res = await fetch("/api/hospital/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user.id,
+          ...hospitalInfo
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert("병원 정보가 성공적으로 저장되었습니다.");
+        router.back();
+      } else {
+        alert("저장에 실패했습니다: " + data.error);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("서버 오류가 발생했습니다.");
+    }
   };
 
   if (!user) return <div className="min-h-screen bg-gray-50 flex items-center justify-center">로딩중...</div>;
