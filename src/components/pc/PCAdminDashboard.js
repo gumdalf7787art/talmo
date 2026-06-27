@@ -8,9 +8,15 @@ export default function PCAdminDashboard({ user }) {
   const [stats, setStats] = useState(null);
   const [users, setUsers] = useState([]);
   const [banners, setBanners] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   
   // New banner form state
   const [newBanner, setNewBanner] = useState({ title: "", image_url: "", link_url: "" });
+
+  const filteredUsers = users.filter(u => 
+    (u.email && u.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (u.nickname && u.nickname.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
 
   useEffect(() => {
     if (activeTab === "stats") {
@@ -162,7 +168,16 @@ export default function PCAdminDashboard({ user }) {
 
         {activeTab === "users" && (
           <div className="flex flex-col gap-6">
-            <h3 className="text-xl font-bold text-gray-900">회원 및 권한 관리 (총 {users.length}명)</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-bold text-gray-900">회원 및 권한 관리 (총 {users.length}명)</h3>
+              <input
+                type="text"
+                placeholder="이메일 또는 닉네임 검색"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-64 px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:border-teal-500"
+              />
+            </div>
             <div className="overflow-x-auto rounded-lg border border-gray-200">
               <table className="w-full text-sm text-left">
                 <thead className="bg-gray-50 text-gray-600 border-b border-gray-200">
@@ -175,7 +190,7 @@ export default function PCAdminDashboard({ user }) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {users.map(u => (
+                  {filteredUsers.map(u => (
                     <tr key={u.id} className="hover:bg-gray-50">
                       <td className="px-4 py-3">{u.email}</td>
                       <td className="px-4 py-3 font-medium">{u.nickname}</td>

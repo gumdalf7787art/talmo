@@ -1,13 +1,24 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, Search } from "lucide-react";
+import useMediaQuery from "@/hooks/useMediaQuery";
+import PCConsult from "@/components/pc/PCConsult";
+import PCHospitalDashboard from "@/components/pc/PCHospitalDashboard";
 
 export default function ChatListPage() {
   const router = useRouter();
+  const isPC = useMediaQuery("(min-width: 1024px)");
+  const [user, setUser] = useState(null);
 
-  // Mock chat list data
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) setUser(JSON.parse(savedUser));
+  }, []);
+
+  // Mock chat list data for mobile
   const chatRooms = [
     {
       id: 1,
@@ -28,6 +39,27 @@ export default function ChatListPage() {
       isClinic: true,
     }
   ];
+
+  if (isPC) {
+    if (user?.role === 'hospital') {
+      return (
+        <div className="min-h-[90vh] bg-[#F5F6F8] py-8">
+           <div className="max-w-7xl mx-auto px-4">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">병원 관리자 탈모톡</h2>
+              <PCHospitalDashboard user={user} />
+           </div>
+        </div>
+      );
+    }
+    return (
+      <div className="min-h-[90vh] bg-[#F5F6F8] py-8">
+         <div className="max-w-5xl mx-auto">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 px-2">나의 탈모톡</h2>
+            <PCConsult />
+         </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">

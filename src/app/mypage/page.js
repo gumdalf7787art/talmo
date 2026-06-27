@@ -230,12 +230,22 @@ export default function MyPage() {
                 변경
               </button>
             </div>
-            <p className="text-sm text-gray-500">{profile.email}</p>
+            <p className="text-sm text-gray-500 flex items-center gap-2">
+              {profile.email}
+              {user?.role === 'hospital' && (
+                <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded">병원 권한</span>
+              )}
+            </p>
           </div>
         </div>
         {user?.role === 'admin' && (
           <Link href="/admin/dashboard" className="mt-4 flex w-full items-center justify-center py-2.5 bg-gray-900 text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors">
             마스터 시스템 접속
+          </Link>
+        )}
+        {user?.role === 'hospital' && (
+          <Link href="/hospital/settings" className="mt-4 flex w-full items-center justify-center py-2.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors">
+            병원 설정
           </Link>
         )}
       </div>

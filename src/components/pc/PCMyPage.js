@@ -204,7 +204,12 @@ export default function PCMyPage() {
               <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleImageChange} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-1">{profile.nickname}</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-1 flex items-center gap-2">
+                {profile.nickname}
+                {user?.role === 'hospital' && (
+                  <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 text-[11px] font-bold rounded">병원 권한</span>
+                )}
+              </h2>
               <p className="text-sm text-gray-500">{profile.email}</p>
             </div>
           </div>
@@ -215,6 +220,11 @@ export default function PCMyPage() {
           {user?.role === 'admin' && (
             <Link href="/admin/dashboard" className="mt-2 flex w-full items-center justify-center py-2.5 bg-gray-900 text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors">
               마스터 시스템 접속
+            </Link>
+          )}
+          {user?.role === 'hospital' && (
+            <Link href="/hospital/settings" className="mt-2 flex w-full items-center justify-center py-2.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors">
+              병원 설정
             </Link>
           )}
         </div>
