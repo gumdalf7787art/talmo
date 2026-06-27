@@ -187,7 +187,7 @@ function PCDiagnosisContent() {
                 </div>
                 <h4 className="font-bold text-[15px] text-gray-900 mb-4">항목별 상세 지표</h4>
                 <div className="flex flex-col gap-4">
-                  {[{ label: "모발 밀도 (정수리)", score: 65, color: "orange", status: "주의" }, { label: "헤어라인 (M자) 후퇴도", score: 32, color: "red", status: "위험" }, { label: "모발 굵기 약화", score: 75, color: "yellow", status: "양호" }, { label: "두피 상태 (각질/홍반)", score: 90, color: "teal", status: "우수" }].map((m) => (
+                  {(result.breakdown || [{ label: "모발 밀도 (정수리)", score: 65, color: "orange", status: "주의" }, { label: "헤어라인 (M자) 후퇴도", score: 32, color: "red", status: "위험" }, { label: "모발 굵기 약화", score: 75, color: "yellow", status: "양호" }, { label: "두피 상태 (각질/홍반)", score: 90, color: "teal", status: "우수" }]).map((m) => (
                     <div key={m.label} className="flex flex-col gap-1.5">
                       <div className="flex justify-between items-center text-[13px]">
                         <span className="text-gray-700 font-medium">{m.label}</span>
@@ -206,16 +206,26 @@ function PCDiagnosisContent() {
                 <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
                   <h4 className="font-bold text-[15px] text-gray-900 mb-3">종합 소견</h4>
                   <ul className="text-[13px] text-gray-700 leading-relaxed space-y-2 list-disc pl-4 marker:text-gray-400">
-                    <li>현재 동일 연령대(30대 남성) 평균 대비 <b>M자 헤어라인의 후퇴가 확연하게 관찰</b>됩니다.</li>
-                    <li>정수리 부근의 모발 밀도는 정상 범위의 하한선에 위치해 있어 꾸준한 관리가 필요합니다.</li>
-                    <li>두피 상태는 매우 깨끗하며 염증 소견은 발견되지 않았습니다.</li>
+                    {(result.analysis || [
+                      "현재 동일 연령대(30대 남성) 평균 대비 <b>M자 헤어라인의 후퇴가 확연하게 관찰</b>됩니다.",
+                      "정수리 부근의 모발 밀도는 정상 범위의 하한선에 위치해 있어 꾸준한 관리가 필요합니다.",
+                      "두피 상태는 매우 깨끗하며 염증 소견은 발견되지 않았습니다."
+                    ]).map((text, idx) => (
+                      <li key={idx} dangerouslySetInnerHTML={{ __html: text }} />
+                    ))}
                   </ul>
                 </div>
                 <div className="bg-teal-50 p-5 rounded-xl border border-teal-100 flex items-start gap-3">
                   <AlertCircle className="w-5 h-5 text-teal-600 shrink-0 mt-0.5" />
                   <div>
                     <span className="text-[14px] font-bold text-teal-900">맞춤 솔루션 제안</span>
-                    <p className="text-[13px] text-teal-800 leading-relaxed mt-1">피나스테리드 계열 약물 복용 상담이 시급하며, M자 라인의 경우 모발이식 상담을 병행하는 것을 강력히 권장합니다.</p>
+                    <ul className="text-[13px] text-teal-800 leading-relaxed mt-1 list-disc pl-4">
+                      {(result.recommendations || [
+                        "피나스테리드 계열 약물 복용 상담이 시급하며, M자 라인의 경우 모발이식 상담을 병행하는 것을 강력히 권장합니다."
+                      ]).map((text, idx) => (
+                        <li key={idx}>{text}</li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
                 <div className="bg-gray-100/50 p-4 rounded-xl border border-gray-200">

@@ -300,58 +300,30 @@ function DiagnosisContent() {
             {/* Detailed Graphs */}
             <h4 className="font-bold text-[15px] text-gray-900 mb-4">항목별 상세 지표</h4>
             <div className="flex flex-col gap-3.5 mb-6">
-              {/* Metric 1 */}
-              <div className="flex flex-col gap-1.5">
-                <div className="flex justify-between items-center text-[13px]">
-                  <span className="text-gray-700 font-medium">모발 밀도 (정수리)</span>
-                  <span className="text-orange-500 font-bold">주의 (65점)</span>
+              {(result.breakdown || [{ label: "모발 밀도 (정수리)", score: 65, color: "orange", status: "주의" }, { label: "헤어라인 (M자) 후퇴도", score: 32, color: "red", status: "위험" }, { label: "모발 굵기 약화", score: 75, color: "yellow", status: "양호" }, { label: "두피 상태 (각질/홍반)", score: 90, color: "teal", status: "우수" }]).map((m, idx) => (
+                <div key={idx} className="flex flex-col gap-1.5">
+                  <div className="flex justify-between items-center text-[13px]">
+                    <span className="text-gray-700 font-medium">{m.label}</span>
+                    <span className={`text-${m.color}-500 font-bold`}>{m.status} ({m.score}점)</span>
+                  </div>
+                  <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                    <div className={`bg-gradient-to-r from-${m.color}-400 to-${m.color}-500 h-full rounded-full`} style={{ width: `${m.score}%` }}></div>
+                  </div>
                 </div>
-                <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                  <div className="bg-gradient-to-r from-orange-400 to-orange-500 h-full rounded-full" style={{ width: '65%' }}></div>
-                </div>
-              </div>
-
-              {/* Metric 2 */}
-              <div className="flex flex-col gap-1.5">
-                <div className="flex justify-between items-center text-[13px]">
-                  <span className="text-gray-700 font-medium">헤어라인 (M자) 후퇴도</span>
-                  <span className="text-red-500 font-bold">위험 (32점)</span>
-                </div>
-                <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                  <div className="bg-gradient-to-r from-red-400 to-red-500 h-full rounded-full" style={{ width: '32%' }}></div>
-                </div>
-              </div>
-
-              {/* Metric 3 */}
-              <div className="flex flex-col gap-1.5">
-                <div className="flex justify-between items-center text-[13px]">
-                  <span className="text-gray-700 font-medium">모발 굵기 약화</span>
-                  <span className="text-yellow-500 font-bold">양호 (75점)</span>
-                </div>
-                <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                  <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-full rounded-full" style={{ width: '75%' }}></div>
-                </div>
-              </div>
-
-              {/* Metric 4 */}
-              <div className="flex flex-col gap-1.5">
-                <div className="flex justify-between items-center text-[13px]">
-                  <span className="text-gray-700 font-medium">두피 상태 (각질/홍반)</span>
-                  <span className="text-teal-500 font-bold">우수 (90점)</span>
-                </div>
-                <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                  <div className="bg-gradient-to-r from-teal-400 to-teal-500 h-full rounded-full" style={{ width: '90%' }}></div>
-                </div>
-              </div>
+              ))}
             </div>
 
             {/* Comprehensive Opinion */}
             <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 mb-5">
               <h4 className="font-bold text-[14px] text-gray-900 mb-2">종합 소견</h4>
               <ul className="text-[13px] text-gray-700 leading-relaxed space-y-1.5 list-disc pl-4 marker:text-gray-400">
-                <li>현재 동일 연령대(30대 남성) 평균 대비 <b>M자 헤어라인의 후퇴가 확연하게 관찰</b>됩니다.</li>
-                <li>정수리 부근의 모발 밀도는 정상 범위의 하한선에 위치해 있어 꾸준한 관리가 필요합니다.</li>
-                <li>두피 상태는 매우 깨끗하며 염증 소견은 발견되지 않았습니다.</li>
+                {(result.analysis || [
+                  "현재 동일 연령대(30대 남성) 평균 대비 <b>M자 헤어라인의 후퇴가 확연하게 관찰</b>됩니다.",
+                  "정수리 부근의 모발 밀도는 정상 범위의 하한선에 위치해 있어 꾸준한 관리가 필요합니다.",
+                  "두피 상태는 매우 깨끗하며 염증 소견은 발견되지 않았습니다."
+                ]).map((text, idx) => (
+                  <li key={idx} dangerouslySetInnerHTML={{ __html: text }} />
+                ))}
               </ul>
             </div>
 
@@ -360,9 +332,13 @@ function DiagnosisContent() {
               <AlertCircle className="w-5 h-5 text-teal-600 shrink-0 mt-0.5" />
               <div className="flex flex-col gap-1">
                 <span className="text-[13px] font-bold text-teal-900">맞춤 솔루션 제안</span>
-                <p className="text-[12px] text-teal-800 leading-relaxed">
-                  피나스테리드 계열 약물 복용 상담이 시급하며, M자 라인의 경우 모발이식 상담을 병행하는 것을 강력히 권장합니다.
-                </p>
+                <ul className="text-[12px] text-teal-800 leading-relaxed list-disc pl-4">
+                  {(result.recommendations || [
+                    "피나스테리드 계열 약물 복용 상담이 시급하며, M자 라인의 경우 모발이식 상담을 병행하는 것을 강력히 권장합니다."
+                  ]).map((text, idx) => (
+                    <li key={idx}>{text}</li>
+                  ))}
+                </ul>
               </div>
             </div>
 
