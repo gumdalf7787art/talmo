@@ -23,7 +23,7 @@ export async function onRequestPut(context) {
     const now = new Date().toISOString();
 
     // Check nickname uniqueness
-    if (nickname) {
+    if (nickname !== undefined && nickname !== null) {
       const nickCheckStmt = db.prepare('SELECT id FROM users WHERE nickname = ? AND id != ?').bind(nickname, id);
       const nickCheckResult = await nickCheckStmt.all();
       if (nickCheckResult.results && nickCheckResult.results.length > 0) {
@@ -34,19 +34,43 @@ export async function onRequestPut(context) {
       }
     }
 
+    const updates = [];
+    const params = [];
+
+    if (nickname !== undefined) {
+      updates.push('nickname = ?');
+      params.push(nickname);
+    }
+    if (profile_image !== undefined) {
+      updates.push('profile_image = ?');
+      params.push(profile_image);
+    }
+    if (gender !== undefined) {
+      updates.push('gender = ?');
+      params.push(gender);
+    }
+    if (birth_year !== undefined) {
+      updates.push('birth_year = ?');
+      params.push(birth_year);
+    }
+    if (family_history !== undefined) {
+      updates.push('family_history = ?');
+      params.push(family_history);
+    }
+
+    if (updates.length === 0) {
+      return new Response(JSON.stringify({ success: true, message: 'No changes provided' }), { status: 200 });
+    }
+
+    updates.push('updated_at = ?');
+    params.push(now);
+    params.push(id);
+
     const updateStmt = db.prepare(`
       UPDATE users 
-      SET nickname = ?, profile_image = ?, gender = ?, birth_year = ?, family_history = ?, updated_at = ?
+      SET ${updates.join(', ')}
       WHERE id = ?
-    `).bind(
-      nickname || null, 
-      profile_image || null, 
-      gender || null, 
-      birth_year || null, 
-      family_history || null, 
-      now, 
-      id
-    );
+    `).bind(...params);
 
     const result = await updateStmt.run();
 
