@@ -5,21 +5,51 @@ import { useRouter } from "next/navigation";
 import { Heart, MessageCircle, Share2, Send, ChevronLeft } from "lucide-react";
 import PCSidebar from "@/components/pc/PCSidebar";
 
-export default function PCPostDetail({ post, loading }) {
+export default function PCPostDetail({ post, comments, loading, setComments, setPost }) {
   const router = useRouter();
   const [isLiked, setIsLiked] = useState(false);
   const [comment, setComment] = useState("");
 
-  const comments = [
-    { id: 1, author: "득모기원", time: "50분 전", content: "와 대박이네요! 혹시 비용이 어느 정도 들었는지 쪽지 가능할까요?", isAuthor: false },
-    { id: 2, author: "탈모요정", time: "45분 전", content: "득모기원님 쪽지 드렸습니다~ 참고하세요!", isAuthor: true },
-    { id: 3, author: "머리숱부자", time: "30분 전", content: "생착률 엄청 좋아보이네요. 축하드립니다!!", isAuthor: false },
-  ];
-
-  const handleCommentSubmit = (e) => {
+  const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!comment.trim()) return;
-    setComment("");
+    
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/posts/comment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          postId: post.id,
+          userId: userId,
+          content: comment
+        })
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        setComment("");
+        const newComment = {
+          id: data.comment.id,
+          author: data.comment.author || "익명 사용자",
+          time: "방금 전",
+          content: data.comment.content,
+          isAuthor: false
+        };
+        setComments([...comments, newComment]);
+        setPost(prev => ({ ...prev, comments: prev.comments + 1 }));
+      } else {
+        alert(data.error || "댓글 등록에 실패했습니다.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("댓글 등록 중 오류가 발생했습니다.");
+    }
   };
 
   if (loading) {

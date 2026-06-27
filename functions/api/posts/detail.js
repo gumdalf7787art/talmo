@@ -34,6 +34,7 @@ export async function onRequestGet(context) {
         p.created_at, 
         p.views,
         p.comments_count,
+        p.user_id as post_author_id,
         u.nickname as author
       FROM posts p
       LEFT JOIN users u ON p.user_id = u.id
@@ -49,22 +50,47 @@ export async function onRequestGet(context) {
       });
     }
 
-    // Format time
-    const postDate = new Date(post.created_at);
-    const now = new Date();
-    const diffMs = now - postDate;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMins / 60);
-    const diffDays = Math.floor(diffHours / 24);
+    // Fetch comments
+    const commentsStmt = db.prepare(`
+      SELECT 
+        c.id, 
+        c.content, 
+        c.created_at, 
+        c.user_id,
+        u.nickname as author
+      FROM comments c
+      LEFT JOIN users u ON c.user_id = u.id
+      WHERE c.post_id = ?
+      ORDER BY c.created_at ASC
+    `).bind(id);
 
-    let timeStr = "";
-    if (diffMins < 60) {
-      timeStr = `${diffMins || 1}분 전`;
-    } else if (diffHours < 24) {
-      timeStr = `${diffHours}시간 전`;
-    } else {
-      timeStr = `${diffDays}일 전`;
-    }
+    const commentsResult = await commentsStmt.all();
+    const rawComments = commentsResult.results || [];
+
+    // Format time for comments
+    const formatTime = (dateString) => {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffMs = now - date;
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMins / 60);
+      const diffDays = Math.floor(diffHours / 24);
+      
+      if (diffMins < 60) return `${diffMins || 1}분 전`;
+      if (diffHours < 24) return `${diffHours}시간 전`;
+      return `${diffDays}일 전`;
+    };
+
+    const processedComments = rawComments.map(c => ({
+      id: c.id,
+      author: c.author || "익명 사용자",
+      time: formatTime(c.created_at),
+      content: c.content,
+      isAuthor: c.user_id === post.post_author_id
+    }));
+
+    // Format time for post
+    const timeStr = formatTime(post.created_at);
 
     const processedPost = {
       id: post.id,
@@ -74,11 +100,11 @@ export async function onRequestGet(context) {
       author: post.author || "익명 사용자",
       time: timeStr,
       views: (post.views || 0) + 1, // Include the incremented view
-      comments: post.comments_count || 0,
+      comments: processedComments.length,
       likes: 0 // Mocking likes as we haven't implemented it yet
     };
 
-    return new Response(JSON.stringify({ success: true, post: processedPost }), { 
+    return new Response(JSON.stringify({ success: true, post: processedPost, comments: processedComments }), { 
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
