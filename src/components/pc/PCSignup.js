@@ -14,11 +14,75 @@ export default function PCSignup() {
   const [agreeAll, setAgreeAll] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [agreePrivacy, setAgreePrivacy] = useState(false);
+  const [emailStatus, setEmailStatus] = useState("");
+  const [emailMessage, setEmailMessage] = useState("");
+
+  const validateEmailFormat = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
+  const handleEmailChange = (e) => {
+    const val = e.target.value;
+    setEmail(val);
+    if (!val) {
+      setEmailStatus("");
+      setEmailMessage("");
+    } else if (!validateEmailFormat(val)) {
+      setEmailStatus("invalid");
+      setEmailMessage("올바른 이메일 형식을 입력해주세요.");
+    } else {
+      setEmailStatus("valid");
+      setEmailMessage("이메일 중복확인을 진행해주세요.");
+    }
+  };
+
+  const handleCheckEmail = async () => {
+    if (emailStatus !== "valid" && emailStatus !== "available") return;
+    setEmailStatus("checking");
+    setEmailMessage("중복 확인 중...");
+    try {
+      const res = await fetch(`/api/auth/check-email?email=${encodeURIComponent(email)}`);
+      if (!res.ok) throw new Error("서버 에러");
+      const data = await res.json();
+      if (data.available) {
+        setEmailStatus("available");
+        setEmailMessage("사용 가능한 이메일입니다.");
+      } else {
+        setEmailStatus("duplicate");
+        setEmailMessage("이미 가입된 이메일입니다.");
+      }
+    } catch (error) {
+      setEmailStatus("error");
+      setEmailMessage("중복 확인 중 오류가 발생했습니다.");
+    }
+  };
 
   const handleAgreeAll = () => { const n = !agreeAll; setAgreeAll(n); setAgreeTerms(n); setAgreePrivacy(n); };
-  const isFormValid = email && password && password === passwordConfirm && nickname && agreeTerms && agreePrivacy;
+  const isFormValid = emailStatus === "available" && password && password === passwordConfirm && nickname && agreeTerms && agreePrivacy;
 
-  const handleSignup = (e) => { e.preventDefault(); if (!isFormValid) return; router.push("/login"); };
+  const handleSignup = async (e) => { 
+    e.preventDefault(); 
+    if (!isFormValid) return; 
+    
+    // TODO: Send to API
+    try {
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, nickname })
+      });
+      if (res.ok) {
+        alert("회원가입이 완료되었습니다.");
+        router.push("/login");
+      } else {
+        const data = await res.json();
+        alert(`회원가입 실패: ${data.error}`);
+      }
+    } catch (e) {
+      alert("오류가 발생했습니다.");
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-[70vh] py-8">
@@ -31,12 +95,19 @@ export default function PCSignup() {
         <form onSubmit={handleSignup} className="flex flex-col gap-5">
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-semibold text-gray-800 ml-1">이메일</label>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="example@talmotalk.com" className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all" required />
+            <div className="flex flex-col gap-1.5">
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input type="email" value={email} onChange={handleEmailChange} placeholder="example@talmotalk.com" className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all" required />
+                </div>
+                <button type="button" onClick={handleCheckEmail} disabled={emailStatus !== 'valid'} className={`px-4 py-3.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-colors ${emailStatus === 'valid' ? 'bg-teal-600 text-white hover:bg-teal-700' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}>중복확인</button>
               </div>
-              <button type="button" className="px-4 py-3.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold whitespace-nowrap hover:bg-gray-200 transition-colors">중복확인</button>
+              {emailMessage && (
+                <span className={`text-xs ml-1 ${emailStatus === 'available' ? 'text-teal-600' : emailStatus === 'valid' ? 'text-gray-500' : 'text-red-500'}`}>
+                  {emailMessage}
+                </span>
+              )}
             </div>
           </div>
 
