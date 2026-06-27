@@ -81,8 +81,10 @@ export default function SignupPage() {
     }
   };
 
-  const isFormValid = emailStatus === "available" && password && password === passwordConfirm && nickname && agreeTerms && agreePrivacy;
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+  const isPasswordValid = passwordRegex.test(password);
 
+  const isFormValid = emailStatus === "available" && isPasswordValid && password === passwordConfirm && nickname && agreeTerms && agreePrivacy;
   const handleSignup = async (e) => {
     e.preventDefault();
     if (!isFormValid) return;
@@ -179,6 +181,11 @@ export default function SignupPage() {
                 required
               />
             </div>
+            {password && (
+              <span className={`text-xs ml-1 ${isPasswordValid ? 'text-teal-600' : 'text-red-500'}`}>
+                {isPasswordValid ? '비밀번호 사용 가능합니다.' : '비밀번호 형식에 맞지 않습니다.'}
+              </span>
+            )}
           </div>
 
           {/* Password Confirm */}

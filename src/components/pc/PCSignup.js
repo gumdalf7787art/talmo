@@ -61,7 +61,11 @@ export default function PCSignup() {
   };
 
   const handleAgreeAll = () => { const n = !agreeAll; setAgreeAll(n); setAgreeTerms(n); setAgreePrivacy(n); };
-  const isFormValid = emailStatus === "available" && password && password === passwordConfirm && nickname && agreeTerms && agreePrivacy;
+  
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+  const isPasswordValid = passwordRegex.test(password);
+  
+  const isFormValid = emailStatus === "available" && isPasswordValid && password === passwordConfirm && nickname && agreeTerms && agreePrivacy;
 
   const handleSignup = async (e) => { 
     e.preventDefault(); 
@@ -120,6 +124,11 @@ export default function PCSignup() {
                 <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="영문, 숫자, 특수문자 8자 이상" className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all" required />
               </div>
+              {password && (
+                <span className={`text-xs ml-1 ${isPasswordValid ? 'text-teal-600' : 'text-red-500'}`}>
+                  {isPasswordValid ? '비밀번호 사용 가능합니다.' : '비밀번호 형식에 맞지 않습니다.'}
+                </span>
+              )}
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-gray-800 ml-1">비밀번호 확인</label>
@@ -127,7 +136,11 @@ export default function PCSignup() {
                 <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input type="password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} placeholder="비밀번호 재입력" className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all" required />
               </div>
-              {password && passwordConfirm && password !== passwordConfirm && <span className="text-xs text-red-500 ml-1">비밀번호가 일치하지 않습니다.</span>}
+              {passwordConfirm && (
+                <span className={`text-xs ml-1 ${password === passwordConfirm ? 'text-teal-600' : 'text-red-500'}`}>
+                  {password === passwordConfirm ? '비밀번호가 일치합니다.' : '비밀번호가 일치하지 않습니다.'}
+                </span>
+              )}
             </div>
           </div>
 
