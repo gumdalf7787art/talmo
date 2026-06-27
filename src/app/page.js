@@ -46,7 +46,7 @@ export default function Home() {
   const [infoPosts, setInfoPosts] = useState([]);
 
   useEffect(() => {
-    fetch('/api/posts/list?sort=popular&limit=10')
+    fetch('/api/posts/list?sort=popular&limit=30')
       .then(res => res.json())
       .then(data => setPopularPosts(data.posts || []));
       

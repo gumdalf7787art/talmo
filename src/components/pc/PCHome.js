@@ -18,7 +18,7 @@ export default function PCHome() {
     const hasDiagnosed = localStorage.getItem("hasDiagnosed");
     setBannerType(hasDiagnosed ? "community" : "diagnosis");
 
-    fetch('/api/posts/list?sort=popular&limit=10')
+    fetch('/api/posts/list?sort=popular&limit=30')
       .then(res => res.json())
       .then(data => setPopularPosts(data.posts || []));
       
