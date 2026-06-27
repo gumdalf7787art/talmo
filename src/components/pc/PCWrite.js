@@ -1,8 +1,8 @@
 import { useState, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { X, Image as ImageIcon } from "lucide-react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 
 export default function PCWrite() {
   const router = useRouter();
