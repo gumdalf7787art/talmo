@@ -3,9 +3,14 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Image as ImageIcon, X } from "lucide-react";
+import useMediaQuery from "@/hooks/useMediaQuery";
+import dynamic from "next/dynamic";
+
+const PCWrite = dynamic(() => import("@/components/pc/PCWrite"), { ssr: false });
 
 export default function WritePage() {
   const router = useRouter();
+  const isPC = useMediaQuery("(min-width: 1024px)");
   const [category, setCategory] = useState("");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -42,6 +47,8 @@ export default function WritePage() {
   };
 
   const isFormValid = category && title.trim() && content.trim();
+
+  if (isPC) return <PCWrite />;
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
