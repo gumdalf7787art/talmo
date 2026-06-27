@@ -12,11 +12,30 @@ const PCWrite = dynamic(() => import("@/components/pc/PCWrite"), { ssr: false })
 export default function WritePage() {
   const router = useRouter();
   const isPC = useMediaQuery("(min-width: 1024px)");
+  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+  const editId = searchParams ? searchParams.get('id') : null;
+  
   const [category, setCategory] = useState("");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [isLoading, setIsLoading] = useState(editId ? true : false);
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    if (editId) {
+      fetch(`/api/posts/detail?id=${editId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.post) {
+            setCategory(data.post.category);
+            setTitle(data.post.title);
+            setContent(data.post.content);
+          }
+        })
+        .finally(() => setIsLoading(false));
+    }
+  }, [editId]);
 
   const categories = ["탈모수다", "리얼후기", "탈모정보"];
 
@@ -56,21 +75,32 @@ export default function WritePage() {
       }
       const user = JSON.parse(savedUser);
 
-      const res = await fetch('/api/posts/create', {
+      const endpoint = editId ? '/api/posts/update' : '/api/posts/create';
+      const bodyData = {
+        userId: user.id,
+        category,
+        title,
+        content
+      };
+      
+      if (editId) {
+        bodyData.postId = editId;
+      }
+
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: user.id,
-          category,
-          title,
-          content
-        })
+        body: JSON.stringify(bodyData)
       });
 
       const data = await res.json();
       if (res.ok) {
-        alert("게시글이 성공적으로 등록되었습니다.");
-        router.push("/community");
+        alert(editId ? "게시글이 성공적으로 수정되었습니다." : "게시글이 성공적으로 등록되었습니다.");
+        if (editId) {
+          router.push(`/community/detail?id=${editId}`);
+        } else {
+          router.push("/community");
+        }
       } else {
         alert(data.error || "게시글 등록에 실패했습니다.");
       }
@@ -79,9 +109,9 @@ export default function WritePage() {
     }
   };
 
-  const isFormValid = category && title.trim() && content.trim();
+  const isFormValid = category && title.trim() && content.trim() && !isLoading;
 
-  if (isPC) return <PCWrite />;
+  if (isPC) return <PCWrite editId={editId} />;
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -90,7 +120,7 @@ export default function WritePage() {
         <button onClick={() => router.back()} className="p-1 -ml-1 text-gray-700">
           <X className="w-6 h-6" />
         </button>
-        <h1 className="font-bold text-lg text-gray-900">글쓰기</h1>
+        <h1 className="font-bold text-lg text-gray-900">{editId ? '글 수정' : '글쓰기'}</h1>
         <button 
           onClick={handlePost}
           disabled={!isFormValid}

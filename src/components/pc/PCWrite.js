@@ -1,16 +1,32 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { X, Image as ImageIcon } from "lucide-react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import { compressImage } from "@/lib/imageUtils";
 
-export default function PCWrite() {
+export default function PCWrite({ editId }) {
   const router = useRouter();
   const [category, setCategory] = useState("");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [isLoading, setIsLoading] = useState(editId ? true : false);
   const quillRef = useRef(null);
+
+  useEffect(() => {
+    if (editId) {
+      fetch(`/api/posts/detail?id=${editId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.post) {
+            setCategory(data.post.category);
+            setTitle(data.post.title);
+            setContent(data.post.content);
+          }
+        })
+        .finally(() => setIsLoading(false));
+    }
+  }, [editId]);
 
   const categories = ["탈모수다", "리얼후기", "탈모정보"];
 
@@ -88,21 +104,32 @@ export default function PCWrite() {
       }
       const user = JSON.parse(savedUser);
 
-      const res = await fetch('/api/posts/create', {
+      const endpoint = editId ? '/api/posts/update' : '/api/posts/create';
+      const bodyData = {
+        userId: user.id,
+        category,
+        title,
+        content
+      };
+      
+      if (editId) {
+        bodyData.postId = editId;
+      }
+
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: user.id,
-          category,
-          title,
-          content
-        })
+        body: JSON.stringify(bodyData)
       });
 
       const data = await res.json();
       if (res.ok) {
-        alert("게시글이 성공적으로 등록되었습니다.");
-        router.push("/community");
+        alert(editId ? "게시글이 성공적으로 수정되었습니다." : "게시글이 성공적으로 등록되었습니다.");
+        if (editId) {
+          router.push(`/community/detail?id=${editId}`);
+        } else {
+          router.push("/community");
+        }
       } else {
         alert(data.error || "게시글 등록에 실패했습니다.");
       }
@@ -111,7 +138,7 @@ export default function PCWrite() {
     }
   };
 
-  const isFormValid = category && title.trim() && content.trim() && content !== "<p><br></p>";
+  const isFormValid = category && title.trim() && content.trim() && content !== "<p><br></p>" && !isLoading;
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -122,7 +149,7 @@ export default function PCWrite() {
             <button onClick={() => router.back()} className="p-2 -ml-2 text-gray-500 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-100">
               <X className="w-6 h-6" />
             </button>
-            <span className="font-bold text-xl text-gray-900">새 글 작성</span>
+            <span className="font-bold text-xl text-gray-900">{editId ? '글 수정' : '새 글 작성'}</span>
           </div>
           
           <div className="flex items-center gap-3">

@@ -98,6 +98,7 @@ export async function onRequestGet(context) {
       category: post.category,
       content: post.content, // HTML content
       author: post.author || "익명 사용자",
+      authorId: post.post_author_id,
       time: timeStr,
       views: (post.views || 0) + 1, // Include the incremented view
       comments: processedComments.length,

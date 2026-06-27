@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Heart, MessageCircle, Share2, Send, ChevronLeft } from "lucide-react";
 import PCSidebar from "@/components/pc/PCSidebar";
 
-export default function PCPostDetail({ post, comments, loading, setComments, setPost }) {
+export default function PCPostDetail({ post, comments, loading, setComments, setPost, loggedInUserId, handleEdit, handleDelete }) {
   const router = useRouter();
   const [isLiked, setIsLiked] = useState(false);
   const [comment, setComment] = useState("");
@@ -94,12 +94,24 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
           <div className="px-8 pt-8 pb-6 border-b border-gray-100">
             <span className="inline-block px-3 py-1 mb-4 rounded-lg bg-teal-50 text-teal-600 text-sm font-bold">{post.category}</span>
             <h1 className="text-2xl font-bold text-gray-900 leading-snug mb-5">{post.title}</h1>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold">{post.author.charAt(0)}</div>
-              <div>
-                <span className="text-[15px] font-semibold text-gray-900">{post.author}</span>
-                <span className="text-[13px] text-gray-400 ml-3">{post.time} · 조회 {post.views}</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold">{post.author.charAt(0)}</div>
+                <div>
+                  <span className="text-[15px] font-semibold text-gray-900">{post.author}</span>
+                  <span className="text-[13px] text-gray-400 ml-3">{post.time} · 조회 {post.views}</span>
+                </div>
               </div>
+              {loggedInUserId && loggedInUserId === post.authorId && (
+                <div className="flex gap-2">
+                  <button onClick={handleEdit} className="text-sm font-medium text-gray-500 hover:text-gray-900 px-3 py-1.5 rounded-md hover:bg-gray-100 transition-colors">
+                    수정
+                  </button>
+                  <button onClick={handleDelete} className="text-sm font-medium text-red-500 hover:text-red-600 px-3 py-1.5 rounded-md hover:bg-red-50 transition-colors">
+                    삭제
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 

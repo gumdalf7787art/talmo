@@ -16,8 +16,16 @@ function PostDetailContent() {
   const [loading, setLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
   const [comment, setComment] = useState("");
-
   const [comments, setComments] = useState([]);
+  const [loggedInUserId, setLoggedInUserId] = useState(null);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      setLoggedInUserId(user.id);
+    }
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -81,7 +89,32 @@ function PostDetailContent() {
     }
   };
 
-  if (isPC) return <PCPostDetail post={post} comments={comments} loading={loading} setComments={setComments} setPost={setPost} />;
+  const handleEdit = () => {
+    router.push(`/write?id=${id}`);
+  };
+
+  const handleDelete = async () => {
+    if (!confirm("정말 이 게시글을 삭제하시겠습니까?")) return;
+
+    try {
+      const res = await fetch('/api/posts/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postId: id, userId: loggedInUserId })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        alert("게시글이 삭제되었습니다.");
+        router.push("/community");
+      } else {
+        alert(data.error || "게시글 삭제에 실패했습니다.");
+      }
+    } catch (err) {
+      alert("오류가 발생했습니다.");
+    }
+  };
+
+  if (isPC) return <PCPostDetail post={post} comments={comments} loading={loading} setComments={setComments} setPost={setPost} loggedInUserId={loggedInUserId} handleEdit={handleEdit} handleDelete={handleDelete} />;
 
   if (loading) {
     return (
@@ -108,9 +141,17 @@ function PostDetailContent() {
           <ChevronLeft className="w-6 h-6" />
         </button>
         <h1 className="font-bold text-base text-gray-900">게시글</h1>
-        <button className="p-1 -mr-1 text-gray-700">
-          <MoreVertical className="w-5 h-5" />
-        </button>
+        <div className="flex items-center gap-1 -mr-1">
+          {loggedInUserId && loggedInUserId === post.authorId && (
+            <>
+              <button onClick={handleEdit} className="text-xs font-medium text-gray-500 hover:text-gray-900 px-2 py-1">수정</button>
+              <button onClick={handleDelete} className="text-xs font-medium text-red-500 hover:text-red-600 px-2 py-1">삭제</button>
+            </>
+          )}
+          <button className="p-1 text-gray-700">
+            <MoreVertical className="w-5 h-5" />
+          </button>
+        </div>
       </header>
 
       {/* Main Content */}
