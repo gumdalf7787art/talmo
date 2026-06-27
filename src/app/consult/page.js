@@ -112,7 +112,7 @@ export default function ConsultPage() {
                 </div>
               </div>
               
-              <Link href={`/consult/${clinic.id}`} className="flex items-center gap-1.5 bg-teal-600 hover:bg-teal-700 text-white px-3.5 py-1.5 rounded-lg transition-colors shadow-sm active:bg-teal-800">
+              <Link href={`/consult/detail?id=${clinic.id}`} className="flex items-center gap-1.5 bg-teal-600 hover:bg-teal-700 text-white px-3.5 py-1.5 rounded-lg transition-colors shadow-sm active:bg-teal-800">
                 <MessageCircle className="w-4 h-4" />
                 <span className="text-[13px] font-bold">상담하기</span>
                 <ChevronRight className="w-3 h-3 ml-0.5 opacity-80" />

@@ -237,7 +237,7 @@ export default function PCHome() {
           </div>
           <div className="grid grid-cols-4 gap-4">
             {doctors.slice(0, 4).map((doc) => (
-              <Link key={doc.id} href={`/consult/${doc.id}`} className="flex flex-col gap-3 group p-3 rounded-xl border border-gray-100 hover:border-teal-200 hover:shadow-md transition-all">
+              <Link key={doc.id} href={`/consult/detail?id=${doc.id}`} className="flex flex-col gap-3 group p-3 rounded-xl border border-gray-100 hover:border-teal-200 hover:shadow-md transition-all">
                 <div className="w-full aspect-square rounded-xl overflow-hidden border border-gray-100 flex items-center justify-center bg-gray-50">
                   {doc.image_url ? (
                     <img src={doc.image_url} alt={doc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />

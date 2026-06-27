@@ -112,7 +112,7 @@ export default function PCConsult({ clinicId, clinicName }) {
             return (
               <Link 
                 key={room.id} 
-                href={`/consult/${room.clinicId}`} 
+                href={`/consult/detail?id=${room.clinicId}`} 
                 className={`flex items-center gap-3 px-4 py-4 border-b border-gray-50 transition-colors ${
                   isActive ? 'bg-teal-50/50' : 'hover:bg-gray-50'
                 }`}

@@ -397,7 +397,7 @@ export default function Home() {
             {[0, 1].map((pageIndex) => (
               <div key={`doctor-page-${pageIndex}`} className="w-full shrink-0 flex gap-2">
                 {doctors.slice(pageIndex * 2, pageIndex * 2 + 2).map((doc) => (
-                  <Link key={`doc-${doc.id}`} href={`/consult/${doc.id}`} className="flex-1 flex flex-col gap-2 group">
+                  <Link key={`doc-${doc.id}`} href={`/consult/detail?id=${doc.id}`} className="flex-1 flex flex-col gap-2 group">
                     <div className="w-full aspect-square rounded-xl overflow-hidden relative shadow-sm border border-gray-100 flex items-center justify-center bg-gray-50">
                       {doc.image_url ? (
                         <img src={doc.image_url} alt={doc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />

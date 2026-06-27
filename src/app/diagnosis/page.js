@@ -396,7 +396,7 @@ function DiagnosisContent() {
             
             <div className="flex flex-col gap-3">
               {recommendedClinics.map(clinic => (
-                <Link key={clinic.id} href={`/consult/${clinic.id}`} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 block transition-transform active:scale-[0.98]">
+                <Link key={clinic.id} href={`/consult/detail?id=${clinic.id}`} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 block transition-transform active:scale-[0.98]">
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex flex-col">
                       <div className="flex items-center gap-1.5 mb-1">

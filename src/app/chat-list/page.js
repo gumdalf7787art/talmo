@@ -83,7 +83,7 @@ export default function ChatListPage() {
             {chatRooms.map((room) => (
               <Link 
                 key={room.id} 
-                href={`/consult/${room.clinicId}`} 
+                href={`/consult/detail?id=${room.clinicId}`} 
                 className="flex items-center gap-4 px-5 py-4 border-b border-gray-100 hover:bg-gray-50 transition-colors active:bg-gray-100"
               >
                 {/* Profile Image */}

@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, MoreVertical, Plus, Send, Image as ImageIcon, Camera } from "lucide-react";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import PCConsult from "@/components/pc/PCConsult";
 
-export default function ChatPage() {
+function ChatContent() {
   const router = useRouter();
-  const params = useParams();
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
   const [message, setMessage] = useState("");
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   const isPC = useMediaQuery("(min-width: 1024px)");
@@ -21,9 +22,9 @@ export default function ChatPage() {
   }, []);
 
   useEffect(() => {
-    if (!user || !params.id) return;
+    if (!user || !id) return;
     const fetchMessages = () => {
-      fetch(`/api/chat/messages?userId=${user.id}&clinicId=${params.id}`)
+      fetch(`/api/chat/messages?userId=${user.id}&clinicId=${id}`)
         .then(res => res.json())
         .then(data => {
           if (data.success) setMessages(data.messages);
@@ -32,10 +33,10 @@ export default function ChatPage() {
     fetchMessages();
     const interval = setInterval(fetchMessages, 5000);
     return () => clearInterval(interval);
-  }, [user, params.id]);
+  }, [user, id]);
 
-  // Mock clinic data (In a real app, fetch based on params.id)
-  const clinicName = params.id === "2" ? "블랙라인 스튜디오" : "모프로 탈모의원";
+  // Mock clinic data (In a real app, fetch based on id)
+  const clinicName = id === "2" ? "블랙라인 스튜디오" : "모프로 탈모의원";
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -57,7 +58,7 @@ export default function ChatPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: user.id,
-          clinicId: params.id,
+          clinicId: id,
           senderId: user.id,
           content: textToSend
         })
@@ -68,7 +69,7 @@ export default function ChatPage() {
   };
 
   if (isPC) {
-    return <PCConsult clinicId={params.id} clinicName={clinicName} />;
+    return <PCConsult clinicId={id} clinicName={clinicName} />;
   }
 
   return (
@@ -173,5 +174,13 @@ export default function ChatPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ChatContent />
+    </Suspense>
   );
 }

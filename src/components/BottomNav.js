@@ -9,7 +9,7 @@ export default function BottomNav() {
 
   const hideRoutes = ["/login", "/signup", "/write", "/find-id", "/find-password", "/terms", "/privacy"];
   const isPostDetail = pathname?.startsWith("/community/") && pathname !== "/community";
-  const isChatRoom = pathname?.startsWith("/consult/") && pathname !== "/consult";
+  const isChatRoom = pathname === "/consult/detail";
   const isChatList = pathname === "/chat-list";
   const isHistory = pathname === "/diagnosis-history";
   const isMyPosts = pathname === "/my-posts" || pathname === "/my-bookmarks";
