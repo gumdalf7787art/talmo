@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Search, ArrowLeft, MessageCircle, Star, MapPin } from "lucide-react";
 
-export default function SearchPage() {
+function SearchContent() {
   const router = useRouter();
-  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
-  const initialQuery = searchParams ? searchParams.get('q') : "";
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get('q') || "";
 
-  const [query, setQuery] = useState(initialQuery || "");
+  const [query, setQuery] = useState(initialQuery);
   const [isSearched, setIsSearched] = useState(!!initialQuery);
   const [communityResults, setCommunityResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -163,5 +163,13 @@ export default function SearchPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center text-sm text-gray-500">로딩 중...</div>}>
+      <SearchContent />
+    </Suspense>
   );
 }

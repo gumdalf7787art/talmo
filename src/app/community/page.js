@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { MessageCircle, Search, Edit3, Bell, ChevronUp, ChevronDown } from "lucide-react";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import PCCommunity from "@/components/pc/PCCommunity";
 
-export default function CommunityPage() {
+function CommunityContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const isPC = useMediaQuery("(min-width: 1024px)");
-  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
-  const initialTab = searchParams ? searchParams.get('category') : "전체";
+  const initialTab = searchParams.get('category') || "전체";
   
   const [activeTab, setActiveTab] = useState(initialTab || "전체");
   const [isNoticeOpen, setIsNoticeOpen] = useState(true);
@@ -161,5 +161,13 @@ export default function CommunityPage() {
         <span className="font-bold text-[14px]">글쓰기</span>
       </Link>
     </div>
+  );
+}
+
+export default function CommunityPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center text-sm text-gray-500">로딩 중...</div>}>
+      <CommunityContent />
+    </Suspense>
   );
 }
