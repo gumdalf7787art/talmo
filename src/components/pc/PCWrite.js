@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { X, Image as ImageIcon } from "lucide-react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
+import { compressImage } from "@/lib/imageUtils";
 
 export default function PCWrite() {
   const router = useRouter();
@@ -23,15 +24,16 @@ export default function PCWrite() {
     input.onchange = async () => {
       const file = input.files[0];
       if (file) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const base64Url = reader.result;
+        try {
+          const compressedBase64 = await compressImage(file, 800, 0.6);
           const quill = quillRef.current.getEditor();
           const range = quill.getSelection(true);
-          quill.insertEmbed(range.index, "image", base64Url);
+          quill.insertEmbed(range.index, "image", compressedBase64);
           quill.setSelection(range.index + 1);
-        };
-        reader.readAsDataURL(file);
+        } catch (err) {
+          console.error("Image compression failed:", err);
+          alert("이미지 처리 중 오류가 발생했습니다.");
+        }
       }
     };
   };

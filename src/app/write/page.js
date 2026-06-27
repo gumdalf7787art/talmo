@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft, Image as ImageIcon, X } from "lucide-react";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import dynamic from "next/dynamic";
+import { compressImage } from "@/lib/imageUtils";
 
 const PCWrite = dynamic(() => import("@/components/pc/PCWrite"), { ssr: false });
 
@@ -28,16 +29,16 @@ export default function WritePage() {
       editorRef.current.focus();
     }
 
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64Url = reader.result;
+    Array.from(files).forEach(async (file) => {
+      try {
+        const compressedBase64 = await compressImage(file, 800, 0.6);
         // Use negative margin to break out of the px-5 container and be full-width
-        const imgHtml = `<img src="${base64Url}" style="width: calc(100% + 40px); max-width: none; margin-left: -20px; margin-top: 16px; margin-bottom: 16px; display: block;" alt="uploaded" /><p><br></p>`;
+        const imgHtml = `<img src="${compressedBase64}" style="width: calc(100% + 40px); max-width: none; margin-left: -20px; margin-top: 16px; margin-bottom: 16px; display: block;" alt="uploaded" /><p><br></p>`;
         document.execCommand("insertHTML", false, imgHtml);
         setContent(editorRef.current.innerHTML);
-      };
-      reader.readAsDataURL(file);
+      } catch (err) {
+        console.error("Image compression failed:", err);
+      }
     });
 
     e.target.value = ''; // Reset input
