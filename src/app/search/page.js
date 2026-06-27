@@ -4,10 +4,13 @@ import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search, ArrowLeft, MessageCircle, Star, MapPin } from "lucide-react";
+import useMediaQuery from "@/hooks/useMediaQuery";
+import PCSearch from "@/components/pc/PCSearch";
 
 function SearchContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const isPC = useMediaQuery("(min-width: 1024px)");
   const initialQuery = searchParams.get('q') || "";
 
   const [query, setQuery] = useState(initialQuery);
@@ -42,6 +45,20 @@ function SearchContent() {
     { id: 1, name: "강남 득모의원", address: "서울 강남구 역삼동", tags: ["모발이식", "비대면진료"], rating: 4.8, reviews: 124 },
     { id: 3, name: "여의도 풍성한의원", address: "서울 영등포구 여의도동", tags: ["모발이식", "여성탈모"], rating: 4.9, reviews: 210 },
   ];
+
+  const categoryColor = (cat) => {
+    switch(cat) {
+      case '탈모수다': return 'text-orange-500';
+      case '리얼후기': return 'text-teal-500';
+      case '탈모정보': return 'text-blue-500';
+      case '닥터칼럼': return 'text-indigo-500';
+      default: return 'text-gray-500';
+    }
+  };
+
+  if (isPC) {
+    return <PCSearch initialQuery={initialQuery} communityResults={communityResults} hospitalResults={hospitalResults} isLoading={isLoading} />;
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 pb-20">
@@ -97,24 +114,38 @@ function SearchContent() {
                 </h3>
                 <button className="text-xs text-gray-500 hover:text-gray-900">더보기</button>
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col bg-white border-y border-gray-100">
                 {isLoading ? (
                   <div className="py-10 text-center text-sm text-gray-500">검색 중입니다...</div>
                 ) : communityResults.length === 0 ? (
                   <div className="py-10 text-center text-sm text-gray-500">검색 결과가 없습니다.</div>
                 ) : (
                   communityResults.map(post => (
-                  <Link key={post.id} href={`/community/detail?id=${post.id}`} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex flex-col gap-2 hover:border-teal-100">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded-sm">
-                        {post.category}
-                      </span>
-                      <span className="text-xs text-gray-400">{post.time}</span>
+                  <Link key={post.id} href={`/community/detail?id=${post.id}`} className="py-3 px-4 border-b border-gray-100 active:bg-gray-50 transition-colors flex items-start gap-2 last:border-b-0">
+                    <span className={`text-[11px] font-medium shrink-0 pt-[2px] w-[52px] ${categoryColor(post.category)}`}>
+                      {post.category}
+                    </span>
+                    
+                    <div className="flex flex-col flex-1 min-w-0 pr-1">
+                      <h3 className="font-bold text-gray-900 text-[14px] leading-snug line-clamp-2 mb-1.5">
+                        {post.title}
+                        <span className="text-teal-600 font-bold ml-1.5 text-[13px]">[{post.comments || 0}]</span>
+                      </h3>
+                      <div className="flex items-center mt-auto">
+                        <div className="flex items-center gap-2 text-[12px] text-gray-400">
+                          <span>{post.author}</span>
+                          <span className="text-gray-300">|</span>
+                          <span>{post.time || '방금 전'}</span>
+                        </div>
+                      </div>
                     </div>
-                    <h4 className="font-medium text-gray-900 text-sm">{post.title}</h4>
-                    <div className="flex items-center gap-1 text-xs text-gray-400 mt-1">
-                      <MessageCircle className="w-3.5 h-3.5" /> 댓글 {post.comments}
-                    </div>
+
+                    {/* Thumbnail */}
+                    {post.imageUrl && (
+                      <div className="w-[52px] h-[52px] shrink-0 rounded-lg overflow-hidden bg-gray-100 border border-gray-100 ml-1">
+                        <img src={post.imageUrl} alt="thumbnail" className="w-full h-full object-cover" />
+                      </div>
+                    )}
                   </Link>
                   ))
                 )}
