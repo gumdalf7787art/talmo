@@ -212,6 +212,11 @@ export default function PCMyPage() {
             <button onClick={handleEditNickname} className="flex-1 py-2.5 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-colors">닉네임 변경</button>
             <button onClick={handleChangePassword} className="flex-1 py-2.5 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-colors">비밀번호 변경</button>
           </div>
+          {user?.role === 'admin' && (
+            <Link href="/admin/dashboard" className="mt-2 flex w-full items-center justify-center py-2.5 bg-gray-900 text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors">
+              마스터 시스템 접속
+            </Link>
+          )}
         </div>
 
         {/* AI Profile */}

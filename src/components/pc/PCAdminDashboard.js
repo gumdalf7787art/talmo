@@ -128,7 +128,7 @@ export default function PCAdminDashboard({ user }) {
               <div className="grid grid-cols-3 gap-4">
                 {/* Traffic Stats */}
                 <div className="bg-teal-50 p-6 rounded-xl border border-teal-100">
-                  <p className="text-teal-700 font-medium text-sm mb-1">1일 접속자수 (DAU)</p>
+                  <p className="text-teal-700 font-medium text-sm mb-1">오늘 누적 방문자수 (DAU)</p>
                   <p className="text-3xl font-bold text-teal-900">{stats.dau}명</p>
                 </div>
                 <div className="bg-teal-50 p-6 rounded-xl border border-teal-100">
@@ -162,7 +162,7 @@ export default function PCAdminDashboard({ user }) {
 
         {activeTab === "users" && (
           <div className="flex flex-col gap-6">
-            <h3 className="text-xl font-bold text-gray-900">회원 및 권한 관리</h3>
+            <h3 className="text-xl font-bold text-gray-900">회원 및 권한 관리 (총 {users.length}명)</h3>
             <div className="overflow-x-auto rounded-lg border border-gray-200">
               <table className="w-full text-sm text-left">
                 <thead className="bg-gray-50 text-gray-600 border-b border-gray-200">

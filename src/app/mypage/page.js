@@ -233,6 +233,11 @@ export default function MyPage() {
             <p className="text-sm text-gray-500">{profile.email}</p>
           </div>
         </div>
+        {user?.role === 'admin' && (
+          <Link href="/admin/dashboard" className="mt-4 flex w-full items-center justify-center py-2.5 bg-gray-900 text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors">
+            마스터 시스템 접속
+          </Link>
+        )}
       </div>
 
       {/* AI Health Profile Section */}

@@ -7,12 +7,12 @@ export async function onRequestGet(context) {
       return new Response(JSON.stringify({ error: 'DB 연결 설정이 누락되었습니다.' }), { status: 500 });
     }
 
-    // Daily active visitors
-    const dauStmt = db.prepare(`SELECT COUNT(DISTINCT ip_address) as count FROM site_visits WHERE visited_at >= datetime('now', '-1 day')`);
+    // Daily active visitors (Today)
+    const dauStmt = db.prepare(`SELECT COUNT(DISTINCT ip_address) as count FROM site_visits WHERE date(visited_at) = date('now')`);
     // Weekly active visitors
-    const wauStmt = db.prepare(`SELECT COUNT(DISTINCT ip_address) as count FROM site_visits WHERE visited_at >= datetime('now', '-7 days')`);
+    const wauStmt = db.prepare(`SELECT COUNT(DISTINCT ip_address) as count FROM site_visits WHERE visited_at >= date('now', '-7 days')`);
     // Monthly active visitors
-    const mauStmt = db.prepare(`SELECT COUNT(DISTINCT ip_address) as count FROM site_visits WHERE visited_at >= datetime('now', '-30 days')`);
+    const mauStmt = db.prepare(`SELECT COUNT(DISTINCT ip_address) as count FROM site_visits WHERE visited_at >= date('now', '-30 days')`);
     
     const totalUsersStmt = db.prepare(`SELECT COUNT(*) as count FROM users`);
     const totalPostsStmt = db.prepare(`SELECT COUNT(*) as count FROM posts`);
