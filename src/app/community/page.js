@@ -8,7 +8,10 @@ import PCCommunity from "@/components/pc/PCCommunity";
 
 export default function CommunityPage() {
   const isPC = useMediaQuery("(min-width: 1024px)");
-  const [activeTab, setActiveTab] = useState("전체");
+  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+  const initialTab = searchParams ? searchParams.get('category') : "전체";
+  
+  const [activeTab, setActiveTab] = useState(initialTab || "전체");
   const [isNoticeOpen, setIsNoticeOpen] = useState(true);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +39,7 @@ export default function CommunityPage() {
     { id: 102, title: "탈모톡 병원 할인 및 브로커 신고 포상금 안내", date: "06.20" }
   ];
 
-  if (isPC) return <PCCommunity />;
+  if (isPC) return <PCCommunity initialTab={initialTab || "전체"} />;
 
   return (
     <div className="flex flex-col h-full bg-gray-50">

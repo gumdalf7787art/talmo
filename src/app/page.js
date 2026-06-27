@@ -249,7 +249,7 @@ export default function Home() {
       <section className="flex flex-col gap-1 mt-2.5">
         <div className="flex items-center justify-between">
           <h3 className="font-bold text-base text-gray-900">탈모 정보</h3>
-          <Link href="/community?category=정보" className="text-xs font-medium text-teal-600 flex items-center">
+          <Link href="/community?category=탈모정보" className="text-xs font-medium text-teal-600 flex items-center">
             더보기 <ChevronRight className="w-3 h-3" />
           </Link>
         </div>

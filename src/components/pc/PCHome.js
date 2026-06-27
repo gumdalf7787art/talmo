@@ -170,7 +170,7 @@ export default function PCHome() {
           <section className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-base text-gray-900">탈모 정보</h3>
-              <Link href="/community?category=정보" className="text-xs font-medium text-teal-600 flex items-center">더보기 <ChevronRight className="w-3 h-3" /></Link>
+              <Link href="/community?category=탈모정보" className="text-xs font-medium text-teal-600 flex items-center">더보기 <ChevronRight className="w-3 h-3" /></Link>
             </div>
             <div className="grid grid-cols-2 gap-3">
               {infoPhotos.map((photo) => (

@@ -5,8 +5,8 @@ import Link from "next/link";
 import { MessageCircle, Search, Edit3, Bell, ChevronUp, ChevronDown } from "lucide-react";
 import PCSidebar from "@/components/pc/PCSidebar";
 
-export default function PCCommunity() {
-  const [activeTab, setActiveTab] = useState("전체");
+export default function PCCommunity({ initialTab }) {
+  const [activeTab, setActiveTab] = useState(initialTab || "전체");
   const [isNoticeOpen, setIsNoticeOpen] = useState(true);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
