@@ -292,7 +292,7 @@ export default function Home() {
               <Link key={`info-post-${post.id}`} href={`/community/detail?id=${post.id}`} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0 group">
                 <div className="flex items-center gap-2 overflow-hidden">
                   <span className="w-1 h-1 rounded-full bg-teal-500 shrink-0"></span>
-                  <h4 className="font-medium text-gray-800 text-[13px] leading-tight line-clamp-1 group-hover:text-teal-600 transition-colors">{post.title}</h4>
+                  <h4 className="font-medium text-gray-800 text-[13px] leading-tight line-clamp-2 group-hover:text-teal-600 transition-colors">{post.title}</h4>
                 </div>
                 <div className="flex items-center gap-1 text-gray-400 text-xs shrink-0 ml-4">
                   <MessageCircle className="w-3.5 h-3.5" />

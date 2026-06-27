@@ -153,7 +153,7 @@ export default function PCHome() {
                       <span className="text-gray-400 text-[10px]">사진 없음</span>
                     )}
                   </div>
-                  <h4 className="font-medium text-gray-800 text-[12px] line-clamp-1">{photo.title}</h4>
+                  <h4 className="font-medium text-gray-800 text-[12px] leading-snug line-clamp-2 mt-0.5">{photo.title}</h4>
                 </Link>
               ))}
             </div>
