@@ -115,7 +115,7 @@ export default function PCHome() {
           {/* 리얼후기 */}
           <section className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-base text-gray-900">탈모 리얼후기</h3>
+              <h3 className="font-bold text-base"><span className="text-gray-900">관리 및 이식</span> <span className="text-teal-600">리얼후기</span></h3>
               <Link href="/reviews" className="text-xs font-medium text-teal-600 flex items-center">더보기 <ChevronRight className="w-3 h-3" /></Link>
             </div>
             <div className="grid grid-cols-2 gap-3">

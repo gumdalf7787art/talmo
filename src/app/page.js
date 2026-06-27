@@ -198,7 +198,7 @@ export default function Home() {
       {/* Hair Loss Real Reviews */}
       <section className="flex flex-col gap-1 mt-4">
         <div className="flex items-center justify-between">
-          <h3 className="font-bold text-base text-gray-900">탈모 리얼후기</h3>
+          <h3 className="font-bold text-base"><span className="text-gray-900">관리 및 이식</span> <span className="text-teal-600">리얼후기</span></h3>
           <Link href="/community?category=리얼후기" className="text-xs font-medium text-teal-600 flex items-center">
             더보기 <ChevronRight className="w-3 h-3" />
           </Link>
