@@ -35,7 +35,7 @@ function PostDetailContent() {
     if (isInputFocused) {
       setTimeout(() => {
         if (commentsEndRef.current) {
-          commentsEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+          commentsEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       }, 300); // Wait for keyboard animation
     }
@@ -219,7 +219,7 @@ function PostDetailContent() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 pb-[110px]">
+      <main className="flex-1 pb-[70px]">
         {/* Post Header */}
         <div className="px-5 pt-6 pb-4 border-b border-gray-100">
           <span className="inline-block px-2.5 py-1 mb-3 rounded-md bg-teal-50 text-teal-600 text-xs font-bold">
