@@ -78,7 +78,16 @@ export default function LoginPage() {
           >
             카카오톡으로 시작하기
           </button>
-          <button className="flex items-center justify-center w-full py-3.5 rounded-lg bg-[#03C75A] text-white font-semibold text-[15px] transition-opacity active:opacity-80">
+          <button 
+            type="button" 
+            onClick={() => {
+              const clientId = 'OWvIAOQuyH9DRnz0L4HZ';
+              const redirectUri = `${window.location.origin}/api/auth/naver/callback`;
+              const state = Math.random().toString(36).substring(3, 14);
+              window.location.href = `https://nid.naver.com/oauth2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&state=${state}`;
+            }}
+            className="flex items-center justify-center w-full py-3.5 rounded-lg bg-[#03C75A] text-white font-semibold text-[15px] transition-opacity active:opacity-80"
+          >
             네이버로 시작하기
           </button>
           <button className="flex items-center justify-center w-full py-3.5 rounded-lg bg-white border border-gray-300 text-gray-700 font-semibold text-[15px] transition-colors active:bg-gray-50">
