@@ -28,18 +28,8 @@ export default function PCHeader() {
       <div className="max-w-[1080px] mx-auto flex items-center justify-between px-6 h-16">
         {/* Logo */}
         <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-2.5 shrink-0">
-            <div className="w-9 h-9 rounded-lg overflow-hidden bg-white shadow-sm border border-gray-200 shrink-0">
-              <img src="/logo.jpg" alt="탈모톡 로고" className="w-full h-full object-cover" />
-            </div>
-            <div className="flex flex-col justify-center">
-              <span className="font-bold text-xl tracking-tight text-gray-900 leading-none">
-                탈모톡<span className="text-teal-500">.</span>
-              </span>
-              <span className="text-[10px] text-gray-400 font-medium tracking-wider mt-0.5">
-                대한민국 리얼 탈모 커뮤니티
-              </span>
-            </div>
+          <Link href="/" className="flex items-center shrink-0">
+            <img src="/logo-pc.png" alt="탈모톡 로고" className="h-10 w-auto object-contain" />
           </Link>
 
           {/* Navigation */}
