@@ -40,6 +40,7 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
         const newComment = {
           id: data.comment.id,
           author: data.comment.author || "익명 사용자",
+          authorImage: data.comment.authorImage,
           time: "방금 전",
           content: data.comment.content,
           isAuthor: false
@@ -96,7 +97,13 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
             <h1 className="text-2xl font-bold text-gray-900 leading-snug mb-5">{post.title}</h1>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold">{post.author.charAt(0)}</div>
+                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold overflow-hidden shrink-0">
+                  {post.authorImage ? (
+                    <img src={post.authorImage} alt={post.author} className="w-full h-full object-cover" />
+                  ) : (
+                    post.author.charAt(0)
+                  )}
+                </div>
                 <div>
                   <span className="text-[15px] font-semibold text-gray-900">{post.author}</span>
                   <span className="text-[13px] text-gray-400 ml-3">{post.time} · 조회 {post.views}</span>
@@ -147,7 +154,13 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
           <div className="flex flex-col gap-6 mb-8">
             {comments.map((c) => (
               <div key={c.id} className="flex gap-3">
-                <div className="w-9 h-9 rounded-full bg-gray-200 shrink-0 flex items-center justify-center text-gray-500 font-bold text-sm">{c.author.charAt(0)}</div>
+                <div className="w-9 h-9 rounded-full bg-gray-200 shrink-0 flex items-center justify-center text-gray-500 font-bold text-sm overflow-hidden">
+                  {c.authorImage ? (
+                    <img src={c.authorImage} alt={c.author} className="w-full h-full object-cover" />
+                  ) : (
+                    c.author.charAt(0)
+                  )}
+                </div>
                 <div className="flex flex-col flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-[14px] font-semibold text-gray-900">{c.author}</span>

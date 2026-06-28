@@ -73,6 +73,7 @@ function PostDetailContent() {
         const newComment = {
           id: data.comment.id,
           author: data.comment.author || "익명 사용자",
+          authorImage: data.comment.authorImage,
           time: "방금 전",
           content: data.comment.content,
           isAuthor: false // Assume false for immediate UI update unless checked
@@ -166,8 +167,12 @@ function PostDetailContent() {
           </h1>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-sm">
-                {post.author.charAt(0)}
+              <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-sm overflow-hidden shrink-0">
+                {post.authorImage ? (
+                  <img src={post.authorImage} alt={post.author} className="w-full h-full object-cover" />
+                ) : (
+                  post.author.charAt(0)
+                )}
               </div>
               <div className="flex flex-col">
                 <span className="text-sm font-semibold text-gray-900 leading-tight">{post.author}</span>
@@ -211,8 +216,12 @@ function PostDetailContent() {
           <div className="flex flex-col gap-5">
             {comments.map((c) => (
               <div key={c.id} className="flex gap-3">
-                <div className="w-7 h-7 rounded-full bg-gray-200 shrink-0 flex items-center justify-center text-gray-500 font-bold text-xs">
-                  {c.author.charAt(0)}
+                <div className="w-7 h-7 rounded-full bg-gray-200 shrink-0 flex items-center justify-center text-gray-500 font-bold text-xs overflow-hidden">
+                  {c.authorImage ? (
+                    <img src={c.authorImage} alt={c.author} className="w-full h-full object-cover" />
+                  ) : (
+                    c.author.charAt(0)
+                  )}
                 </div>
                 <div className="flex flex-col flex-1">
                   <div className="flex items-center gap-2 mb-1">

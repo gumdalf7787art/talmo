@@ -45,7 +45,8 @@ export async function onRequestPost(context) {
           c.content, 
           c.created_at, 
           c.user_id,
-          u.nickname as author
+          u.nickname as author,
+          u.profile_image as authorImage
         FROM comments c
         LEFT JOIN users u ON c.user_id = u.id
         WHERE c.id = ?

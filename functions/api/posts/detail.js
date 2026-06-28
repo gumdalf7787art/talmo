@@ -35,7 +35,8 @@ export async function onRequestGet(context) {
         p.views,
         p.comments_count,
         p.user_id as post_author_id,
-        u.nickname as author
+        u.nickname as author,
+        u.profile_image as authorImage
       FROM posts p
       LEFT JOIN users u ON p.user_id = u.id
       WHERE p.id = ?
@@ -57,7 +58,8 @@ export async function onRequestGet(context) {
         c.content, 
         c.created_at, 
         c.user_id,
-        u.nickname as author
+        u.nickname as author,
+        u.profile_image as authorImage
       FROM comments c
       LEFT JOIN users u ON c.user_id = u.id
       WHERE c.post_id = ?
@@ -84,6 +86,7 @@ export async function onRequestGet(context) {
     const processedComments = rawComments.map(c => ({
       id: c.id,
       author: c.author || "익명 사용자",
+      authorImage: c.authorImage,
       time: formatTime(c.created_at),
       content: c.content,
       isAuthor: c.user_id === post.post_author_id
@@ -98,6 +101,7 @@ export async function onRequestGet(context) {
       category: post.category,
       content: post.content, // HTML content
       author: post.author || "익명 사용자",
+      authorImage: post.authorImage,
       authorId: post.post_author_id,
       time: timeStr,
       views: (post.views || 0) + 1, // Include the incremented view
