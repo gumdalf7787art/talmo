@@ -18,6 +18,8 @@ function PostDetailContent() {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [loggedInUserId, setLoggedInUserId] = useState(null);
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editContent, setEditContent] = useState("");
 
   useEffect(() => {
     const userStr = localStorage.getItem('user');
@@ -76,7 +78,8 @@ function PostDetailContent() {
           authorImage: data.comment.authorImage,
           time: "방금 전",
           content: data.comment.content,
-          isAuthor: false // Assume false for immediate UI update unless checked
+          isAuthor: false, // Assume false for immediate UI update unless checked
+          userId: userId
         };
         setComments([...comments, newComment]);
         // Update post comment count
@@ -109,6 +112,47 @@ function PostDetailContent() {
         router.push("/community");
       } else {
         alert(data.error || "게시글 삭제에 실패했습니다.");
+      }
+    } catch (err) {
+      alert("오류가 발생했습니다.");
+    }
+  };
+
+  const handleCommentDelete = async (commentId) => {
+    if (!confirm("댓글을 삭제하시겠습니까?")) return;
+    try {
+      const res = await fetch('/api/posts/comment-delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ commentId, userId: loggedInUserId, postId: id })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setComments(comments.filter(c => c.id !== commentId));
+        setPost(prev => ({ ...prev, comments: Math.max(0, prev.comments - 1) }));
+      } else {
+        alert(data.error || "삭제에 실패했습니다.");
+      }
+    } catch (err) {
+      alert("오류가 발생했습니다.");
+    }
+  };
+
+  const handleCommentEditSave = async (commentId) => {
+    if (!editContent.trim()) return;
+    try {
+      const res = await fetch('/api/posts/comment-update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ commentId, userId: loggedInUserId, content: editContent })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setComments(comments.map(c => c.id === commentId ? { ...c, content: editContent } : c));
+        setEditingCommentId(null);
+        setEditContent("");
+      } else {
+        alert(data.error || "수정에 실패했습니다.");
       }
     } catch (err) {
       alert("오류가 발생했습니다.");
@@ -230,8 +274,25 @@ function PostDetailContent() {
                       <span className="text-[10px] font-bold text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded">작성자</span>
                     )}
                     <span className="text-[11px] text-gray-400">{c.time}</span>
+                    <div className="flex-1"></div>
+                    {loggedInUserId && c.userId === loggedInUserId && (
+                      <div className="flex gap-2">
+                        <button onClick={() => { setEditingCommentId(c.id); setEditContent(c.content); }} className="text-[11px] text-gray-400 hover:text-gray-600">수정</button>
+                        <button onClick={() => handleCommentDelete(c.id)} className="text-[11px] text-gray-400 hover:text-red-500">삭제</button>
+                      </div>
+                    )}
                   </div>
-                  <p className="text-[14px] text-gray-800 leading-snug">{c.content}</p>
+                  {editingCommentId === c.id ? (
+                    <div className="flex flex-col gap-2 mt-1">
+                      <textarea value={editContent} onChange={e => setEditContent(e.target.value)} className="w-full text-sm border border-gray-200 rounded-lg p-2 focus:outline-none focus:border-teal-500" rows={2} />
+                      <div className="flex justify-end gap-2">
+                        <button onClick={() => setEditingCommentId(null)} className="text-xs px-3 py-1.5 text-gray-500 bg-gray-100 rounded-md">취소</button>
+                        <button onClick={() => handleCommentEditSave(c.id)} className="text-xs px-3 py-1.5 text-white bg-teal-600 rounded-md">저장</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-[14px] text-gray-800 leading-snug">{c.content}</p>
+                  )}
                 </div>
               </div>
             ))}

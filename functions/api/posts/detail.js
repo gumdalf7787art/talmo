@@ -89,7 +89,8 @@ export async function onRequestGet(context) {
       authorImage: c.authorImage,
       time: formatTime(c.created_at),
       content: c.content,
-      isAuthor: c.user_id === post.post_author_id
+      isAuthor: c.user_id === post.post_author_id,
+      userId: c.user_id
     }));
 
     // Format time for post

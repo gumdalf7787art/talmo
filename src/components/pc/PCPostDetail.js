@@ -9,6 +9,8 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
   const router = useRouter();
   const [isLiked, setIsLiked] = useState(false);
   const [comment, setComment] = useState("");
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editContent, setEditContent] = useState("");
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
@@ -43,7 +45,8 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
           authorImage: data.comment.authorImage,
           time: "방금 전",
           content: data.comment.content,
-          isAuthor: false
+          isAuthor: false,
+          userId: userId
         };
         setComments([...comments, newComment]);
         setPost(prev => ({ ...prev, comments: prev.comments + 1 }));
@@ -53,6 +56,47 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
     } catch (err) {
       console.error(err);
       alert("댓글 등록 중 오류가 발생했습니다.");
+    }
+  };
+
+  const handleCommentDelete = async (commentId) => {
+    if (!confirm("댓글을 삭제하시겠습니까?")) return;
+    try {
+      const res = await fetch('/api/posts/comment-delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ commentId, userId: loggedInUserId, postId: post.id })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setComments(comments.filter(c => c.id !== commentId));
+        setPost(prev => ({ ...prev, comments: Math.max(0, prev.comments - 1) }));
+      } else {
+        alert(data.error || "삭제에 실패했습니다.");
+      }
+    } catch (err) {
+      alert("오류가 발생했습니다.");
+    }
+  };
+
+  const handleCommentEditSave = async (commentId) => {
+    if (!editContent.trim()) return;
+    try {
+      const res = await fetch('/api/posts/comment-update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ commentId, userId: loggedInUserId, content: editContent })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setComments(comments.map(c => c.id === commentId ? { ...c, content: editContent } : c));
+        setEditingCommentId(null);
+        setEditContent("");
+      } else {
+        alert(data.error || "수정에 실패했습니다.");
+      }
+    } catch (err) {
+      alert("오류가 발생했습니다.");
     }
   };
 
@@ -166,8 +210,25 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
                     <span className="text-[14px] font-semibold text-gray-900">{c.author}</span>
                     {c.isAuthor && <span className="text-[11px] font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded">작성자</span>}
                     <span className="text-[12px] text-gray-400">{c.time}</span>
+                    <div className="flex-1"></div>
+                    {loggedInUserId && c.userId === loggedInUserId && (
+                      <div className="flex gap-2">
+                        <button onClick={() => { setEditingCommentId(c.id); setEditContent(c.content); }} className="text-[12px] text-gray-400 hover:text-gray-600">수정</button>
+                        <button onClick={() => handleCommentDelete(c.id)} className="text-[12px] text-gray-400 hover:text-red-500">삭제</button>
+                      </div>
+                    )}
                   </div>
-                  <p className="text-[15px] text-gray-800 leading-snug">{c.content}</p>
+                  {editingCommentId === c.id ? (
+                    <div className="flex flex-col gap-2 mt-1">
+                      <textarea value={editContent} onChange={e => setEditContent(e.target.value)} className="w-full text-sm border border-gray-200 rounded-lg p-3 focus:outline-none focus:border-teal-500" rows={2} />
+                      <div className="flex justify-end gap-2">
+                        <button onClick={() => setEditingCommentId(null)} className="text-sm px-4 py-2 text-gray-500 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">취소</button>
+                        <button onClick={() => handleCommentEditSave(c.id)} className="text-sm px-4 py-2 text-white bg-teal-600 hover:bg-teal-700 rounded-md transition-colors">저장</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-[15px] text-gray-800 leading-snug">{c.content}</p>
+                  )}
                 </div>
               </div>
             ))}
