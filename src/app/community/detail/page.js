@@ -20,6 +20,7 @@ function PostDetailContent() {
   const [loggedInUserId, setLoggedInUserId] = useState(null);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editContent, setEditContent] = useState("");
+  const [isInputFocused, setIsInputFocused] = useState(false);
   const commentsEndRef = useRef(null);
 
   useEffect(() => {
@@ -29,6 +30,16 @@ function PostDetailContent() {
       setLoggedInUserId(user.id);
     }
   }, []);
+
+  useEffect(() => {
+    if (isInputFocused) {
+      setTimeout(() => {
+        if (commentsEndRef.current) {
+          commentsEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+      }, 300); // Wait for keyboard animation
+    }
+  }, [isInputFocused]);
 
   useEffect(() => {
     if (!id) return;
@@ -208,7 +219,7 @@ function PostDetailContent() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 pb-[140px]">
+      <main className="flex-1 pb-[110px]">
         {/* Post Header */}
         <div className="px-5 pt-6 pb-4 border-b border-gray-100">
           <span className="inline-block px-2.5 py-1 mb-3 rounded-md bg-teal-50 text-teal-600 text-xs font-bold">
@@ -311,14 +322,16 @@ function PostDetailContent() {
 
       {/* Sticky Comment Input */}
       <div 
-        className="fixed left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 flex items-center gap-2 max-w-md mx-auto z-50"
-        style={{ bottom: 'calc(64px + env(safe-area-inset-bottom, 0px))' }}
+        className="fixed left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 flex items-center gap-2 max-w-md mx-auto z-[60] transition-all duration-200"
+        style={{ bottom: isInputFocused ? '0px' : 'calc(64px + env(safe-area-inset-bottom, 0px))' }}
       >
         <form onSubmit={handleCommentSubmit} className="flex flex-1 items-center bg-gray-100 rounded-full pr-1.5 pl-4 py-1.5">
           <input
             type="text"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
+            onFocus={() => setIsInputFocused(true)}
+            onBlur={() => setIsInputFocused(false)}
             placeholder="따뜻한 댓글을 남겨주세요."
             className="flex-1 bg-transparent text-sm text-gray-900 focus:outline-none py-1.5"
           />
