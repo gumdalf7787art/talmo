@@ -29,14 +29,14 @@ export default function Header() {
       <div className="flex items-center justify-between px-4 h-14 max-w-md mx-auto w-full">
         <Link href="/" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg overflow-hidden bg-white shadow-sm shrink-0 border border-teal-400/30">
-            <img src="/logo.jpg" alt="?�모??로고" className="w-full h-full object-cover" />
+            <img src="/logo.jpg" alt="탈모톡 로고" className="w-full h-full object-cover" />
           </div>
           <div className="flex flex-col justify-center">
             <span className="text-[9px] text-teal-100 font-medium tracking-wider mb-0.5 opacity-90">
-              ?�?��?�?리얼 ?�모 커�??�티
+              대한민국 리얼 탈모 커뮤니티
             </span>
             <span className="font-bold text-xl tracking-tight text-white leading-none">
-              ?�모??span className="text-teal-200">.</span>
+              탈모톡<span className="text-teal-200">.</span>
             </span>
           </div>
         </Link>
@@ -53,7 +53,8 @@ export default function Header() {
             </>
           ) : mounted && !isLoggedIn ? (
             <Link href="/login" className="text-teal-50 hover:text-white transition-colors text-xs font-semibold px-2 py-1 bg-teal-600/50 rounded-md border border-teal-400/30">
-              로그??            </Link>
+              로그인
+            </Link>
           ) : (
             <div className="w-5 h-5"></div>
           )}

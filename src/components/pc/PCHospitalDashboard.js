@@ -92,7 +92,7 @@ export default function PCHospitalDashboard({ user }) {
       {/* Left Sidebar: Patients List */}
       <div className="w-[320px] bg-white border-r border-gray-100 flex flex-col shrink-0">
         <div className="h-14 px-4 flex items-center justify-between border-b border-gray-100 shrink-0">
-          <h2 className="font-bold text-[16px] text-gray-900">?�담 목록</h2>
+          <h2 className="font-bold text-[16px] text-gray-900">상담 목록</h2>
           <button className="text-gray-500 hover:text-gray-700 transition-colors">
             <Search className="w-5 h-5" />
           </button>
@@ -101,7 +101,7 @@ export default function PCHospitalDashboard({ user }) {
         <div className="flex-1 overflow-y-auto">
           {chatRooms.length === 0 ? (
              <div className="flex items-center justify-center h-full text-gray-400 text-sm">
-                진행 중인 ?�담???�습?�다.
+                진행 중인 상담이 없습니다.
              </div>
           ) : (
             chatRooms.map((room) => {
@@ -120,14 +120,15 @@ export default function PCHospitalDashboard({ user }) {
                   <div className="flex flex-col flex-1 min-w-0">
                     <div className="flex justify-between items-center mb-0.5">
                       <h3 className={`font-bold text-[14px] truncate pr-2 ${isActive ? 'text-teal-700' : 'text-gray-900'}`}>
-                        {room.otherPartyName} ?�자??                      </h3>
+                        {room.otherPartyName} 환자님
+                      </h3>
                       <span className="text-[11px] text-gray-400 shrink-0">
                         {new Date(room.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <p className={`text-[12px] truncate pr-2 ${room.unreadCount > 0 ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
-                        {room.lastMessage || '?�?��? ?�습?�다.'}
+                        {room.lastMessage || '대화가 없습니다.'}
                       </p>
                       {room.unreadCount > 0 && (
                         <span className="w-4 h-4 rounded-full bg-teal-600 text-white flex items-center justify-center text-[9px] font-bold shrink-0">
@@ -148,7 +149,7 @@ export default function PCHospitalDashboard({ user }) {
         {!activeRoom ? (
            <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-4">
              <img src="/logo.jpg" className="w-16 h-16 opacity-20 grayscale" alt="empty" />
-             <p>?�담???�자�??�택?�주?�요.</p>
+             <p>상담할 환자를 선택해주세요.</p>
            </div>
         ) : (
           <>
@@ -156,7 +157,7 @@ export default function PCHospitalDashboard({ user }) {
             <div className="h-14 px-5 bg-white/90 backdrop-blur-md flex items-center justify-between border-b border-gray-200 shrink-0 z-10">
               <div className="flex items-center gap-3">
                 <div className="flex flex-col">
-                  <h1 className="font-bold text-[16px] text-gray-900 leading-tight">{activeRoom.otherPartyName} ?�자??/h1>
+                  <h1 className="font-bold text-[16px] text-gray-900 leading-tight">{activeRoom.otherPartyName} 환자님</h1>
                 </div>
               </div>
             </div>
@@ -198,7 +199,7 @@ export default function PCHospitalDashboard({ user }) {
                   <textarea
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
-                    placeholder="?�자?�게 ?��????�력?�세??"
+                    placeholder="환자에게 답변을 입력하세요."
                     className="flex-1 bg-transparent text-[14px] text-gray-900 focus:outline-none resize-none max-h-32 min-h-[24px] py-1"
                     rows={1}
                     onKeyDown={(e) => {

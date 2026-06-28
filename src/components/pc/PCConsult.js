@@ -30,17 +30,17 @@ export default function PCConsult({ clinicId, clinicName }) {
             {
               id: 1,
               clinicId: "2",
-              otherPartyName: "블랙?�인 ?�튜?�오",
-              lastMessage: "?�수�?부???�진??2~3????보내주실 ???�나??",
-              time: "?�전 11:30",
+              otherPartyName: "블랙라인 스튜디오",
+              lastMessage: "정수리 부위 사진을 2~3장 더 보내주실 수 있나요?",
+              time: "오전 11:30",
               unreadCount: 2,
             },
             {
               id: 2,
               clinicId: "18763bdb-dd5b-4c2a-b996-1012039dc029",
-              otherPartyName: "모프�??�모?�원",
-              lastMessage: "?? ?�원?�시�??�확??견적???�내???�리겠습?�다.",
-              time: "?�제",
+              otherPartyName: "모프로 탈모의원",
+              lastMessage: "네, 내원하시면 정확한 견적을 안내해 드리겠습니다.",
+              time: "어제",
               unreadCount: 0,
             }
           ]);
@@ -111,7 +111,7 @@ export default function PCConsult({ clinicId, clinicName }) {
       <div className="w-[320px] bg-white border-r border-gray-100 flex flex-col shrink-0">
         {/* Sidebar Header */}
         <div className="h-14 px-4 flex items-center justify-between border-b border-gray-100 shrink-0">
-          <h2 className="font-bold text-[16px] text-gray-900">?�의 ?�모??/h2>
+          <h2 className="font-bold text-[16px] text-gray-900">나의 탈모톡</h2>
           <button className="text-gray-500 hover:text-gray-700 transition-colors">
             <Search className="w-5 h-5" />
           </button>
@@ -171,7 +171,7 @@ export default function PCConsult({ clinicId, clinicName }) {
             </div>
             <div className="flex flex-col">
               <h1 className="font-bold text-[16px] text-gray-900 leading-tight">{clinicName}</h1>
-              <span className="text-[11px] text-teal-600 font-medium">보통 10�????�답</span>
+              <span className="text-[11px] text-teal-600 font-medium">보통 10분 내 응답</span>
             </div>
           </div>
           <button className="text-gray-500 hover:text-gray-700 transition-colors">
@@ -183,7 +183,8 @@ export default function PCConsult({ clinicId, clinicName }) {
         <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-6 flex flex-col gap-4 scroll-smooth">
           <div className="flex justify-center my-2">
             <span className="bg-gray-200/70 text-gray-500 text-[11px] px-3 py-1 rounded-full font-medium">
-              2026??6??27???�요??            </span>
+              2026년 6월 27일 토요일
+            </span>
           </div>
 
           {/* Chat Messages */}
@@ -230,13 +231,13 @@ export default function PCConsult({ clinicId, clinicName }) {
                 <div className="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm group-hover:bg-gray-50 transition-colors">
                   <ImageIcon className="w-5 h-5 text-gray-600" />
                 </div>
-                <span className="text-[11px] text-gray-600 font-medium">?�범</span>
+                <span className="text-[11px] text-gray-600 font-medium">앨범</span>
               </button>
               <button className="flex flex-col items-center gap-1.5 group">
                 <div className="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm group-hover:bg-gray-50 transition-colors">
                   <Camera className="w-5 h-5 text-gray-600" />
                 </div>
-                <span className="text-[11px] text-gray-600 font-medium">카메??/span>
+                <span className="text-[11px] text-gray-600 font-medium">카메라</span>
               </button>
             </div>
           )}
@@ -253,7 +254,7 @@ export default function PCConsult({ clinicId, clinicName }) {
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="메시지�??�력?�세??"
+                placeholder="메시지를 입력하세요."
                 className="flex-1 bg-transparent text-[14px] text-gray-900 focus:outline-none resize-none max-h-32 min-h-[24px] py-1"
                 rows={1}
                 onKeyDown={(e) => {
