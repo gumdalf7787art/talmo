@@ -90,7 +90,17 @@ export default function LoginPage() {
           >
             네이버로 시작하기
           </button>
-          <button className="flex items-center justify-center w-full py-3.5 rounded-lg bg-white border border-gray-300 text-gray-700 font-semibold text-[15px] transition-colors active:bg-gray-50">
+          <button 
+            type="button" 
+            onClick={() => {
+              const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+              const redirectUri = `${window.location.origin}/api/auth/google/callback`;
+              const scope = 'email profile';
+              const responseType = 'code';
+              window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=${responseType}&scope=${scope}`;
+            }}
+            className="flex items-center justify-center w-full py-3.5 rounded-lg bg-white border border-gray-300 text-gray-700 font-semibold text-[15px] transition-colors active:bg-gray-50"
+          >
             구글로 시작하기
           </button>
         </div>
