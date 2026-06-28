@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, MoreVertical, Heart, MessageCircle, Share2, Send } from "lucide-react";
 import useMediaQuery from "@/hooks/useMediaQuery";
@@ -20,6 +20,7 @@ function PostDetailContent() {
   const [loggedInUserId, setLoggedInUserId] = useState(null);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editContent, setEditContent] = useState("");
+  const commentsEndRef = useRef(null);
 
   useEffect(() => {
     const userStr = localStorage.getItem('user');
@@ -84,6 +85,13 @@ function PostDetailContent() {
         setComments([...comments, newComment]);
         // Update post comment count
         setPost(prev => ({ ...prev, comments: prev.comments + 1 }));
+        
+        // Scroll to the new comment
+        setTimeout(() => {
+          if (commentsEndRef.current) {
+            commentsEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
       } else {
         alert(data.error || "댓글 등록에 실패했습니다.");
       }
@@ -296,6 +304,7 @@ function PostDetailContent() {
                 </div>
               </div>
             ))}
+            <div ref={commentsEndRef} className="h-4" />
           </div>
         </div>
       </main>

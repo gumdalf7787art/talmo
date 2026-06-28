@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Heart, MessageCircle, Share2, Send, ChevronLeft } from "lucide-react";
 import PCSidebar from "@/components/pc/PCSidebar";
@@ -11,6 +11,7 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
   const [comment, setComment] = useState("");
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editContent, setEditContent] = useState("");
+  const commentsEndRef = useRef(null);
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
@@ -50,6 +51,13 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
         };
         setComments([...comments, newComment]);
         setPost(prev => ({ ...prev, comments: prev.comments + 1 }));
+        
+        // Scroll to the new comment
+        setTimeout(() => {
+          if (commentsEndRef.current) {
+            commentsEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
       } else {
         alert(data.error || "댓글 등록에 실패했습니다.");
       }
@@ -232,6 +240,7 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
                 </div>
               </div>
             ))}
+            <div ref={commentsEndRef} className="h-4" />
           </div>
           <form onSubmit={handleCommentSubmit} className="flex items-center gap-3 bg-gray-100 rounded-xl px-5 py-3">
             <input type="text" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="따뜻한 댓글을 남겨주세요." className="flex-1 bg-transparent text-[15px] text-gray-900 focus:outline-none" />
