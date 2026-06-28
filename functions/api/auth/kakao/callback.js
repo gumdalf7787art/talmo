@@ -10,7 +10,7 @@ export async function onRequestGet(context) {
   }
 
   // Determine redirect URI dynamically based on current request URL to support both local and prod
-  const redirectUri = \`\${url.origin}/api/auth/kakao/callback\`;
+  const redirectUri = `${url.origin}/api/auth/kakao/callback`;
   const clientId = '43a474ecd76c1a1b758dcdf415c1565a'; // REST API Key
   const clientSecret = 'D0ImffOQpt4abhpgRep7zwvxZg1huQVI';
 
@@ -43,7 +43,7 @@ export async function onRequestGet(context) {
     const userResponse = await fetch('https://kapi.kakao.com/v2/user/me', {
       method: 'GET',
       headers: {
-        'Authorization': \`Bearer \${accessToken}\`,
+        'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
       }
     });
@@ -59,11 +59,11 @@ export async function onRequestGet(context) {
     const kakaoAccount = userData.kakao_account;
     const profile = kakaoAccount?.profile;
     
-    const nickname = profile?.nickname || \`user_\${Math.random().toString(36).substring(2, 8)}\`;
+    const nickname = profile?.nickname || `user_${Math.random().toString(36).substring(2, 8)}`;
     const profileImage = profile?.profile_image_url || null;
     
     // Create dummy email with Kakao ID
-    const dummyEmail = \`kakao_\${kakaoId}@talmotalk.com\`;
+    const dummyEmail = `kakao_${kakaoId}@talmotalk.com`;
 
     const db = env.DB;
     if (!db) {
@@ -81,10 +81,10 @@ export async function onRequestGet(context) {
       const randomPassword = crypto.randomUUID(); // Dummy password
       const hashedPassword = await hashPassword(randomPassword);
 
-      const insertStmt = db.prepare(\`
+      const insertStmt = db.prepare(`
         INSERT INTO users (id, email, password, nickname, profile_image, role, provider, provider_id, created_at, updated_at) 
         VALUES (?, ?, ?, ?, ?, 'user', 'kakao', ?, ?, ?)
-      \`).bind(id, dummyEmail, hashedPassword, nickname, profileImage, kakaoId, now, now);
+      `).bind(id, dummyEmail, hashedPassword, nickname, profileImage, kakaoId, now, now);
 
       await insertStmt.run();
 
@@ -96,7 +96,7 @@ export async function onRequestGet(context) {
     const { password: _, ...safeUser } = user;
 
     // 5. Return HTML to set localStorage and redirect to Home
-    const htmlResponse = \`
+    const htmlResponse = `
       <!DOCTYPE html>
       <html>
         <head>
@@ -106,12 +106,12 @@ export async function onRequestGet(context) {
         <body>
           <script>
             localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('user', JSON.stringify(\${JSON.stringify(safeUser)}));
+            localStorage.setItem('user', JSON.stringify(${JSON.stringify(safeUser)}));
             window.location.href = '/';
           </script>
         </body>
       </html>
-    \`;
+    `;
 
     return new Response(htmlResponse, {
       status: 200,
