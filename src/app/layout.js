@@ -13,8 +13,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "탈모톡 - 대한민국 리얼 탈모 커뮤니티",
-  description: "AI 두피 진단, 모발이식 1:1 상담, 탈모 정보 커뮤니티",
+  title: "탈모톡",
+  description: "대한민국 리얼 탈모 커뮤니티",
+  openGraph: {
+    title: "탈모톡",
+    description: "대한민국 리얼 탈모 커뮤니티",
+  }
 };
 
 export default function RootLayout({ children }) {
