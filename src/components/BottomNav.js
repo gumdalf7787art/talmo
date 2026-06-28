@@ -14,7 +14,7 @@ export default function BottomNav() {
   const isHistory = pathname === "/diagnosis-history";
   const isMyPosts = pathname === "/my-posts" || pathname === "/my-bookmarks";
   
-  if (hideRoutes.includes(pathname) || isPostDetail || isChatRoom || isChatList || isHistory || isMyPosts) return null;
+  if (hideRoutes.includes(pathname) || isChatRoom || isChatList || isHistory || isMyPosts) return null;
 
   const navItems = [
     { href: "/", label: "홈", icon: Home },

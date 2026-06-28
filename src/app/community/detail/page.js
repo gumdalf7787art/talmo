@@ -136,7 +136,7 @@ function PostDetailContent() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md flex items-center justify-between px-4 h-14 border-b border-gray-100">
+      <header className="w-full bg-white flex items-center justify-between px-4 h-14 border-b border-gray-100">
         <button onClick={() => router.back()} className="p-1 -ml-1 text-gray-700">
           <ChevronLeft className="w-6 h-6" />
         </button>
@@ -155,7 +155,7 @@ function PostDetailContent() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 pb-[72px]">
+      <main className="flex-1 pb-[140px]">
         {/* Post Header */}
         <div className="px-5 pt-6 pb-4 border-b border-gray-100">
           <span className="inline-block px-2.5 py-1 mb-3 rounded-md bg-teal-50 text-teal-600 text-xs font-bold">
@@ -231,7 +231,10 @@ function PostDetailContent() {
       </main>
 
       {/* Sticky Comment Input */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 flex items-center gap-2 max-w-md mx-auto z-50 pb-safe">
+      <div 
+        className="fixed left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 flex items-center gap-2 max-w-md mx-auto z-50"
+        style={{ bottom: 'calc(64px + env(safe-area-inset-bottom, 0px))' }}
+      >
         <form onSubmit={handleCommentSubmit} className="flex flex-1 items-center bg-gray-100 rounded-full pr-1.5 pl-4 py-1.5">
           <input
             type="text"

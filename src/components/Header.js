@@ -22,7 +22,7 @@ export default function Header() {
     setIsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
   }, [pathname]);
 
-  if (hideRoutes.includes(pathname) || isPostDetail || isChatRoom || isChatList || isHistory || isMyPosts) return null;
+  if (hideRoutes.includes(pathname) || isChatRoom || isChatList || isHistory || isMyPosts) return null;
 
   return (
     <header className="sticky top-0 z-50 w-full bg-gradient-to-r from-teal-500 to-teal-700 flex flex-col shadow-md">
