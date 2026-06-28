@@ -166,6 +166,33 @@ export default function SignupPage() {
           </p>
         </div>
 
+        {/* Social Signup Buttons */}
+        <div className="flex flex-col gap-3 w-full mb-8">
+          <button 
+            type="button"
+            onClick={() => {
+              const clientId = '43a474ecd76c1a1b758dcdf415c1565a';
+              const redirectUri = `${window.location.origin}/api/auth/kakao/callback`;
+              window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
+            }}
+            className="flex items-center justify-center w-full py-3.5 rounded-lg bg-[#FEE500] text-black font-semibold text-[15px] transition-opacity active:opacity-80"
+          >
+            카카오톡으로 시작하기
+          </button>
+          <button type="button" className="flex items-center justify-center w-full py-3.5 rounded-lg bg-[#03C75A] text-white font-semibold text-[15px] transition-opacity active:opacity-80">
+            네이버로 시작하기
+          </button>
+          <button type="button" className="flex items-center justify-center w-full py-3.5 rounded-lg bg-white border border-gray-300 text-gray-700 font-semibold text-[15px] transition-colors active:bg-gray-50">
+            구글로 시작하기
+          </button>
+        </div>
+
+        <div className="flex items-center w-full gap-4 mb-8">
+          <div className="flex-1 h-px bg-gray-200"></div>
+          <span className="text-xs text-gray-400 font-medium">또는 이메일로 가입</span>
+          <div className="flex-1 h-px bg-gray-200"></div>
+        </div>
+
         <form onSubmit={handleSignup} className="flex flex-col gap-6 w-full">
           {/* Email */}
           <div className="flex flex-col gap-1.5">

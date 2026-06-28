@@ -135,6 +135,30 @@ export default function PCSignup() {
           <p className="text-sm text-gray-500 mt-2">기본 정보만 입력하고 바로 시작해보세요.</p>
         </div>
 
+        <div className="flex flex-col gap-3 mb-8">
+          <button 
+            type="button"
+            onClick={() => {
+              const clientId = '43a474ecd76c1a1b758dcdf415c1565a';
+              const redirectUri = `${window.location.origin}/api/auth/kakao/callback`;
+              window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
+            }}
+            className="flex items-center justify-center w-full py-3.5 rounded-lg bg-[#FEE500] text-black font-semibold text-[15px] hover:opacity-90 transition-opacity"
+          >
+            카카오톡으로 시작하기
+          </button>
+          <button type="button" className="flex items-center justify-center w-full py-3.5 rounded-lg bg-[#03C75A] text-white font-semibold text-[15px] hover:opacity-90 transition-opacity">
+            네이버로 시작하기
+          </button>
+          <button type="button" className="flex items-center justify-center w-full py-3.5 rounded-lg bg-white border border-gray-300 text-gray-700 font-semibold text-[15px] hover:bg-gray-50 transition-colors">
+            구글로 시작하기
+          </button>
+        </div>
+
+        <div className="flex items-center gap-4 mb-8">
+          <div className="flex-1 h-px bg-gray-200" /><span className="text-xs text-gray-400 font-medium">또는 이메일로 가입</span><div className="flex-1 h-px bg-gray-200" />
+        </div>
+
         <form onSubmit={handleSignup} className="flex flex-col gap-5">
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-semibold text-gray-800 ml-1">이메일</label>
