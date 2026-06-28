@@ -52,7 +52,17 @@ export default function PCLogin() {
         </div>
 
         <div className="flex flex-col gap-3 mb-8">
-          <button className="flex items-center justify-center w-full py-3.5 rounded-lg bg-[#FEE500] text-black font-semibold text-[15px] hover:opacity-90 transition-opacity">카카오톡으로 시작하기</button>
+          <button 
+            type="button"
+            onClick={() => {
+              const clientId = '43a474ecd76c1a1b758dcdf415c1565a';
+              const redirectUri = `${window.location.origin}/api/auth/kakao/callback`;
+              window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
+            }}
+            className="flex items-center justify-center w-full py-3.5 rounded-lg bg-[#FEE500] text-black font-semibold text-[15px] hover:opacity-90 transition-opacity"
+          >
+            카카오톡으로 시작하기
+          </button>
           <button className="flex items-center justify-center w-full py-3.5 rounded-lg bg-[#03C75A] text-white font-semibold text-[15px] hover:opacity-90 transition-opacity">네이버로 시작하기</button>
           <button className="flex items-center justify-center w-full py-3.5 rounded-lg bg-white border border-gray-300 text-gray-700 font-semibold text-[15px] hover:bg-gray-50 transition-colors">구글로 시작하기</button>
         </div>

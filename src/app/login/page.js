@@ -67,7 +67,15 @@ export default function LoginPage() {
 
         {/* Social Login Buttons */}
         <div className="flex flex-col gap-3 w-full mb-8">
-          <button className="flex items-center justify-center w-full py-3.5 rounded-lg bg-[#FEE500] text-black font-semibold text-[15px] transition-opacity active:opacity-80">
+          <button 
+            type="button"
+            onClick={() => {
+              const clientId = '43a474ecd76c1a1b758dcdf415c1565a';
+              const redirectUri = `${window.location.origin}/api/auth/kakao/callback`;
+              window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
+            }}
+            className="flex items-center justify-center w-full py-3.5 rounded-lg bg-[#FEE500] text-black font-semibold text-[15px] transition-opacity active:opacity-80"
+          >
             카카오톡으로 시작하기
           </button>
           <button className="flex items-center justify-center w-full py-3.5 rounded-lg bg-[#03C75A] text-white font-semibold text-[15px] transition-opacity active:opacity-80">
