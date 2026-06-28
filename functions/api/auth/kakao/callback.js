@@ -62,34 +62,54 @@ export async function onRequestGet(context) {
     const nickname = profile?.nickname || `user_${Math.random().toString(36).substring(2, 8)}`;
     const profileImage = profile?.profile_image_url || null;
     
-    // Create dummy email with Kakao ID
+    // Use real email if available, otherwise fallback to dummy email
+    const kakaoEmail = kakaoAccount?.email;
     const dummyEmail = `kakao_${kakaoId}@talmotalk.com`;
+    const finalEmail = kakaoEmail || dummyEmail;
 
     const db = env.DB;
     if (!db) {
       return new Response('DB connection missing', { status: 500 });
     }
 
-    // 3. Check if user exists in DB
+    // 3. Check if user exists by Kakao ID
     const stmt = db.prepare('SELECT * FROM users WHERE provider = ? AND provider_id = ?').bind('kakao', kakaoId);
     let user = await stmt.first();
 
     if (!user) {
-      // 4. Create new user if not exists
-      const id = crypto.randomUUID();
-      const now = new Date().toISOString();
-      const randomPassword = crypto.randomUUID(); // Dummy password
-      const hashedPassword = await hashPassword(randomPassword);
+      // If Kakao gave us an email, check if an account with this email already exists
+      if (kakaoEmail) {
+        const emailStmt = db.prepare('SELECT * FROM users WHERE email = ?').bind(kakaoEmail);
+        user = await emailStmt.first();
 
-      const insertStmt = db.prepare(`
-        INSERT INTO users (id, email, password, nickname, profile_image, role, provider, provider_id, created_at, updated_at) 
-        VALUES (?, ?, ?, ?, ?, 'user', 'kakao', ?, ?, ?)
-      `).bind(id, dummyEmail, hashedPassword, nickname, profileImage, kakaoId, now, now);
+        if (user) {
+          // Link existing account to Kakao
+          const now = new Date().toISOString();
+          await db.prepare('UPDATE users SET provider = ?, provider_id = ?, updated_at = ? WHERE id = ?')
+            .bind('kakao', kakaoId, now, user.id)
+            .run();
+          user.provider = 'kakao';
+          user.provider_id = kakaoId;
+        }
+      }
 
-      await insertStmt.run();
+      // If still no user, create a new one
+      if (!user) {
+        const id = crypto.randomUUID();
+        const now = new Date().toISOString();
+        const randomPassword = crypto.randomUUID(); // Dummy password
+        const hashedPassword = await hashPassword(randomPassword);
 
-      // Fetch the newly created user
-      user = await db.prepare('SELECT * FROM users WHERE id = ?').bind(id).first();
+        const insertStmt = db.prepare(`
+          INSERT INTO users (id, email, password, nickname, profile_image, role, provider, provider_id, created_at, updated_at) 
+          VALUES (?, ?, ?, ?, ?, 'user', 'kakao', ?, ?, ?)
+        `).bind(id, finalEmail, hashedPassword, nickname, profileImage, kakaoId, now, now);
+
+        await insertStmt.run();
+
+        // Fetch the newly created user
+        user = await db.prepare('SELECT * FROM users WHERE id = ?').bind(id).first();
+      }
     }
 
     // Remove password from user object
