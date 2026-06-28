@@ -29,7 +29,7 @@ export default function PCHeader() {
         {/* Logo */}
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center shrink-0">
-            <img src="/logo-pc.png" alt="탈모톡 로고" className="h-10 w-auto object-contain" />
+            <img src="/logo-pc.png" alt="탈모톡 로고" className="h-12 w-auto object-contain" />
           </Link>
 
           {/* Navigation */}
