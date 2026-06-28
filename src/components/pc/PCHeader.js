@@ -9,10 +9,10 @@ export default function PCHeader() {
   const pathname = usePathname();
 
   const navItems = [
-    { href: "/", label: "홈" },
-    { href: "/community", label: "커뮤니티" },
+    { href: "/", label: "?? },
+    { href: "/community", label: "커�??�티" },
     { href: "/diagnosis", label: "AI 분석" },
-    { href: "/consult", label: "1:1 상담" },
+    { href: "/consult", label: "1:1 ?�담" },
   ];
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -30,14 +30,14 @@ export default function PCHeader() {
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2.5 shrink-0">
             <div className="w-9 h-9 rounded-lg overflow-hidden bg-white shadow-sm border border-gray-200 shrink-0">
-              <img src="/logo.png" alt="탈모톡 로고" className="w-full h-full object-cover" />
+              <img src="/logo.jpg" alt="?�모??로고" className="w-full h-full object-cover" />
             </div>
             <div className="flex flex-col justify-center">
               <span className="font-bold text-xl tracking-tight text-gray-900 leading-none">
-                탈모톡<span className="text-teal-500">.</span>
+                ?�모??span className="text-teal-500">.</span>
               </span>
               <span className="text-[10px] text-gray-400 font-medium tracking-wider mt-0.5">
-                대한민국 리얼 탈모 커뮤니티
+                ?�?��?�?리얼 ?�모 커�??�티
               </span>
             </div>
           </Link>
@@ -72,7 +72,7 @@ export default function PCHeader() {
             className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 rounded-lg px-4 py-2 text-gray-500 transition-colors"
           >
             <Search className="w-4 h-4" />
-            <span className="text-sm">검색</span>
+            <span className="text-sm">검??/span>
           </Link>
           
           {mounted && isLoggedIn ? (
@@ -86,7 +86,7 @@ export default function PCHeader() {
                 className="flex items-center gap-2 text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <User className="w-5 h-5" />
-                <span className="text-sm font-medium">마이페이지</span>
+                <span className="text-sm font-medium">마이?�이지</span>
               </Link>
             </>
           ) : mounted && !isLoggedIn ? (
@@ -94,8 +94,7 @@ export default function PCHeader() {
               href="/login"
               className="bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm px-5 py-2 rounded-lg transition-colors shadow-sm"
             >
-              로그인
-            </Link>
+              로그??            </Link>
           ) : (
             <div className="w-16 h-9"></div>
           )}

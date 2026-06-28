@@ -41,7 +41,7 @@ export default function ChatListPage() {
       return (
         <div className="min-h-[90vh] bg-[#F5F6F8] py-8">
            <div className="max-w-7xl mx-auto px-4">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">병원 관리자 탈모톡</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-4">병원 관리자 ?�모??/h2>
               <PCHospitalDashboard user={user} />
            </div>
         </div>
@@ -50,7 +50,7 @@ export default function ChatListPage() {
     return (
       <div className="min-h-[90vh] bg-[#F5F6F8] py-8">
          <div className="max-w-5xl mx-auto">
-            <h2 className="text-xl font-bold text-gray-900 mb-4 px-2">나의 탈모톡</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4 px-2">?�의 ?�모??/h2>
             <PCConsult />
          </div>
       </div>
@@ -66,7 +66,7 @@ export default function ChatListPage() {
             <ChevronLeft className="w-6 h-6" />
           </button>
           <h1 className="font-bold text-[18px] text-gray-900">
-            {user?.role === 'hospital' ? '상담 목록' : '나의 탈모톡'}
+            {user?.role === 'hospital' ? '?�담 목록' : '?�의 ?�모??}
           </h1>
         </div>
         <button className="p-1 -mr-1 text-gray-700">
@@ -86,7 +86,7 @@ export default function ChatListPage() {
               >
                 {/* Profile Image */}
                 <div className="w-12 h-12 rounded-full bg-gray-100 border border-gray-200 shrink-0 flex items-center justify-center overflow-hidden">
-                  <img src="/logo.png" alt="logo" className="w-7 h-7 opacity-50 grayscale" />
+                  <img src="/logo.jpg" alt="logo" className="w-7 h-7 opacity-50 grayscale" />
                 </div>
                 
                 {/* Content */}
@@ -113,7 +113,7 @@ export default function ChatListPage() {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-[60vh] text-gray-400">
-            <p>진행 중인 상담 내역이 없습니다.</p>
+            <p>진행 중인 ?�담 ?�역???�습?�다.</p>
           </div>
         )}
       </main>
