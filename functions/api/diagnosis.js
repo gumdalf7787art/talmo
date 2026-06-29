@@ -32,8 +32,13 @@ export async function onRequestPost(context) {
     if (apiKey === "YOUR_DUMMY_API_KEY_HERE") {
       aiDiagnosisResult = generateMockData(gender, age, familyHistory);
     } else {
-      // 3. 실제 Gemini API 호출 (Gemini 1.5 Flash 모델)
-      const promptText = `
+      // 3. 실제 Gemini API 호출 (다중 모델 폴백 지원)
+      const modelsToTry = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-pro-vision'];
+      let geminiResponse;
+      let rawText = null;
+
+      for (const model of modelsToTry) {
+        const promptText = `
 당신은 20년 경력의 세계적인 피부과 전문의이자 모발 이식 권위자입니다.
 환자의 기본 정보: [성별: ${gender}, 나이: ${age}세, 탈모 가족력: ${familyHistory}]
 
@@ -75,44 +80,57 @@ export async function onRequestPost(context) {
     }
   }
 }
-      `;
+        `;
 
-      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
-      const geminiResponse = await fetch(geminiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                { text: promptText },
-                {
-                  inlineData: {
-                    mimeType: mimeType,
-                    data: base64Image
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        geminiResponse = await fetch(geminiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  { text: promptText },
+                  {
+                    inlineData: {
+                      mimeType: mimeType,
+                      data: base64Image
+                    }
                   }
-                }
-              ]
-            }
-          ],
-          generationConfig: {
-            responseMimeType: "application/json"
-          }
-        })
-      });
+                ]
+              }
+            ],
+            // gemini-pro-vision does not strictly support responseMimeType in some regions, but we will pass it anyway or remove it.
+            // Actually, we'll just let it return JSON text.
+          })
+        });
 
-      if (!geminiResponse.ok) {
-        const errorData = await geminiResponse.json();
-        throw new Error(`Gemini API 오류: ${errorData.error?.message || '알 수 없는 오류'}`);
+        if (geminiResponse.ok) {
+          const geminiData = await geminiResponse.json();
+          rawText = geminiData.candidates[0].content.parts[0].text;
+          // 마크다운 백틱 제거 (가끔 JSON 텍스트를 마크다운 블록으로 감싸서 리턴할 때 방어)
+          rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+          break; // 성공하면 루프 탈출
+        } else {
+          const errorData = await geminiResponse.json().catch(() => ({}));
+          // 모델이 없는 에러(404)면 다음 모델로 넘어감, 아니면 에러 발생
+          if (errorData.error?.code === 404 || errorData.error?.message?.includes('not found')) {
+            console.log(`[Gemini API] Model ${model} not found, trying next model...`);
+            continue;
+          } else {
+            throw new Error(`Gemini API 오류 (${model}): ${errorData.error?.message || '알 수 없는 오류'}`);
+          }
+        }
       }
 
-      const geminiData = await geminiResponse.json();
-      const rawText = geminiData.candidates[0].content.parts[0].text;
+      if (!rawText) {
+        throw new Error("모든 Gemini 모델(1.5-flash, 1.5-pro, pro-vision) 호출에 실패했거나 사용 가능한 모델이 없습니다. API 키 권한을 확인해주세요.");
+      }
       
       try {
         aiDiagnosisResult = JSON.parse(rawText);
       } catch (parseError) {
-        throw new Error("AI가 JSON 형식을 반환하지 않았습니다.");
+        throw new Error("AI가 JSON 형식을 반환하지 않았습니다. 내용: " + rawText);
       }
     }
 
