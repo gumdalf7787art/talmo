@@ -175,13 +175,34 @@ function PCDiagnosisContent() {
               </div>
             </div>
 
-            <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200">
-              <h4 className="font-bold text-slate-900 text-sm mb-2">📋 전문의 AI 스캔 안내</h4>
-              <ul className="text-[13px] text-slate-700 space-y-1.5 list-disc pl-4">
-                <li>입력하신 환자 컨텍스트를 기반으로 정밀 임상 분석을 수행합니다.</li>
-                <li>AI가 전문의 소견서 및 맞춤형 처방 가이드라인을 생성합니다.</li>
-                <li>분석 결과는 참고용이며 의학적 진단을 완전 대체할 수 없습니다.</li>
-              </ul>
+            <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 flex flex-col gap-4">
+              <div>
+                <h4 className="font-bold text-slate-900 text-sm mb-2 flex items-center gap-1.5"><Camera className="w-4 h-4 text-teal-600"/> 정확도를 높이는 촬영 팁</h4>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <div className="bg-white border border-slate-200 rounded-lg p-3 flex flex-col items-center text-center gap-1.5">
+                    <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-lg">👱‍♂️</div>
+                    <span className="text-[12px] font-bold text-slate-800">M자 / 헤어라인</span>
+                    <span className="text-[11px] text-slate-500 leading-tight">정면 45도에서<br/>이마 라인이 보이게</span>
+                  </div>
+                  <div className="bg-white border border-slate-200 rounded-lg p-3 flex flex-col items-center text-center gap-1.5">
+                    <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-lg">🙇‍♂️</div>
+                    <span className="text-[12px] font-bold text-slate-800">정수리 / 가르마</span>
+                    <span className="text-[11px] text-slate-500 leading-tight">고개를 숙여<br/>위에서 아래로</span>
+                  </div>
+                </div>
+                <p className="text-[12px] text-slate-600 mt-3 bg-white p-2 rounded border border-slate-200 flex items-start gap-1.5">
+                  <AlertCircle className="w-4 h-4 text-orange-500 shrink-0" />
+                  <span>밝은 조명 아래에서 흔들림 없이 찍어야 <strong>모발 밀도와 두피 상태(홍반 등)</strong>를 AI가 가장 정확히 판독합니다.</span>
+                </p>
+              </div>
+
+              <div className="border-t border-slate-200 pt-4">
+                <h4 className="font-bold text-slate-900 text-sm mb-2 flex items-center gap-1.5"><FileText className="w-4 h-4 text-slate-600"/> 임상 스캔 안내</h4>
+                <ul className="text-[12px] text-slate-700 space-y-1.5 list-disc pl-4">
+                  <li>입력된 환자 정보(나이/성별/가족력)를 바탕으로 초개인화 분석을 진행합니다.</li>
+                  <li>AI의 분석 결과는 참고용이며, 의학적 진단을 완전 대체할 수 없습니다.</li>
+                </ul>
+              </div>
             </div>
             
             <div 
