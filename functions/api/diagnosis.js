@@ -108,17 +108,20 @@ export async function onRequestPost(context) {
         if (geminiResponse.ok) {
           const geminiData = await geminiResponse.json();
           rawText = geminiData.candidates[0].content.parts[0].text;
-          // 마크다운 백틱 제거 (가끔 JSON 텍스트를 마크다운 블록으로 감싸서 리턴할 때 방어)
           rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
           break; // 성공하면 루프 탈출
         } else {
           const errorData = await geminiResponse.json().catch(() => ({}));
-          // 모델이 없는 에러(404)면 다음 모델로 넘어감, 아니면 에러 발생
-          if (errorData.error?.code === 404 || errorData.error?.message?.includes('not found')) {
-            console.log(`[Gemini API] Model ${model} not found, trying next model...`);
+          const errCode = errorData.error?.code;
+          const errMsg = errorData.error?.message || '';
+          
+          // 404(Not Found) 거나 503(Overloaded) 등 일시적/모델 권한 에러인 경우 다음 모델로 넘어감
+          if (errCode === 404 || errCode === 503 || errMsg.includes('not found') || errMsg.includes('high demand') || errMsg.includes('overloaded')) {
+            console.log(`[Gemini API] Model ${model} failed (${errCode}), trying next model...`);
             continue;
           } else {
-            throw new Error(`Gemini API 오류 (${model}): ${errorData.error?.message || '알 수 없는 오류'}`);
+            // 그 외의 치명적 에러(API Key 오류 등)는 즉시 중단
+            throw new Error(`Gemini API 오류 (${model}): ${errMsg || '알 수 없는 오류'}`);
           }
         }
       }
