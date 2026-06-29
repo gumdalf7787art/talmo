@@ -11,7 +11,9 @@ function PCDiagnosisContent() {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [consentAgreed, setConsentAgreed] = useState(false);
+  const [consent1, setConsent1] = useState(false);
+  const [consent2, setConsent2] = useState(false);
+  const consentAll = consent1 && consent2;
   const [result, setResult] = useState(null);
   const fileInputRef = useRef(null);
   const [user, setUser] = useState(null);
@@ -57,7 +59,7 @@ function PCDiagnosisContent() {
   const handleImageChange = (e) => { const file = e.target.files[0]; if (file) { setImageFile(file); setImagePreview(URL.createObjectURL(file)); setResult(null); } };
 
   const handleAnalyze = async () => {
-    if (!imageFile || !isProfileComplete || !consentAgreed) return;
+    if (!imageFile || !isProfileComplete || !consentAll) return;
 
     if (user) {
       const isUpdated = 
@@ -138,7 +140,7 @@ function PCDiagnosisContent() {
           {/* Left: Info + Upload */}
           <div className="flex flex-col gap-5">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">AI 정밀 두피 진단</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">AI 정밀 두피 분석</h2>
               <p className="text-sm text-gray-500">이마 라인이나 정수리가 잘 보이도록 사진을 찍어주세요.</p>
             </div>
             <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-gray-300 rounded-2xl h-80 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer overflow-hidden transition-colors">
@@ -157,7 +159,7 @@ function PCDiagnosisContent() {
           <div className="flex flex-col gap-5">
             <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm flex flex-col gap-4">
               <div className="flex items-center gap-2">
-                <h3 className="font-bold text-[16px] text-gray-900">환자 정보 (초개인화 분석용)</h3>
+                <h3 className="font-bold text-[16px] text-gray-900">환자 정보</h3>
                 {!isProfileComplete && <span className="text-[12px] text-red-500 font-medium ml-auto">필수 입력 항목입니다</span>}
               </div>
               <div className="flex flex-col gap-3">
@@ -201,44 +203,70 @@ function PCDiagnosisContent() {
                 <h4 className="font-bold text-slate-900 text-sm mb-2 flex items-center gap-1.5"><Camera className="w-4 h-4 text-teal-600"/> 정확도를 높이는 촬영 팁</h4>
                 <div className="grid grid-cols-2 gap-2 mt-2">
                   <div className="bg-white border border-slate-200 rounded-lg p-3 flex flex-col items-center text-center gap-1.5">
-                    <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-lg">👱‍♂️</div>
+                    <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center overflow-hidden border border-slate-100">
+                      <img src="/hairline_guide.png" alt="M자 헤어라인 가이드" className="w-full h-full object-cover scale-110" />
+                    </div>
                     <span className="text-[12px] font-bold text-slate-800">M자 / 헤어라인</span>
                     <span className="text-[11px] text-slate-500 leading-tight">정면 45도에서<br/>이마 라인이 보이게</span>
                   </div>
                   <div className="bg-white border border-slate-200 rounded-lg p-3 flex flex-col items-center text-center gap-1.5">
-                    <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-lg">🙇‍♂️</div>
+                    <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center overflow-hidden border border-slate-100">
+                      <img src="/crown_guide.png" alt="정수리 가이드" className="w-full h-full object-cover scale-110" />
+                    </div>
                     <span className="text-[12px] font-bold text-slate-800">정수리 / 가르마</span>
                     <span className="text-[11px] text-slate-500 leading-tight">고개를 숙여<br/>위에서 아래로</span>
                   </div>
                 </div>
-                <p className="text-[12px] text-slate-600 mt-3 bg-white p-2 rounded border border-slate-200 flex items-start gap-1.5">
-                  <AlertCircle className="w-4 h-4 text-orange-500 shrink-0" />
-                  <span>밝은 조명 아래에서 흔들림 없이 찍어야 <strong>모발 밀도와 두피 상태(홍반 등)</strong>를 AI가 가장 정확히 판독합니다.</span>
-                </p>
+                <div className="text-[12px] text-slate-600 mt-3 bg-white p-3 rounded border border-slate-200 flex flex-col gap-2">
+                  <div className="flex items-start gap-1.5">
+                    <AlertCircle className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" />
+                    <span>밝은 조명 아래에서 흔들림 없이 찍어야 <strong>모발 밀도와 두피 상태(홍반 등)</strong>를 AI가 가장 정확히 판독합니다.</span>
+                  </div>
+                  <div className="flex items-start gap-1.5 ml-5 text-slate-500">
+                    <span>• Ai 판독은 각도와 조명 그리고 촬영 이미지에 따라 다르게 나올 수 있습니다.</span>
+                  </div>
+                </div>
               </div>
 
               <div className="border-t border-slate-200 pt-4">
                 <h4 className="font-bold text-slate-900 text-sm mb-2 flex items-center gap-1.5"><FileText className="w-4 h-4 text-slate-600"/> 임상 스캔 안내</h4>
                 <ul className="text-[12px] text-slate-700 space-y-1.5 list-disc pl-4">
                   <li>입력된 환자 정보(나이/성별/가족력)를 바탕으로 초개인화 분석을 진행합니다.</li>
-                  <li>AI의 분석 결과는 참고용이며, 의학적 진단을 완전 대체할 수 없습니다.</li>
                 </ul>
               </div>
             </div>
             
-            <div 
-              onClick={() => setConsentAgreed(!consentAgreed)}
-              className="flex items-start gap-3 cursor-pointer p-1"
-            >
-              <div className="mt-0.5 text-teal-600">
-                {consentAgreed ? <CheckSquare className="w-5 h-5" /> : <Square className="w-5 h-5 text-gray-400" />}
+            <div className="flex flex-col gap-2 bg-white p-4 rounded-xl border border-slate-200 shadow-sm mt-1">
+              <div 
+                onClick={() => { const val = !consentAll; setConsent1(val); setConsent2(val); }} 
+                className="flex items-center gap-2 cursor-pointer border-b border-slate-100 pb-3 mb-1"
+              >
+                <div className="text-teal-600">
+                  {consentAll ? <CheckSquare className="w-5 h-5" /> : <Square className="w-5 h-5 text-gray-400" />}
+                </div>
+                <span className="text-[14px] font-bold text-slate-800">전체 동의하기</span>
               </div>
-              <span className="text-[13px] text-gray-600 leading-snug">
-                (필수) 서비스 품질 향상 및 향후 자체 AI 모델 학습을 위해, 업로드하신 두피 사진과 분석 결과 데이터를 수집하고 활용하는 것에 동의합니다.
-              </span>
+              
+              <div onClick={() => setConsent1(!consent1)} className="flex items-start gap-2 cursor-pointer pl-1">
+                <div className="mt-0.5 text-teal-600 shrink-0">
+                  {consent1 ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4 text-gray-400" />}
+                </div>
+                <span className="text-[12px] text-gray-600 leading-snug">
+                  (필수) 서비스 품질 향상 및 AI 학습을 위해, 사진과 분석 결과 데이터를 수집하고 활용하는 것에 동의합니다.
+                </span>
+              </div>
+
+              <div onClick={() => setConsent2(!consent2)} className="flex items-start gap-2 cursor-pointer pl-1 mt-1">
+                <div className="mt-0.5 text-teal-600 shrink-0">
+                  {consent2 ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4 text-gray-400" />}
+                </div>
+                <span className="text-[12px] text-gray-600 leading-snug">
+                  (필수) AI의 분석 결과는 참고용이며, 의학적 진단을 완전 대체할 수 없습니다.
+                </span>
+              </div>
             </div>
 
-            <button onClick={handleAnalyze} disabled={!imageFile || isAnalyzing || !isProfileComplete || !consentAgreed} className={`w-full py-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 text-lg transition-colors ${!imageFile || !isProfileComplete || !consentAgreed ? "bg-gray-300 cursor-not-allowed" : "bg-slate-800 hover:bg-slate-900 shadow-md"}`}>
+            <button onClick={handleAnalyze} disabled={!imageFile || isAnalyzing || !isProfileComplete || !consentAll} className={`w-full py-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 text-lg transition-colors mt-2 ${!imageFile || !isProfileComplete || !consentAll ? "bg-gray-300 cursor-not-allowed" : "bg-slate-800 hover:bg-slate-900 shadow-md"}`}>
               {isAnalyzing ? (<><RefreshCcw className="w-5 h-5 animate-spin" /> 임상 리포트 생성 중...</>) : (<><FileText className="w-5 h-5" /> 전문 진단서 발급받기</>)}
             </button>
           </div>
