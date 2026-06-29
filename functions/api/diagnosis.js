@@ -120,12 +120,17 @@ export async function onRequestPost(context) {
           const errCode = errorData.error?.code;
           const errMsg = errorData.error?.message || '';
           
+          // 사용량 제한(Rate Limit, 429) 에러인 경우 사용자에게 친절한 한글 메시지 반환
+          if (errCode === 429 || errMsg.toLowerCase().includes('quota') || errMsg.toLowerCase().includes('rate limit')) {
+            throw new Error(`구글 AI 일일/분당 사용량 제한에 도달했습니다 (무료 요금제 제한). 약 30~60초 뒤에 다시 시도해주세요! (대상: ${model})`);
+          }
+
           // 404(Not Found) 거나 503(Overloaded) 등 일시적/모델 권한 에러인 경우 다음 모델로 넘어감
           if (errCode === 404 || errCode === 503 || errMsg.includes('not found') || errMsg.includes('high demand') || errMsg.includes('overloaded')) {
             console.log(`[Gemini API] Model ${model} failed (${errCode}), trying next model...`);
             continue;
           } else {
-            // 그 외의 치명적 에러(API Key 오류 등)는 즉시 중단
+            // 그 외의 치명적 에러는 즉시 중단
             throw new Error(`Gemini API 오류 (${model}): ${errMsg || '알 수 없는 오류'}`);
           }
         }
