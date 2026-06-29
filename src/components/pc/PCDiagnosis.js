@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, ChevronRight, FileText, Calendar, User, Activity, Pill, Heart, Home, CheckSquare, Square } from "lucide-react";
 import RadarChart from "../RadarChart";
+import { compressImage } from "@/lib/imageUtils";
 
 function PCDiagnosisContent() {
   const [imageFile, setImageFile] = useState(null);
@@ -98,6 +99,14 @@ function PCDiagnosisContent() {
       
       if (user && user.id) {
         formData.append("userId", user.id);
+      }
+
+      // 서버 용량 최적화를 위해 초소형 썸네일(Base64) 생성 후 함께 전송
+      try {
+        const thumbnailBase64 = await compressImage(imageFile, 150, 0.5); // 가로 150px, 품질 50%
+        formData.append("thumbnail", thumbnailBase64);
+      } catch (err) {
+        console.warn("Thumbnail generation failed, skipping...", err);
       }
 
       const response = await fetch("/api/diagnosis", { method: "POST", body: formData });

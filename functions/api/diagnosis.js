@@ -170,11 +170,12 @@ export async function onRequestPost(context) {
       const dbScore = aiDiagnosisResult?.diagnosis?.summary?.score || 0;
       const dbSeverity = aiDiagnosisResult?.diagnosis?.summary?.severity || '알 수 없음';
       const dbDetails = JSON.stringify(aiDiagnosisResult?.diagnosis || {});
+      const thumbnailBase64 = formData.get('thumbnail') || "processed_by_gemini";
 
       const insertStmt = db.prepare(`
         INSERT INTO diagnostics (id, user_id, score, severity, image_url, details, created_at) 
         VALUES (?, ?, ?, ?, ?, ?, ?)
-      `).bind(id, userId, dbScore, dbSeverity, "processed_by_gemini", dbDetails, now);
+      `).bind(id, userId, dbScore, dbSeverity, thumbnailBase64, dbDetails, now);
       await insertStmt.run();
     }
 
