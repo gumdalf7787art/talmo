@@ -101,8 +101,18 @@ function PCDiagnosisContent() {
       }
 
       const response = await fetch("/api/diagnosis", { method: "POST", body: formData });
-      if (response.ok) { const data = await response.json(); setResult(data.diagnosis); } else { alert("분석 중 오류가 발생했습니다."); }
-    } catch (error) { alert("서버와 통신할 수 없습니다."); }
+      if (response.ok) { 
+        const data = await response.json(); 
+        setResult(data.diagnosis); 
+      } else { 
+        const errData = await response.json().catch(() => ({}));
+        alert(`분석 중 오류가 발생했습니다: ${errData.error || response.statusText || '서버 에러'}`); 
+        console.error("API Error Response:", errData);
+      }
+    } catch (error) { 
+      alert(`서버와 통신할 수 없습니다: ${error.message}`); 
+      console.error("Fetch Error:", error);
+    }
     finally { setIsAnalyzing(false); }
   };
 
