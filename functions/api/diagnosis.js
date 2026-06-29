@@ -32,8 +32,8 @@ export async function onRequestPost(context) {
     if (apiKey === "YOUR_DUMMY_API_KEY_HERE") {
       aiDiagnosisResult = generateMockData(gender, age, familyHistory);
     } else {
-      // 3. 실제 Gemini API 호출 (다중 모델 폴백 지원)
-      const modelsToTry = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-pro-vision'];
+      // 3. 실제 Gemini API 호출 (최신 모델 폴백 지원: 3.5-flash -> 2.5-flash -> 2.0-flash)
+      const modelsToTry = ['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-2.0-flash'];
       let geminiResponse;
       let rawText = null;
 
