@@ -122,7 +122,7 @@ export async function onRequestPost(context) {
           
           // 사용량 제한(Rate Limit, 429) 에러인 경우 사용자에게 친절한 한글 메시지 반환
           if (errCode === 429 || errMsg.toLowerCase().includes('quota') || errMsg.toLowerCase().includes('rate limit')) {
-            throw new Error(`구글 AI 일일/분당 사용량 제한에 도달했습니다 (무료 요금제 제한). 약 30~60초 뒤에 다시 시도해주세요! (대상: ${model})`);
+            throw new Error(`사용자가 너무 많습니다. 1분 뒤에 다시 시도해주세요.`);
           }
 
           // 404(Not Found) 거나 503(Overloaded) 등 일시적/모델 권한 에러인 경우 다음 모델로 넘어감
