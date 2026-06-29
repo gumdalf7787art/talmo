@@ -100,6 +100,11 @@ export async function onRequestPost(context) {
                 ]
               }
             ],
+            generationConfig: {
+              temperature: 0.0,
+              topK: 1,
+              topP: 0.1
+            }
             // gemini-pro-vision does not strictly support responseMimeType in some regions, but we will pass it anyway or remove it.
             // Actually, we'll just let it return JSON text.
           })
