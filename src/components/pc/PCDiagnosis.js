@@ -245,7 +245,7 @@ function PCDiagnosisContent() {
             {/* 리포트 헤더 */}
             <div className="border-b-[3px] border-slate-800 p-8 flex justify-between items-end bg-slate-50">
               <div>
-                <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">AI 임상 진단 소견서</h1>
+                <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">탈모톡 분석 결과지</h1>
                 <p className="text-sm font-medium text-slate-500">TalmoTalk Precision AI Assessment Report</p>
               </div>
               <div className="text-right text-[13px] text-slate-600 space-y-1">
@@ -268,7 +268,21 @@ function PCDiagnosisContent() {
                 <div className="bg-slate-50 border border-slate-200 p-5 rounded-lg flex flex-col justify-center items-center text-center">
                   <span className="text-[13px] font-bold text-slate-500 mb-1">진행 단계 (Norwood/Ludwig)</span>
                   <div className="text-2xl font-black text-red-600 mt-1">{report?.summary?.norwoodStage}</div>
-                  <div className="text-[12px] font-bold text-red-600/70 mt-1 bg-red-100 px-2 py-0.5 rounded">{report?.summary?.severity}</div>
+                  
+                  {/* 진행 심각도 시각화 스텝퍼 */}
+                  <div className="flex items-center gap-1 mt-3 w-full max-w-[200px]">
+                    {['양호', '진행: 초기', '진행: 중기', '진행: 심각'].map((stage, idx) => {
+                      const isActive = report?.summary?.severity === stage;
+                      return (
+                        <div key={idx} className="flex-1 flex flex-col items-center gap-1">
+                          <div className={`h-1.5 w-full rounded-full ${isActive ? 'bg-red-500' : 'bg-slate-200'}`} />
+                          <span className={`text-[10px] whitespace-nowrap ${isActive ? 'font-bold text-red-600' : 'text-slate-400 font-medium'}`}>
+                            {stage.replace('진행: ', '')}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
 
@@ -287,7 +301,7 @@ function PCDiagnosisContent() {
                             <span className="text-slate-800">{m.label}</span>
                             <span className={`text-${m.color || 'slate'}-600`}>{m.score}점</span>
                           </div>
-                          {m.clinicalNote && <p className="text-slate-500 leading-snug">{m.clinicalNote}</p>}
+                          {m.clinicalNote && <p className="text-slate-500 leading-snug" dangerouslySetInnerHTML={{ __html: m.clinicalNote }} />}
                         </div>
                       ))}
                     </div>
@@ -301,10 +315,10 @@ function PCDiagnosisContent() {
 
                 {/* 우측: 전문의 소견 및 처방 가이드라인 */}
                 <div className="col-span-7 flex flex-col gap-6">
-                  {/* 전문의 소견 */}
+                  {/* 탈모톡 소견 */}
                   <div className="border border-slate-200 rounded-lg overflow-hidden">
                     <div className="bg-slate-100 p-3 border-b border-slate-200">
-                      <h3 className="text-[15px] font-bold text-slate-900 flex items-center gap-2"><FileText className="w-4 h-4 text-slate-600" /> AI 전문의 소견 (Medical Opinion)</h3>
+                      <h3 className="text-[15px] font-bold text-slate-900 flex items-center gap-2"><FileText className="w-4 h-4 text-slate-600" /> 탈모톡 소견</h3>
                     </div>
                     <div className="p-5 text-[14px] text-slate-700 leading-relaxed space-y-4">
                       {report?.medicalAnalysis?.finding && (
@@ -325,15 +339,15 @@ function PCDiagnosisContent() {
                   {/* 맞춤 솔루션 (가이드라인) */}
                   <div className="border border-slate-200 rounded-lg overflow-hidden">
                     <div className="bg-slate-800 p-3 border-b border-slate-900">
-                      <h3 className="text-[15px] font-bold text-white flex items-center gap-2"><AlertCircle className="w-4 h-4 text-slate-300" /> 맞춤 치료 및 관리 가이드라인 (Treatment Plan)</h3>
+                      <h3 className="text-[15px] font-bold text-white flex items-center gap-2"><AlertCircle className="w-4 h-4 text-slate-300" /> 맞춤 관리 가이드 (Management Plan)</h3>
                     </div>
                     <div className="p-5 space-y-5">
                       
                       {report?.treatmentPlan?.medical?.length > 0 && (
                         <div>
-                          <h4 className="flex items-center gap-1.5 text-[14px] font-bold text-teal-700 mb-2"><Pill className="w-4 h-4" /> 의학적 치료 (Rx)</h4>
+                          <h4 className="flex items-center gap-1.5 text-[14px] font-bold text-teal-700 mb-2"><Pill className="w-4 h-4" /> 권고사항</h4>
                           <ul className="list-disc pl-5 text-[13.5px] text-slate-700 space-y-1 marker:text-teal-500">
-                            {report.treatmentPlan.medical.map((text, i) => <li key={i}>{text}</li>)}
+                            {report.treatmentPlan.medical.map((text, i) => <li key={i} dangerouslySetInnerHTML={{ __html: text }} />)}
                           </ul>
                         </div>
                       )}
@@ -342,7 +356,7 @@ function PCDiagnosisContent() {
                         <div>
                           <h4 className="flex items-center gap-1.5 text-[14px] font-bold text-blue-700 mb-2"><Home className="w-4 h-4" /> 자가 관리 (Home Care)</h4>
                           <ul className="list-disc pl-5 text-[13.5px] text-slate-700 space-y-1 marker:text-blue-500">
-                            {report.treatmentPlan.homeCare.map((text, i) => <li key={i}>{text}</li>)}
+                            {report.treatmentPlan.homeCare.map((text, i) => <li key={i} dangerouslySetInnerHTML={{ __html: text }} />)}
                           </ul>
                         </div>
                       )}
@@ -351,7 +365,7 @@ function PCDiagnosisContent() {
                         <div>
                           <h4 className="flex items-center gap-1.5 text-[14px] font-bold text-orange-600 mb-2"><Heart className="w-4 h-4" /> 생활 습관 (Lifestyle)</h4>
                           <ul className="list-disc pl-5 text-[13.5px] text-slate-700 space-y-1 marker:text-orange-400">
-                            {report.treatmentPlan.lifestyle.map((text, i) => <li key={i}>{text}</li>)}
+                            {report.treatmentPlan.lifestyle.map((text, i) => <li key={i} dangerouslySetInnerHTML={{ __html: text }} />)}
                           </ul>
                         </div>
                       )}
@@ -360,7 +374,7 @@ function PCDiagnosisContent() {
                   </div>
                   
                   <div className="text-[11px] text-slate-400 text-center mt-2">
-                    * 본 소견서는 AI의 정밀 시각 분석에 기반하며, 실제 처방을 위해서는 전문의와 대면 상담이 필요합니다.
+                    * AI의 분석 결과는 참고용이며, 의학적 진단을 대체하는것은 아닙니다.
                   </div>
                   
                   {!isHistory && (
