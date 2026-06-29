@@ -133,7 +133,49 @@ function PCDiagnosisContent() {
   const report = result || {};
 
   return (
-    <div className="max-w-[1000px] mx-auto pb-10">
+    <div className="max-w-[1000px] mx-auto pb-10 relative">
+      {/* Loading Modal */}
+      {isAnalyzing && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl w-full max-w-[480px] overflow-hidden shadow-2xl flex flex-col animate-in fade-in zoom-in duration-300">
+            {/* Modal Header */}
+            <div className="flex justify-between items-center p-4 border-b border-gray-100">
+              <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                <RefreshCcw className="w-5 h-5 text-teal-600 animate-spin" /> 
+                AI 두피 분석 중
+              </h3>
+              <button onClick={() => alert("분석 중에는 창을 닫을 수 없습니다. 조금만 기다려주세요!")} className="p-1 text-gray-400 hover:text-gray-700 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            </div>
+            
+            {/* Modal Body */}
+            <div className="p-6 flex flex-col items-center text-center gap-4">
+              <p className="text-gray-800 font-bold text-[18px]">
+                지금 분석중입니다.<br />
+                창을 닫지 말고 기다리세요.
+              </p>
+              
+              {/* Progress Bar */}
+              <div className="w-full bg-gray-100 rounded-full h-3 mt-2 overflow-hidden relative">
+                <div className="absolute top-0 bottom-0 left-0 bg-teal-500 rounded-full animate-pulse" style={{ width: '85%' }}></div>
+              </div>
+              <p className="text-sm text-gray-500 mb-2">초개인화 모델 스캔을 진행하고 있습니다...</p>
+              
+              {/* Ad Banner */}
+              <a href="https://store.talmotalk.com" target="_blank" rel="noopener noreferrer" className="block w-full mt-2 rounded-xl overflow-hidden border border-gray-200 hover:shadow-md transition-shadow relative group">
+                <img src="/talmotalk_ad.png" alt="탈모톡 스토어 광고" className="w-full h-[120px] object-cover" />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                  <span className="bg-white/95 backdrop-blur-sm text-gray-900 text-[13px] font-bold px-4 py-2 rounded-full shadow-sm flex items-center gap-1 transition-transform group-hover:scale-105">
+                    맞춤형 케어 제품 구경하기 <ChevronRight className="w-4 h-4" />
+                  </span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
       {!result && !isHistory ? (
         /* 입력 모드: 좌우 2분할 (기존 유지) */
         <div className="grid grid-cols-2 gap-6">
@@ -147,11 +189,49 @@ function PCDiagnosisContent() {
               {imagePreview ? (<img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />) : (
                 <div className="flex flex-col items-center text-gray-400 gap-3">
                   <div className="p-4 bg-white rounded-full shadow-sm"><Camera className="w-10 h-10 text-teal-500" /></div>
-                  <span className="font-medium text-lg">사진 촬영 또는 업로드</span>
+                  <span className="font-medium text-lg">사진 업로드</span>
                   <span className="text-sm text-gray-400">클릭하여 파일을 선택하세요</span>
                 </div>
               )}
               <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleImageChange} />
+            </div>
+
+            <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 flex flex-col gap-4">
+              <div>
+                <h4 className="font-bold text-slate-900 text-sm mb-2 flex items-center gap-1.5"><Camera className="w-4 h-4 text-teal-600"/> 정확도를 높이는 촬영 팁</h4>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <div className="bg-white border border-slate-200 rounded-lg p-3 flex flex-col items-center text-center gap-1.5">
+                    <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center overflow-hidden border border-slate-100">
+                      <img src="/hairline_guide.png" alt="M자 헤어라인 가이드" className="w-full h-full object-cover scale-110" />
+                    </div>
+                    <span className="text-[12px] font-bold text-slate-800">M자 / 헤어라인</span>
+                    <span className="text-[11px] text-slate-500 leading-tight">정면 45도에서<br/>이마 라인이 보이게</span>
+                  </div>
+                  <div className="bg-white border border-slate-200 rounded-lg p-3 flex flex-col items-center text-center gap-1.5">
+                    <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center overflow-hidden border border-slate-100">
+                      <img src="/crown_guide.png" alt="정수리 가이드" className="w-full h-full object-cover scale-110" />
+                    </div>
+                    <span className="text-[12px] font-bold text-slate-800">정수리 / 가르마</span>
+                    <span className="text-[11px] text-slate-500 leading-tight">고개를 숙여<br/>위에서 아래로</span>
+                  </div>
+                </div>
+                <div className="text-[12px] text-slate-600 mt-3 bg-white p-3 rounded border border-slate-200 flex flex-col gap-2">
+                  <div className="flex items-start gap-1.5">
+                    <AlertCircle className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" />
+                    <span>밝은 조명 아래에서 흔들림 없이 찍어야 <strong>모발 밀도와 두피 상태(홍반 등)</strong>를 AI가 가장 정확히 판독합니다.</span>
+                  </div>
+                  <div className="flex items-start gap-1.5 ml-5 text-slate-500">
+                    <span>• Ai 판독은 각도와 조명 그리고 촬영 이미지에 따라 다르게 나올 수 있습니다.</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-slate-200 pt-4">
+                <h4 className="font-bold text-slate-900 text-sm mb-2 flex items-center gap-1.5"><FileText className="w-4 h-4 text-slate-600"/> 임상 스캔 안내</h4>
+                <ul className="text-[12px] text-slate-700 space-y-1.5 list-disc pl-4">
+                  <li>입력된 환자 정보(나이/성별/가족력)를 바탕으로 초개인화 분석을 진행합니다.</li>
+                </ul>
+              </div>
             </div>
           </div>
 
@@ -197,44 +277,6 @@ function PCDiagnosisContent() {
                 </div>
               </div>
             </div>
-
-            <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 flex flex-col gap-4">
-              <div>
-                <h4 className="font-bold text-slate-900 text-sm mb-2 flex items-center gap-1.5"><Camera className="w-4 h-4 text-teal-600"/> 정확도를 높이는 촬영 팁</h4>
-                <div className="grid grid-cols-2 gap-2 mt-2">
-                  <div className="bg-white border border-slate-200 rounded-lg p-3 flex flex-col items-center text-center gap-1.5">
-                    <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center overflow-hidden border border-slate-100">
-                      <img src="/hairline_guide.png" alt="M자 헤어라인 가이드" className="w-full h-full object-cover scale-110" />
-                    </div>
-                    <span className="text-[12px] font-bold text-slate-800">M자 / 헤어라인</span>
-                    <span className="text-[11px] text-slate-500 leading-tight">정면 45도에서<br/>이마 라인이 보이게</span>
-                  </div>
-                  <div className="bg-white border border-slate-200 rounded-lg p-3 flex flex-col items-center text-center gap-1.5">
-                    <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center overflow-hidden border border-slate-100">
-                      <img src="/crown_guide.png" alt="정수리 가이드" className="w-full h-full object-cover scale-110" />
-                    </div>
-                    <span className="text-[12px] font-bold text-slate-800">정수리 / 가르마</span>
-                    <span className="text-[11px] text-slate-500 leading-tight">고개를 숙여<br/>위에서 아래로</span>
-                  </div>
-                </div>
-                <div className="text-[12px] text-slate-600 mt-3 bg-white p-3 rounded border border-slate-200 flex flex-col gap-2">
-                  <div className="flex items-start gap-1.5">
-                    <AlertCircle className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" />
-                    <span>밝은 조명 아래에서 흔들림 없이 찍어야 <strong>모발 밀도와 두피 상태(홍반 등)</strong>를 AI가 가장 정확히 판독합니다.</span>
-                  </div>
-                  <div className="flex items-start gap-1.5 ml-5 text-slate-500">
-                    <span>• Ai 판독은 각도와 조명 그리고 촬영 이미지에 따라 다르게 나올 수 있습니다.</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="border-t border-slate-200 pt-4">
-                <h4 className="font-bold text-slate-900 text-sm mb-2 flex items-center gap-1.5"><FileText className="w-4 h-4 text-slate-600"/> 임상 스캔 안내</h4>
-                <ul className="text-[12px] text-slate-700 space-y-1.5 list-disc pl-4">
-                  <li>입력된 환자 정보(나이/성별/가족력)를 바탕으로 초개인화 분석을 진행합니다.</li>
-                </ul>
-              </div>
-            </div>
             
             <div className="flex flex-col gap-2 bg-white p-4 rounded-xl border border-slate-200 shadow-sm mt-1">
               <div 
@@ -266,8 +308,16 @@ function PCDiagnosisContent() {
               </div>
             </div>
 
-            <button onClick={handleAnalyze} disabled={!imageFile || isAnalyzing || !isProfileComplete || !consentAll} className={`w-full py-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 text-lg transition-colors mt-2 ${!imageFile || !isProfileComplete || !consentAll ? "bg-gray-300 cursor-not-allowed" : "bg-slate-800 hover:bg-slate-900 shadow-md"}`}>
-              {isAnalyzing ? (<><RefreshCcw className="w-5 h-5 animate-spin" /> 임상 리포트 생성 중...</>) : (<><FileText className="w-5 h-5" /> 전문 진단서 발급받기</>)}
+            <button 
+              onClick={handleAnalyze} 
+              disabled={!imageFile || isAnalyzing || !isProfileComplete || !consentAll} 
+              className={`w-full py-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 text-lg transition-all duration-300 mt-2 
+              ${!imageFile || !isProfileComplete || !consentAll 
+                ? "bg-gray-300 cursor-not-allowed" 
+                : "bg-slate-800 hover:bg-slate-900 hover:-translate-y-1 hover:shadow-lg shadow-md"
+              }`}
+            >
+              {isAnalyzing ? (<><RefreshCcw className="w-5 h-5 animate-spin" /> 임상 리포트 생성 중...</>) : (<><FileText className="w-5 h-5" /> AI 분석 실행</>)}
             </button>
           </div>
         </div>

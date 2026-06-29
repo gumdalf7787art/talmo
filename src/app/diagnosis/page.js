@@ -160,8 +160,50 @@ function DiagnosisContent() {
   };
 
   return (
-    <div className={`flex flex-col ${isHistory ? 'gap-4 p-0' : 'gap-6 p-4'}`}>
+    <div className={`flex flex-col relative ${isHistory ? 'gap-4 p-0' : 'gap-6 p-4'}`}>
       
+      {/* Loading Modal */}
+      {isAnalyzing && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl w-full max-w-[400px] overflow-hidden shadow-2xl flex flex-col animate-in fade-in zoom-in duration-300">
+            {/* Modal Header */}
+            <div className="flex justify-between items-center p-4 border-b border-gray-100">
+              <h3 className="font-bold text-gray-900 flex items-center gap-2 text-[15px]">
+                <RefreshCcw className="w-5 h-5 text-teal-600 animate-spin" /> 
+                AI 두피 분석 중
+              </h3>
+              <button onClick={() => alert("분석 중에는 창을 닫을 수 없습니다. 조금만 기다려주세요!")} className="p-1 text-gray-400 hover:text-gray-700 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            </div>
+            
+            {/* Modal Body */}
+            <div className="p-5 flex flex-col items-center text-center gap-3">
+              <p className="text-gray-800 font-bold text-[16px] leading-snug">
+                지금 분석중입니다.<br />
+                창을 닫지 말고 기다리세요.
+              </p>
+              
+              {/* Progress Bar */}
+              <div className="w-full bg-gray-100 rounded-full h-2.5 mt-2 overflow-hidden relative">
+                <div className="absolute top-0 bottom-0 left-0 bg-teal-500 rounded-full animate-pulse" style={{ width: '85%' }}></div>
+              </div>
+              <p className="text-[12px] text-gray-500 mb-2">초개인화 모델 스캔을 진행하고 있습니다...</p>
+              
+              {/* Ad Banner */}
+              <a href="https://store.talmotalk.com" target="_blank" rel="noopener noreferrer" className="block w-full mt-1 rounded-xl overflow-hidden border border-gray-200 shadow-sm relative group active:scale-[0.98] transition-transform">
+                <img src="/talmotalk_ad.png" alt="탈모톡 스토어 광고" className="w-full h-[100px] object-cover" />
+                <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                  <span className="bg-white/95 backdrop-blur-sm text-gray-900 text-[12px] font-bold px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1">
+                    맞춤형 케어 제품 구경하기 <ChevronRight className="w-3 h-3" />
+                  </span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Back Button Header for History Mode */}
       {isHistory && (
         <header className="sticky top-0 z-50 bg-white flex items-center gap-2 px-4 h-14 border-b border-gray-100">
@@ -253,7 +295,7 @@ function DiagnosisContent() {
                 <div className="p-3 bg-white rounded-full shadow-sm">
                   <Camera className="w-8 h-8 text-teal-500" />
                 </div>
-                <span className="font-medium">사진 촬영 또는 업로드</span>
+                <span className="font-medium">사진 업로드</span>
               </div>
             )}
             <input 
@@ -270,8 +312,10 @@ function DiagnosisContent() {
             <button
               onClick={handleAnalyze}
               disabled={!imageFile || isAnalyzing || !isProfileComplete}
-              className={`w-full py-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition-colors ${
-                !imageFile || !isProfileComplete ? "bg-gray-300 cursor-not-allowed" : "bg-teal-600 hover:bg-teal-700 shadow-md"
+              className={`w-full py-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition-all duration-300 ${
+                !imageFile || !isProfileComplete 
+                  ? "bg-gray-300 cursor-not-allowed" 
+                  : "bg-teal-600 hover:bg-teal-700 hover:-translate-y-1 hover:shadow-lg shadow-md"
               }`}
             >
               {isAnalyzing ? (
@@ -282,7 +326,7 @@ function DiagnosisContent() {
               ) : (
                 <>
                   <Upload className="w-5 h-5" />
-                  내 상태 분석하기
+                  AI 분석 실행
                 </>
               )}
             </button>
