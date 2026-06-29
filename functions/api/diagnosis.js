@@ -146,10 +146,14 @@ export async function onRequestPost(context) {
     if (db && userId) {
       const id = crypto.randomUUID();
       const now = new Date().toISOString();
+      const dbScore = aiDiagnosisResult?.diagnosis?.summary?.score || 0;
+      const dbSeverity = aiDiagnosisResult?.diagnosis?.summary?.severity || '알 수 없음';
+      const dbDetails = JSON.stringify(aiDiagnosisResult?.diagnosis || {});
+
       const insertStmt = db.prepare(`
         INSERT INTO diagnostics (id, user_id, score, severity, image_url, details, created_at) 
         VALUES (?, ?, ?, ?, ?, ?, ?)
-      `).bind(id, userId, aiDiagnosisResult.diagnosis.summary.score, aiDiagnosisResult.diagnosis.summary.severity, "processed_by_gemini", JSON.stringify(aiDiagnosisResult.diagnosis), now);
+      `).bind(id, userId, dbScore, dbSeverity, "processed_by_gemini", dbDetails, now);
       await insertStmt.run();
     }
 
@@ -165,13 +169,13 @@ export async function onRequestPost(context) {
   }
 }
 
-// ArrayBuffer -> Base64 변환 유틸 함수
+// ArrayBuffer -> Base64 변환 유틸 함수 (대용량 이미지 최적화)
 function arrayBufferToBase64(buffer) {
   let binary = '';
   const bytes = new Uint8Array(buffer);
-  const len = bytes.byteLength;
-  for (let i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[i]);
+  const chunkSize = 8192; // 청크 단위로 처리하여 콜스택 초과 방지 및 속도 향상
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
   }
   return btoa(binary);
 }
