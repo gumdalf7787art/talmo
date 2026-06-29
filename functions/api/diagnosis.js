@@ -180,12 +180,25 @@ export async function onRequestPost(context) {
       const dbScore = aiDiagnosisResult?.diagnosis?.summary?.score || 0;
       const dbSeverity = aiDiagnosisResult?.diagnosis?.summary?.severity || '알 수 없음';
       const dbDetails = JSON.stringify(aiDiagnosisResult?.diagnosis || {});
-      const thumbnailBase64 = formData.get('thumbnail') || "processed_by_gemini";
+      
+      let imageUrl = "processed_by_gemini";
+      
+      // 향후 자체 AI 모델 학습 및 사용자 기록 조회를 위해 1024px 이미지를 R2에 저장
+      if (env.STORAGE) {
+        try {
+          const imageKey = `diagnostics/images/${id}.jpg`;
+          const imageFile = formData.get('image'); 
+          await env.STORAGE.put(imageKey, imageFile);
+          imageUrl = `/api/images/${id}`;
+        } catch (e) {
+          console.error("R2 Upload failed:", e);
+        }
+      }
 
       const insertStmt = db.prepare(`
         INSERT INTO diagnostics (id, user_id, score, severity, image_url, details, created_at) 
         VALUES (?, ?, ?, ?, ?, ?, ?)
-      `).bind(id, userId, dbScore, dbSeverity, thumbnailBase64, dbDetails, now);
+      `).bind(id, userId, dbScore, dbSeverity, imageUrl, dbDetails, now);
       await insertStmt.run();
     }
 

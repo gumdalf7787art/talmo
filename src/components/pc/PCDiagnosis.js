@@ -91,7 +91,6 @@ function PCDiagnosisContent() {
     setIsAnalyzing(true); setResult(null);
     try {
       const formData = new FormData();
-      formData.append("image", imageFile);
       // 백엔드 AI 고도화를 위한 환자 정보 추가 전달
       formData.append("gender", profile.gender);
       formData.append("birthYear", profile.birthYear);
@@ -101,12 +100,15 @@ function PCDiagnosisContent() {
         formData.append("userId", user.id);
       }
 
-      // 서버 용량 최적화를 위해 초소형 썸네일(Base64) 생성 후 함께 전송
+      // 프론트엔드에서 1024px로 이미지 최적화 (대역폭 절약 및 R2 저장 용량 최적화)
       try {
-        const thumbnailBase64 = await compressImage(imageFile, 150, 0.5); // 가로 150px, 품질 50%
-        formData.append("thumbnail", thumbnailBase64);
+        const optimizedBase64 = await compressImage(imageFile, 1024, 0.8); 
+        const res = await fetch(optimizedBase64);
+        const blob = await res.blob();
+        formData.append("image", blob, "optimized.jpg");
       } catch (err) {
-        console.warn("Thumbnail generation failed, skipping...", err);
+        console.warn("Image optimization failed, sending original...", err);
+        formData.append("image", imageFile);
       }
 
       const response = await fetch("/api/diagnosis", { method: "POST", body: formData });
@@ -232,7 +234,7 @@ function PCDiagnosisContent() {
                 {consentAgreed ? <CheckSquare className="w-5 h-5" /> : <Square className="w-5 h-5 text-gray-400" />}
               </div>
               <span className="text-[13px] text-gray-600 leading-snug">
-                (필수) 초개인화 진단을 위해 업로드한 <strong>두피 사진</strong>과 입력하신 <strong>환자 정보(나이, 성별, 가족력)</strong>를 AI 분석에 사용하는 것에 동의합니다.
+                (필수) 서비스 품질 향상 및 향후 자체 AI 모델 학습을 위해, 업로드하신 두피 사진과 분석 결과 데이터를 수집하고 활용하는 것에 동의합니다.
               </span>
             </div>
 
