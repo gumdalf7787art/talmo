@@ -51,12 +51,37 @@ export default function WritePage() {
     Array.from(files).forEach(async (file) => {
       try {
         const compressedBase64 = await compressImage(file, 800, 0.6);
+        
+        // Convert base64 back to Blob
+        const res = await fetch(compressedBase64);
+        const blob = await res.blob();
+        
+        // Upload to R2 via API
+        const formData = new FormData();
+        formData.append("image", blob, file.name || "image.jpg");
+        
+        const uploadRes = await fetch("/api/posts/upload-image", {
+          method: "POST",
+          body: formData,
+        });
+        
+        if (!uploadRes.ok) {
+          throw new Error("이미지 업로드에 실패했습니다.");
+        }
+        
+        const uploadData = await uploadRes.json();
+        if (!uploadData.success) {
+          throw new Error(uploadData.error || "이미지 업로드에 실패했습니다.");
+        }
+
+        // Use returned URL instead of base64
         // Use negative margin to break out of the px-5 container and be full-width
-        const imgHtml = `<img src="${compressedBase64}" style="width: calc(100% + 40px); max-width: none; margin-left: -20px; margin-top: 16px; margin-bottom: 16px; display: block;" alt="uploaded" /><p><br></p>`;
+        const imgHtml = `<img src="${uploadData.url}" style="width: calc(100% + 40px); max-width: none; margin-left: -20px; margin-top: 16px; margin-bottom: 16px; display: block;" alt="uploaded" /><p><br></p>`;
         document.execCommand("insertHTML", false, imgHtml);
         setContent(editorRef.current.innerHTML);
       } catch (err) {
-        console.error("Image compression failed:", err);
+        console.error("Image upload failed:", err);
+        alert("이미지 처리 중 오류가 발생했습니다.");
       }
     });
 
