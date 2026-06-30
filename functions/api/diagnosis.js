@@ -43,22 +43,29 @@ export async function onRequestPost(context) {
 환자의 기본 정보: [성별: ${gender}, 나이: ${age}세, 탈모 가족력: ${familyHistory}]
 
 첨부된 두피/모발 사진과 환자의 컨텍스트를 종합하여, 실제 의사가 발급하는 **'임상 정밀 진단 리포트'**를 작성해 주세요.
-반드시 아래의 엄격한 JSON 형식으로만 응답해야 합니다. 다른 말은 절대 추가하지 마세요.
+반드시 아래의 엄격한 JSON 형식으로만 응답해야 합니다.
+
+[평가 기준 (Scoring Rubric)]
+사진의 탈모 심각도를 매우 엄격하고 객관적으로 평가하세요. 
+- 80~100점 (양호): 빽빽한 모발, 빈 모공 없음, 굵은 모발.
+- 60~79점 (초기): 가르마가 살짝 넓어지거나 헤어라인이 조금 후퇴함. 연모화(가늘어짐) 징후 시작.
+- 40~59점 (중기): 두피가 확연히 들여다보임. M자나 정수리 탈모가 명확히 진행됨. 모발이 가늘고 힘이 없음.
+- 0~39점 (심각): 광범위한 탈모, 두피 면적이 모발 면적보다 넓음, 다수의 모낭 소실.
 
 {
   "diagnosis": {
     "patientInfo": { "age": "${age}", "gender": "${gender}", "familyHistory": "${familyHistory}" },
     "summary": {
-      "score": [종합 점수 0~100 정수],
+      "score": [위 평가 기준에 따른 종합 점수 0~100 정수],
       "severity": "[양호, 진행: 초기, 진행: 중기, 진행: 심각 중 하나]",
       "norwoodStage": "[예: Norwood Stage II, Ludwig Scale I 등 전문적인 단계 표기 (해당 없으면 '해당 없음')]",
       "scalpAge": [실제 나이보다 몇 살 더 들어보이거나 젊어보이는지 추정한 두피 나이 정수값]
     },
     "breakdown": [
-      { "id": "density", "label": "모발 밀도 (정수리)", "score": [0~100], "clinicalNote": "[의학적 소견 1문장. 예: '정상 밀도(120/cm2) 대비 20% 감소']" },
-      { "id": "hairline", "label": "헤어라인 (M자)", "score": [0~100], "clinicalNote": "[예: '양측두부 연모화 진행 중']" },
-      { "id": "thickness", "label": "모발 굵기", "score": [0~100], "clinicalNote": "[예: '모낭 소형화(Miniaturization) 30% 관찰']" },
-      { "id": "scalp", "label": "두피 상태", "score": [0~100], "clinicalNote": "[예: '경미한 지루성 두피염 및 각질 관찰']" }
+      { "id": "density", "label": "모발 밀도 (정수리)", "score": [위 기준에 따른 세부 점수 0~100], "clinicalNote": "[의학적 소견 1문장. 예: '정상 밀도(120/cm2) 대비 20% 감소']" },
+      { "id": "hairline", "label": "헤어라인 (M자)", "score": [위 기준에 따른 세부 점수 0~100], "clinicalNote": "[예: '양측두부 연모화 진행 중']" },
+      { "id": "thickness", "label": "모발 굵기", "score": [위 기준에 따른 세부 점수 0~100], "clinicalNote": "[예: '모낭 소형화(Miniaturization) 30% 관찰']" },
+      { "id": "scalp", "label": "두피 상태", "score": [위 기준에 따른 세부 점수 0~100], "clinicalNote": "[예: '경미한 지루성 두피염 및 각질 관찰']" }
     ],
     "medicalAnalysis": {
       "finding": "[전문의의 객관적 관찰 소견. 중요한 키워드는 반드시 HTML <b> 태그로 굵게 강조할 것. 예: '환자의 사진을 분석한 결과, <b>전두부의 연모화</b>가 특징적으로...']",
