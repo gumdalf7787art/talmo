@@ -166,7 +166,7 @@ export default function PCDiagnosisHistory({ historyList }) {
              {/* List View */}
             <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm overflow-hidden">
               <h4 className="font-bold text-gray-800 text-[15px] mb-4">분석 내역 상세</h4>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-3">
                 {filteredHistory.map((item, idx) => {
                   let details = {};
                   try {
@@ -175,17 +175,42 @@ export default function PCDiagnosisHistory({ historyList }) {
                     console.error("Failed to parse history details");
                   }
                   
+                  const summaryText = details?.analysis?.[0] || item.severity || "분석 내용이 없습니다.";
+                  
+                  // Color for severity
+                  let severityColor = "bg-gray-100 text-gray-800";
+                  if (item.severity?.includes("양호") || item.severity?.includes("초기")) severityColor = "bg-green-100 text-green-800";
+                  if (item.severity?.includes("중기")) severityColor = "bg-yellow-100 text-yellow-800";
+                  if (item.severity?.includes("심각") || item.severity?.includes("위험")) severityColor = "bg-red-100 text-red-800";
+                  
                   return (
-                    <Link href={`/diagnosis?id=${item.id}`} key={item.id} className="group border border-gray-200 rounded-lg p-5 hover:border-teal-500 hover:shadow-md transition-all bg-white relative">
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="flex flex-col gap-1">
-                          <span className="text-[12px] font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded w-fit">{details?.scanType || '전체/알 수 없음'}</span>
-                          <span className="text-[13px] text-gray-500 font-medium flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5"/> {new Date(item.created_at).toLocaleDateString()}</span>
-                        </div>
-                        <span className="px-2.5 py-1 bg-yellow-100 text-yellow-800 text-[11px] font-bold rounded-md">진행 단계: {item.severity}</span>
+                    <Link href={`/diagnosis?history=true&id=${item.id}`} key={item.id} className="group border border-gray-200 rounded-xl p-4 hover:border-teal-500 hover:shadow-md transition-all bg-white relative flex gap-4 items-center">
+                      {/* Thumbnail */}
+                      <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-gray-100 border border-gray-200">
+                        <img src={item.image_url && item.image_url !== 'placeholder_url' ? item.image_url : "https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?w=100&h=100&fit=crop"} alt="분석 사진" className="w-full h-full object-cover" />
                       </div>
-                      <div className="text-right">
-                        <span className="text-2xl font-black text-teal-600">{item.score}<span className="text-sm font-medium text-gray-400">점</span></span>
+                      
+                      {/* Content */}
+                      <div className="flex flex-col flex-1 min-w-0">
+                        <div className="flex justify-between items-center mb-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[12px] font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded">{details?.scanType || '전체/알 수 없음'}</span>
+                            <span className="text-[12px] text-gray-500 font-medium flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5"/> {new Date(item.created_at).toLocaleDateString()}</span>
+                          </div>
+                          <span className={`px-2.5 py-1 text-[11px] font-bold rounded-md ${severityColor}`}>진행 단계: {item.severity}</span>
+                        </div>
+                        
+                        <div className="flex justify-between items-end mt-1">
+                          <div className="flex flex-col">
+                            <p className="text-[14px] font-bold text-gray-900 line-clamp-1 mb-1 pr-4">
+                              {summaryText}
+                            </p>
+                            <span className="text-[12px] text-teal-600 font-bold group-hover:underline">상세 리포트 보기 &rarr;</span>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <span className="text-2xl font-black text-teal-600">{item.score}<span className="text-sm font-medium text-gray-400">점</span></span>
+                          </div>
+                        </div>
                       </div>
                     </Link>
                   );
