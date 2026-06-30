@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, MoreVertical, Heart, MessageCircle, Share2, Send } from "lucide-react";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import PCPostDetail from "@/components/pc/PCPostDetail";
+import AuthorPopover from "@/components/common/AuthorPopover";
 
 function PostDetailContent() {
   const isPC = useMediaQuery("(min-width: 1024px)");
@@ -238,7 +239,9 @@ function PostDetailContent() {
                 )}
               </div>
               <div className="flex flex-col">
-                <span className="text-sm font-semibold text-gray-900 leading-tight">{post.author}</span>
+                <span className="text-sm font-semibold text-gray-900 leading-tight">
+                  <AuthorPopover author={post.author} authorImage={post.authorImage} />
+                </span>
                 <span className="text-[11px] text-gray-400 mt-0.5">{post.time} · 조회 {post.views}</span>
               </div>
             </div>
@@ -288,7 +291,9 @@ function PostDetailContent() {
                 </div>
                 <div className="flex flex-col flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm font-semibold text-gray-900">{c.author}</span>
+                    <span className="text-sm font-semibold text-gray-900">
+                      <AuthorPopover author={c.author} authorImage={c.authorImage} />
+                    </span>
                     {c.isAuthor && (
                       <span className="text-[10px] font-bold text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded">작성자</span>
                     )}

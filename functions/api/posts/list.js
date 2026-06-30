@@ -23,6 +23,8 @@ export async function onRequestGet(context) {
     const hasImage = url.searchParams.get('hasImage');
     const limit = limitStr ? parseInt(limitStr) : 100;
 
+    const nickname = url.searchParams.get('nickname');
+
     let query = `
       SELECT 
         p.id, 
@@ -55,6 +57,11 @@ export async function onRequestGet(context) {
     if (author) {
       query += ` AND u.email = ? `;
       params.push(author);
+    }
+
+    if (nickname) {
+      query += ` AND u.nickname = ? `;
+      params.push(nickname);
     }
 
     if (bookmarkedBy) {

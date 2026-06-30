@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { MessageCircle, Search, Edit3, Bell, ChevronUp, ChevronDown } from "lucide-react";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import PCCommunity from "@/components/pc/PCCommunity";
+import AuthorPopover from "@/components/common/AuthorPopover";
 
 function CommunityContent() {
   const router = useRouter();
@@ -138,7 +139,7 @@ function CommunityContent() {
               </h3>
               <div className="flex items-center mt-auto">
                 <div className="flex items-center gap-2 text-[12px] text-gray-400">
-                  <span>{post.author}</span>
+                  <div onClick={e => e.preventDefault()}><AuthorPopover author={post.author} /></div>
                   <span className="text-gray-300">|</span>
                   <span>{post.time}</span>
                 </div>

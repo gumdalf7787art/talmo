@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MessageCircle, Search, Edit3, Bell, ChevronUp, ChevronDown } from "lucide-react";
 import PCSidebar from "@/components/pc/PCSidebar";
+import AuthorPopover from "@/components/common/AuthorPopover";
 
 export default function PCCommunity({ initialTab }) {
   const router = useRouter();
@@ -125,7 +126,9 @@ export default function PCCommunity({ initialTab }) {
                   </div>
                 )}
               </div>
-              <span className="text-[13px] text-gray-500 line-clamp-1">{post.author}</span>
+              <div className="flex items-center justify-start min-w-0 overflow-visible" onClick={e => e.preventDefault()}>
+                <AuthorPopover author={post.author} />
+              </div>
               <span className="text-[13px] text-gray-400 text-center">{post.views?.toLocaleString()}</span>
               <div className="flex items-center justify-center gap-1 text-teal-600 text-[13px] font-bold">
                 <MessageCircle className="w-3.5 h-3.5" /> {post.comments}

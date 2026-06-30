@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Heart, MessageCircle, Share2, Send, ChevronLeft } from "lucide-react";
 import PCSidebar from "@/components/pc/PCSidebar";
+import AuthorPopover from "@/components/common/AuthorPopover";
 
 export default function PCPostDetail({ post, comments, loading, setComments, setPost, loggedInUserId, handleEdit, handleDelete }) {
   const router = useRouter();
@@ -157,7 +158,9 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
                   )}
                 </div>
                 <div>
-                  <span className="text-[15px] font-semibold text-gray-900">{post.author}</span>
+                  <span className="text-[15px] font-semibold text-gray-900">
+                    <AuthorPopover author={post.author} authorImage={post.authorImage} />
+                  </span>
                   <span className="text-[13px] text-gray-400 ml-3">{post.time} · 조회 {post.views}</span>
                 </div>
               </div>
@@ -215,7 +218,9 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
                 </div>
                 <div className="flex flex-col flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[14px] font-semibold text-gray-900">{c.author}</span>
+                    <span className="text-[14px] font-semibold text-gray-900">
+                      <AuthorPopover author={c.author} authorImage={c.authorImage} />
+                    </span>
                     {c.isAuthor && <span className="text-[11px] font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded">작성자</span>}
                     <span className="text-[12px] text-gray-400">{c.time}</span>
                     <div className="flex-1"></div>
