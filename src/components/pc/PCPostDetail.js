@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -23,7 +23,7 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
     const userId = user ? user.id : null;
 
     if (!userId) {
-      alert("로그인이 필요합니다.");
+      alert("濡쒓렇?몄씠 ?꾩슂?⑸땲??");
       return;
     }
 
@@ -43,9 +43,9 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
         setComment("");
         const newComment = {
           id: data.comment.id,
-          author: data.comment.author || "익명 사용자",
+          author: data.comment.author || "?듬챸 ?ъ슜??,
           authorImage: data.comment.authorImage,
-          time: "방금 전",
+          time: "諛⑷툑 ??,
           content: data.comment.content,
           isAuthor: false,
           userId: userId
@@ -60,16 +60,16 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
           }
         }, 100);
       } else {
-        alert(data.error || "댓글 등록에 실패했습니다.");
+        alert(data.error || "?볤? ?깅줉???ㅽ뙣?덉뒿?덈떎.");
       }
     } catch (err) {
       console.error(err);
-      alert("댓글 등록 중 오류가 발생했습니다.");
+      alert("?볤? ?깅줉 以??ㅻ쪟媛 諛쒖깮?덉뒿?덈떎.");
     }
   };
 
   const handleCommentDelete = async (commentId) => {
-    if (!confirm("댓글을 삭제하시겠습니까?")) return;
+    if (!confirm("?볤?????젣?섏떆寃좎뒿?덇퉴?")) return;
     try {
       const res = await fetch('/api/posts/comment-delete', {
         method: 'POST',
@@ -81,10 +81,10 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
         setComments(comments.filter(c => c.id !== commentId));
         setPost(prev => ({ ...prev, comments: Math.max(0, prev.comments - 1) }));
       } else {
-        alert(data.error || "삭제에 실패했습니다.");
+        alert(data.error || "??젣???ㅽ뙣?덉뒿?덈떎.");
       }
     } catch (err) {
-      alert("오류가 발생했습니다.");
+      alert("?ㅻ쪟媛 諛쒖깮?덉뒿?덈떎.");
     }
   };
 
@@ -102,18 +102,18 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
         setEditingCommentId(null);
         setEditContent("");
       } else {
-        alert(data.error || "수정에 실패했습니다.");
+        alert(data.error || "?섏젙???ㅽ뙣?덉뒿?덈떎.");
       }
     } catch (err) {
-      alert("오류가 발생했습니다.");
+      alert("?ㅻ쪟媛 諛쒖깮?덉뒿?덈떎.");
     }
   };
 
   if (loading) {
     return (
       <div className="flex gap-6">
-        <div className="flex-1 min-w-0 flex flex-col gap-4 items-center justify-center py-20 bg-white rounded-2xl border border-gray-200 shadow-sm">
-          <div className="text-gray-500">게시글을 불러오는 중입니다...</div>
+        <div className="flex-1 min-w-0 flex flex-col gap-4 items-center justify-center py-20 bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div className="text-gray-500">寃뚯떆湲??遺덈윭?ㅻ뒗 以묒엯?덈떎...</div>
         </div>
         <PCSidebar />
       </div>
@@ -123,11 +123,10 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
   if (!post) {
     return (
       <div className="flex gap-6">
-        <div className="flex-1 min-w-0 flex flex-col gap-4 items-center justify-center py-20 bg-white rounded-2xl border border-gray-200 shadow-sm">
-          <div className="text-gray-500 mb-4">게시글을 찾을 수 없습니다.</div>
+        <div className="flex-1 min-w-0 flex flex-col gap-4 items-center justify-center py-20 bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div className="text-gray-500 mb-4">寃뚯떆湲??李얠쓣 ???놁뒿?덈떎.</div>
           <button onClick={() => router.back()} className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors">
-            목록으로 돌아가기
-          </button>
+            紐⑸줉?쇰줈 ?뚯븘媛湲?          </button>
         </div>
         <PCSidebar />
       </div>
@@ -139,11 +138,11 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
       <div className="flex-1 min-w-0 flex flex-col gap-4">
         {/* Back */}
         <button onClick={() => router.back()} className="flex items-center gap-1 text-gray-500 hover:text-gray-900 text-sm font-medium w-fit mb-1">
-          <ChevronLeft className="w-4 h-4" /> 목록으로
+          <ChevronLeft className="w-4 h-4" /> 紐⑸줉?쇰줈
         </button>
 
         {/* Post Card */}
-        <article className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <article className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
           {/* Header */}
           <div className="px-8 pt-8 pb-6 border-b border-gray-100">
             <span className="inline-block px-3 py-1 mb-4 rounded-lg bg-teal-50 text-teal-600 text-sm font-bold">{post.category}</span>
@@ -161,16 +160,16 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
                   <span className="text-[15px] font-semibold text-gray-900">
                     <AuthorPopover author={post.author} authorImage={post.authorImage} />
                   </span>
-                  <span className="text-[13px] text-gray-400 ml-3">{post.time} · 조회 {post.views}</span>
+                  <span className="text-[13px] text-gray-400 ml-3">{post.time} 쨌 議고쉶 {post.views}</span>
                 </div>
               </div>
               {loggedInUserId && loggedInUserId === post.authorId && (
                 <div className="flex gap-2">
                   <button onClick={handleEdit} className="text-sm font-medium text-gray-500 hover:text-gray-900 px-3 py-1.5 rounded-md hover:bg-gray-100 transition-colors">
-                    수정
+                    ?섏젙
                   </button>
                   <button onClick={handleDelete} className="text-sm font-medium text-red-500 hover:text-red-600 px-3 py-1.5 rounded-md hover:bg-red-50 transition-colors">
-                    삭제
+                    ??젣
                   </button>
                 </div>
               )}
@@ -198,14 +197,14 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
             <div className="flex-1" />
             <button className="flex items-center gap-2 text-gray-500 hover:text-gray-700">
               <Share2 className="w-5 h-5" />
-              <span className="text-sm font-medium">공유</span>
+              <span className="text-sm font-medium">怨듭쑀</span>
             </button>
           </div>
         </article>
 
         {/* Comments */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
-          <h3 className="font-bold text-gray-900 text-lg mb-6">댓글 <span className="text-teal-600">{post.comments}</span></h3>
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8">
+          <h3 className="font-bold text-gray-900 text-lg mb-6">?볤? <span className="text-teal-600">{post.comments}</span></h3>
           <div className="flex flex-col gap-6 mb-8">
             {comments.map((c) => (
               <div key={c.id} className="flex gap-3">
@@ -221,13 +220,13 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
                     <span className="text-[14px] font-semibold text-gray-900">
                       <AuthorPopover author={c.author} authorImage={c.authorImage} />
                     </span>
-                    {c.isAuthor && <span className="text-[11px] font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded">작성자</span>}
+                    {c.isAuthor && <span className="text-[11px] font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded">?묒꽦??/span>}
                     <span className="text-[12px] text-gray-400">{c.time}</span>
                     <div className="flex-1"></div>
                     {loggedInUserId && c.userId === loggedInUserId && (
                       <div className="flex gap-2">
-                        <button onClick={() => { setEditingCommentId(c.id); setEditContent(c.content); }} className="text-[12px] text-gray-400 hover:text-gray-600">수정</button>
-                        <button onClick={() => handleCommentDelete(c.id)} className="text-[12px] text-gray-400 hover:text-red-500">삭제</button>
+                        <button onClick={() => { setEditingCommentId(c.id); setEditContent(c.content); }} className="text-[12px] text-gray-400 hover:text-gray-600">?섏젙</button>
+                        <button onClick={() => handleCommentDelete(c.id)} className="text-[12px] text-gray-400 hover:text-red-500">??젣</button>
                       </div>
                     )}
                   </div>
@@ -235,8 +234,8 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
                     <div className="flex flex-col gap-2 mt-1">
                       <textarea value={editContent} onChange={e => setEditContent(e.target.value)} className="w-full text-sm border border-gray-200 rounded-lg p-3 focus:outline-none focus:border-teal-500" rows={2} />
                       <div className="flex justify-end gap-2">
-                        <button onClick={() => setEditingCommentId(null)} className="text-sm px-4 py-2 text-gray-500 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">취소</button>
-                        <button onClick={() => handleCommentEditSave(c.id)} className="text-sm px-4 py-2 text-white bg-teal-600 hover:bg-teal-700 rounded-md transition-colors">저장</button>
+                        <button onClick={() => setEditingCommentId(null)} className="text-sm px-4 py-2 text-gray-500 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">痍⑥냼</button>
+                        <button onClick={() => handleCommentEditSave(c.id)} className="text-sm px-4 py-2 text-white bg-teal-600 hover:bg-teal-700 rounded-md transition-colors">???/button>
                       </div>
                     </div>
                   ) : (
@@ -247,8 +246,8 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
             ))}
             <div ref={commentsEndRef} className="h-4" />
           </div>
-          <form onSubmit={handleCommentSubmit} className="flex items-center gap-3 bg-gray-100 rounded-xl px-5 py-3">
-            <input type="text" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="따뜻한 댓글을 남겨주세요." className="flex-1 bg-transparent text-[15px] text-gray-900 focus:outline-none" />
+          <form onSubmit={handleCommentSubmit} className="flex items-center gap-3 bg-gray-100 rounded-md px-5 py-3">
+            <input type="text" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="?곕쑜???볤????④꺼二쇱꽭??" className="flex-1 bg-transparent text-[15px] text-gray-900 focus:outline-none" />
             <button type="submit" disabled={!comment.trim()} className={`p-2 rounded-full transition-colors ${comment.trim() ? 'bg-teal-600 text-white' : 'bg-gray-200 text-gray-400'}`}>
               <Send className="w-4 h-4" />
             </button>
@@ -260,3 +259,4 @@ export default function PCPostDetail({ post, comments, loading, setComments, set
     </div>
   );
 }
+

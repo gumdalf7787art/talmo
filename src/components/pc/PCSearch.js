@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -20,10 +20,10 @@ export default function PCSearch({ initialQuery, communityResults, hospitalResul
 
   const categoryColor = (cat) => {
     switch(cat) {
-      case '탈모수다': return 'text-orange-500 bg-orange-50';
-      case '리얼후기': return 'text-teal-600 bg-teal-50';
-      case '탈모정보': return 'text-blue-500 bg-blue-50';
-      case '닥터칼럼': return 'text-indigo-500 bg-indigo-50';
+      case '?덈え?섎떎': return 'text-orange-500 bg-orange-50';
+      case '由ъ뼹?꾧린': return 'text-teal-600 bg-teal-50';
+      case '?덈え?뺣낫': return 'text-blue-500 bg-blue-50';
+      case '?ν꽣移쇰읆': return 'text-indigo-500 bg-indigo-50';
       default: return 'text-gray-500 bg-gray-50';
     }
   };
@@ -33,7 +33,7 @@ export default function PCSearch({ initialQuery, communityResults, hospitalResul
       {/* Main Content */}
       <div className="flex-1 min-w-0 flex flex-col gap-6">
         {/* Search Bar */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
+        <div className="bg-white rounded-lg border border-gray-200 p-5 shadow-sm">
           <div className="relative">
             <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
             <input 
@@ -41,17 +41,17 @@ export default function PCSearch({ initialQuery, communityResults, hospitalResul
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleSearch}
-              placeholder="모발이식, 부작용, 병원 이름 검색" 
-              className="w-full bg-gray-100 rounded-xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-teal-100 transition-shadow" 
+              placeholder="紐⑤컻?댁떇, 遺?묒슜, 蹂묒썝 ?대쫫 寃?? 
+              className="w-full bg-gray-100 rounded-md py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-teal-100 transition-shadow" 
             />
           </div>
         </div>
 
         {!isSearched ? (
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-            <h3 className="font-bold text-gray-900 text-sm mb-4">인기 검색어</h3>
+          <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+            <h3 className="font-bold text-gray-900 text-sm mb-4">?멸린 寃?됱뼱</h3>
             <div className="flex flex-wrap gap-2">
-              {["모발이식 비용", "핀페시아", "미녹시딜", "두피문신", "강남 병원"].map(keyword => (
+              {["紐⑤컻?댁떇 鍮꾩슜", "??섏떆??, "誘몃끃?쒕뵜", "?먰뵾臾몄떊", "媛뺣궓 蹂묒썝"].map(keyword => (
                 <button 
                   key={keyword}
                   onClick={() => { 
@@ -69,27 +69,27 @@ export default function PCSearch({ initialQuery, communityResults, hospitalResul
         ) : (
           <>
             {/* Community Results */}
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex flex-col">
               <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
                 <h3 className="font-bold text-gray-900 text-base">
-                  커뮤니티 검색결과 <span className="text-teal-600 ml-1">{communityResults.length}</span>
+                  而ㅻ??덊떚 寃?됯껐怨?<span className="text-teal-600 ml-1">{communityResults.length}</span>
                 </h3>
               </div>
               
               {/* Table Header */}
               <div className="grid grid-cols-[80px_1fr_120px_80px_60px] px-5 py-3 bg-gray-50 border-b border-gray-200 text-[13px] font-bold text-gray-500">
-                <span>카테고리</span>
-                <span>제목</span>
-                <span>작성자</span>
-                <span className="text-center">조회</span>
-                <span className="text-center">댓글</span>
+                <span>移댄뀒怨좊━</span>
+                <span>?쒕ぉ</span>
+                <span>?묒꽦??/span>
+                <span className="text-center">議고쉶</span>
+                <span className="text-center">?볤?</span>
               </div>
 
               {/* Table Rows */}
               {isLoading ? (
-                <div className="py-10 text-center text-gray-500 text-sm">검색 중입니다...</div>
+                <div className="py-10 text-center text-gray-500 text-sm">寃??以묒엯?덈떎...</div>
               ) : communityResults.length === 0 ? (
-                <div className="py-10 text-center text-gray-500 text-sm">검색 결과가 없습니다.</div>
+                <div className="py-10 text-center text-gray-500 text-sm">寃??寃곌낵媛 ?놁뒿?덈떎.</div>
               ) : (
                 communityResults.map((post) => (
                   <Link key={post.id} href={`/community/detail?id=${post.id}`} className="grid grid-cols-[80px_1fr_120px_80px_60px] items-center px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
@@ -113,19 +113,19 @@ export default function PCSearch({ initialQuery, communityResults, hospitalResul
             </div>
 
             {/* Hospital Results */}
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex flex-col">
               <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
                 <h3 className="font-bold text-gray-900 text-base">
-                  병원 검색결과 <span className="text-teal-600 ml-1">{hospitalResults.length}</span>
+                  蹂묒썝 寃?됯껐怨?<span className="text-teal-600 ml-1">{hospitalResults.length}</span>
                 </h3>
               </div>
               
               <div className="grid grid-cols-2 gap-4 p-5">
                 {hospitalResults.map(hospital => (
-                  <Link key={hospital.id} href={`/hospitals/${hospital.id}`} className="flex flex-col gap-3 group p-4 rounded-xl border border-gray-100 hover:border-teal-200 hover:shadow-md transition-all">
+                  <Link key={hospital.id} href={`/hospitals/${hospital.id}`} className="flex flex-col gap-3 group p-4 rounded-md border border-gray-100 hover:border-teal-200 hover:shadow-md transition-all">
                     <div className="flex items-start gap-4">
-                      <div className="w-16 h-16 rounded-xl bg-teal-50 flex items-center justify-center shrink-0 border border-teal-100">
-                        <span className="text-xs font-bold text-teal-600">사진</span>
+                      <div className="w-16 h-16 rounded-md bg-teal-50 flex items-center justify-center shrink-0 border border-teal-100">
+                        <span className="text-xs font-bold text-teal-600">?ъ쭊</span>
                       </div>
                       <div className="flex flex-col min-w-0 flex-1">
                         <h4 className="font-bold text-gray-900 text-base line-clamp-1 group-hover:text-teal-600 transition-colors">{hospital.name}</h4>
@@ -161,3 +161,4 @@ export default function PCSearch({ initialQuery, communityResults, hospitalResul
     </div>
   );
 }
+

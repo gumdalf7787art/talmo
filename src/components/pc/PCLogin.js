@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -36,19 +36,19 @@ export default function PCLogin() {
           router.push("/");
         }
       } else {
-        setErrorMsg(data.error || "로그인에 실패했습니다.");
+        setErrorMsg(data.error || "濡쒓렇?몄뿉 ?ㅽ뙣?덉뒿?덈떎.");
       }
     } catch (e) {
-      setErrorMsg("서버 통신 중 오류가 발생했습니다.");
+      setErrorMsg("?쒕쾭 ?듭떊 以??ㅻ쪟媛 諛쒖깮?덉뒿?덈떎.");
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-[70vh]">
-      <div className="w-full max-w-md bg-white rounded-2xl border border-gray-200 shadow-lg p-10">
+      <div className="w-full max-w-md bg-white rounded-lg border border-gray-200 shadow-lg p-10">
         <div className="flex flex-col items-center mb-10">
-          <span className="font-bold text-3xl tracking-tight text-teal-600 mb-2">탈모톡<span className="text-teal-200">.</span></span>
-          <p className="text-gray-500 text-sm">대한민국 리얼 탈모 커뮤니티</p>
+          <span className="font-bold text-3xl tracking-tight text-teal-600 mb-2">?덈え??span className="text-teal-200">.</span></span>
+          <p className="text-gray-500 text-sm">??쒕?援?由ъ뼹 ?덈え 而ㅻ??덊떚</p>
         </div>
 
         <div className="flex flex-col gap-3 mb-8">
@@ -61,7 +61,7 @@ export default function PCLogin() {
             }}
             className="flex items-center justify-center w-full py-3.5 rounded-lg bg-[#FEE500] text-black font-semibold text-[15px] hover:opacity-90 transition-opacity"
           >
-            카카오톡으로 시작하기
+            移댁뭅?ㅽ넚?쇰줈 ?쒖옉?섍린
           </button>
           <button 
             type="button"
@@ -73,7 +73,7 @@ export default function PCLogin() {
             }}
             className="flex items-center justify-center w-full py-3.5 rounded-lg bg-[#03C75A] text-white font-semibold text-[15px] hover:opacity-90 transition-opacity"
           >
-            네이버로 시작하기
+            ?ㅼ씠踰꾨줈 ?쒖옉?섍린
           </button>
           <button 
             type="button"
@@ -86,41 +86,42 @@ export default function PCLogin() {
             }}
             className="flex items-center justify-center w-full py-3.5 rounded-lg bg-white border border-gray-300 text-gray-700 font-semibold text-[15px] hover:bg-gray-50 transition-colors"
           >
-            구글로 시작하기
+            援ш?濡??쒖옉?섍린
           </button>
         </div>
 
         <div className="flex items-center gap-4 mb-8">
-          <div className="flex-1 h-px bg-gray-200" /><span className="text-xs text-gray-400 font-medium">또는</span><div className="flex-1 h-px bg-gray-200" />
+          <div className="flex-1 h-px bg-gray-200" /><span className="text-xs text-gray-400 font-medium">?먮뒗</span><div className="flex-1 h-px bg-gray-200" />
         </div>
 
         <form onSubmit={handleLogin} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-gray-700 ml-1">이메일</label>
+            <label className="text-xs font-semibold text-gray-700 ml-1">?대찓??/label>
             <div className="relative">
               <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="이메일을 입력해주세요" className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all" required />
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="?대찓?쇱쓣 ?낅젰?댁＜?몄슂" className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all" required />
             </div>
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-gray-700 ml-1">비밀번호</label>
+            <label className="text-xs font-semibold text-gray-700 ml-1">鍮꾨?踰덊샇</label>
             <div className="relative">
               <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="비밀번호를 입력해주세요" className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all" required />
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="鍮꾨?踰덊샇瑜??낅젰?댁＜?몄슂" className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all" required />
             </div>
           </div>
           {errorMsg && <div className="text-red-500 text-sm mt-1">{errorMsg}</div>}
-          <button type="submit" className="w-full py-4 mt-2 bg-teal-600 text-white rounded-lg font-bold text-[15px] shadow-sm hover:bg-teal-700 transition-colors">이메일로 로그인</button>
+          <button type="submit" className="w-full py-4 mt-2 bg-teal-600 text-white rounded-lg font-bold text-[15px] shadow-sm hover:bg-teal-700 transition-colors">?대찓?쇰줈 濡쒓렇??/button>
         </form>
 
         <div className="flex items-center justify-center gap-4 mt-8 text-xs text-gray-500 font-medium">
-          <Link href="/find-id" className="hover:text-gray-900">아이디 찾기</Link>
+          <Link href="/find-id" className="hover:text-gray-900">?꾩씠??李얘린</Link>
           <div className="w-px h-3 bg-gray-300" />
-          <Link href="/find-password" className="hover:text-gray-900">비밀번호 찾기</Link>
+          <Link href="/find-password" className="hover:text-gray-900">鍮꾨?踰덊샇 李얘린</Link>
           <div className="w-px h-3 bg-gray-300" />
-          <Link href="/signup" className="text-teal-600 font-bold hover:text-teal-700">회원가입</Link>
+          <Link href="/signup" className="text-teal-600 font-bold hover:text-teal-700">?뚯썝媛??/Link>
         </div>
       </div>
     </div>
   );
 }
+

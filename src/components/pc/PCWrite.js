@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo, useEffect } from "react";
+﻿import { useState, useRef, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { X, Image as ImageIcon } from "lucide-react";
 import ReactQuill from "react-quill-new";
@@ -28,7 +28,7 @@ export default function PCWrite({ editId }) {
     }
   }, [editId]);
 
-  const categories = ["탈모수다", "리얼후기", "탈모정보"];
+  const categories = ["?덈え?섎떎", "由ъ뼹?꾧린", "?덈え?뺣낫"];
 
   // Custom Image Handler for Quill
   const imageHandler = () => {
@@ -57,12 +57,12 @@ export default function PCWrite({ editId }) {
           });
           
           if (!uploadRes.ok) {
-            throw new Error("이미지 업로드에 실패했습니다.");
+            throw new Error("?대?吏 ?낅줈?쒖뿉 ?ㅽ뙣?덉뒿?덈떎.");
           }
           
           const uploadData = await uploadRes.json();
           if (!uploadData.success) {
-            throw new Error(uploadData.error || "이미지 업로드에 실패했습니다.");
+            throw new Error(uploadData.error || "?대?吏 ?낅줈?쒖뿉 ?ㅽ뙣?덉뒿?덈떎.");
           }
 
           const quill = quillRef.current.getEditor();
@@ -72,7 +72,7 @@ export default function PCWrite({ editId }) {
           quill.setSelection(range.index + 1);
         } catch (err) {
           console.error("Image upload failed:", err);
-          alert("이미지 처리 중 오류가 발생했습니다.");
+          alert("?대?吏 泥섎━ 以??ㅻ쪟媛 諛쒖깮?덉뒿?덈떎.");
         }
       }
     };
@@ -122,7 +122,7 @@ export default function PCWrite({ editId }) {
     try {
       const savedUser = localStorage.getItem('user');
       if (!savedUser) {
-        alert("로그인이 필요합니다.");
+        alert("濡쒓렇?몄씠 ?꾩슂?⑸땲??");
         router.push("/login");
         return;
       }
@@ -148,17 +148,17 @@ export default function PCWrite({ editId }) {
 
       const data = await res.json();
       if (res.ok) {
-        alert(editId ? "게시글이 성공적으로 수정되었습니다." : "게시글이 성공적으로 등록되었습니다.");
+        alert(editId ? "寃뚯떆湲???깃났?곸쑝濡??섏젙?섏뿀?듬땲??" : "寃뚯떆湲???깃났?곸쑝濡??깅줉?섏뿀?듬땲??");
         if (editId) {
           router.push(`/community/detail?id=${editId}`);
         } else {
           router.push("/community");
         }
       } else {
-        alert(data.error || "게시글 등록에 실패했습니다.");
+        alert(data.error || "寃뚯떆湲 ?깅줉???ㅽ뙣?덉뒿?덈떎.");
       }
     } catch (e) {
-      alert("오류가 발생했습니다. 다시 시도해주세요.");
+      alert("?ㅻ쪟媛 諛쒖깮?덉뒿?덈떎. ?ㅼ떆 ?쒕룄?댁＜?몄슂.");
     }
   };
 
@@ -173,7 +173,7 @@ export default function PCWrite({ editId }) {
             <button onClick={() => router.back()} className="p-2 -ml-2 text-gray-500 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-100">
               <X className="w-6 h-6" />
             </button>
-            <span className="font-bold text-xl text-gray-900">{editId ? '글 수정' : '새 글 작성'}</span>
+            <span className="font-bold text-xl text-gray-900">{editId ? '湲 ?섏젙' : '??湲 ?묒꽦'}</span>
           </div>
           
           <div className="flex items-center gap-3">
@@ -181,7 +181,7 @@ export default function PCWrite({ editId }) {
               onClick={() => router.back()}
               className="px-4 py-2 font-semibold text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-[15px]"
             >
-              취소
+              痍⑥냼
             </button>
             <button 
               onClick={handlePost}
@@ -192,7 +192,7 @@ export default function PCWrite({ editId }) {
                   : 'bg-gray-200 text-gray-400 cursor-not-allowed'
               }`}
             >
-              등록
+              ?깅줉
             </button>
           </div>
         </div>
@@ -200,18 +200,18 @@ export default function PCWrite({ editId }) {
 
       {/* Main Content Area */}
       <main className="flex flex-col items-center flex-1 w-full bg-gray-50/30 py-8">
-        <div className="w-full max-w-[800px] bg-white rounded-2xl border border-gray-200 shadow-sm flex flex-col min-h-[800px] overflow-hidden">
+        <div className="w-full max-w-[800px] bg-white rounded-lg border border-gray-200 shadow-sm flex flex-col min-h-[800px] overflow-hidden">
           
           {/* Category & Title Section */}
           <div className="p-8 border-b border-gray-100 flex flex-col gap-6">
             <div className="flex flex-col gap-3">
-              <label className="text-sm font-bold text-gray-700">카테고리</label>
+              <label className="text-sm font-bold text-gray-700">移댄뀒怨좊━</label>
               <div className="flex gap-2">
                 {categories.map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setCategory(cat)}
-                    className={`px-5 py-2.5 rounded-xl text-[14px] font-bold transition-colors border ${
+                    className={`px-5 py-2.5 rounded-md text-[14px] font-bold transition-colors border ${
                       category === cat 
                         ? 'bg-teal-600 border-teal-600 text-white shadow-sm' 
                         : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'
@@ -228,7 +228,7 @@ export default function PCWrite({ editId }) {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="제목을 입력하세요"
+                placeholder="?쒕ぉ???낅젰?섏꽭??
                 className="w-full text-[32px] font-bold text-gray-900 placeholder-gray-300 focus:outline-none py-2"
               />
             </div>
@@ -297,7 +297,7 @@ export default function PCWrite({ editId }) {
               onChange={setContent}
               modules={modules}
               formats={formats}
-              placeholder="내용을 자유롭게 작성해주세요. 이미지와 동영상도 첨부할 수 있습니다."
+              placeholder="?댁슜???먯쑀濡?쾶 ?묒꽦?댁＜?몄슂. ?대?吏? ?숈쁺?곷룄 泥⑤??????덉뒿?덈떎."
             />
           </div>
         </div>
@@ -305,3 +305,4 @@ export default function PCWrite({ editId }) {
     </div>
   );
 }
+

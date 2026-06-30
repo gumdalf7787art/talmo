@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -30,17 +30,17 @@ export default function PCConsult({ clinicId, clinicName }) {
             {
               id: 1,
               clinicId: "2",
-              otherPartyName: "블랙라인 스튜디오",
-              lastMessage: "정수리 부위 사진을 2~3장 더 보내주실 수 있나요?",
-              time: "오전 11:30",
+              otherPartyName: "釉붾옓?쇱씤 ?ㅽ뒠?붿삤",
+              lastMessage: "?뺤닔由?遺???ъ쭊??2~3????蹂대궡二쇱떎 ???덈굹??",
+              time: "?ㅼ쟾 11:30",
               unreadCount: 2,
             },
             {
               id: 2,
               clinicId: "18763bdb-dd5b-4c2a-b996-1012039dc029",
-              otherPartyName: "모프로 탈모의원",
-              lastMessage: "네, 내원하시면 정확한 견적을 안내해 드리겠습니다.",
-              time: "어제",
+              otherPartyName: "紐⑦봽濡??덈え?섏썝",
+              lastMessage: "?? ?댁썝?섏떆硫??뺥솗??寃ъ쟻???덈궡???쒕━寃좎뒿?덈떎.",
+              time: "?댁젣",
               unreadCount: 0,
             }
           ]);
@@ -105,13 +105,13 @@ export default function PCConsult({ clinicId, clinicName }) {
   };
 
   return (
-    <div className="max-w-5xl mx-auto h-[750px] bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex">
+    <div className="max-w-5xl mx-auto h-[750px] bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex">
       
       {/* Left Sidebar: Chat List */}
       <div className="w-[320px] bg-white border-r border-gray-100 flex flex-col shrink-0">
         {/* Sidebar Header */}
         <div className="h-14 px-4 flex items-center justify-between border-b border-gray-100 shrink-0">
-          <h2 className="font-bold text-[16px] text-gray-900">나의 탈모톡</h2>
+          <h2 className="font-bold text-[16px] text-gray-900">?섏쓽 ?덈え??/h2>
           <button className="text-gray-500 hover:text-gray-700 transition-colors">
             <Search className="w-5 h-5" />
           </button>
@@ -171,7 +171,7 @@ export default function PCConsult({ clinicId, clinicName }) {
             </div>
             <div className="flex flex-col">
               <h1 className="font-bold text-[16px] text-gray-900 leading-tight">{clinicName}</h1>
-              <span className="text-[11px] text-teal-600 font-medium">보통 10분 내 응답</span>
+              <span className="text-[11px] text-teal-600 font-medium">蹂댄넻 10遺????묐떟</span>
             </div>
           </div>
           <button className="text-gray-500 hover:text-gray-700 transition-colors">
@@ -183,7 +183,7 @@ export default function PCConsult({ clinicId, clinicName }) {
         <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-6 flex flex-col gap-4 scroll-smooth">
           <div className="flex justify-center my-2">
             <span className="bg-gray-200/70 text-gray-500 text-[11px] px-3 py-1 rounded-full font-medium">
-              2026년 6월 27일 토요일
+              2026??6??27???좎슂??
             </span>
           </div>
 
@@ -195,11 +195,11 @@ export default function PCConsult({ clinicId, clinicName }) {
                 <div className={`flex items-end gap-1.5 ${isMine ? 'flex-row-reverse' : 'flex-row'}`}>
                   {/* Bubble */}
                   {msg.image_url ? (
-                     <div className="rounded-xl overflow-hidden shadow-sm border border-gray-200 bg-gray-100 max-w-full">
+                     <div className="rounded-md overflow-hidden shadow-sm border border-gray-200 bg-gray-100 max-w-full">
                        <img src={msg.image_url} alt="attached" className="w-full h-auto object-cover" />
                      </div>
                   ) : (
-                    <div className={`px-4 py-3 rounded-2xl shadow-sm text-[14px] leading-relaxed break-words ${
+                    <div className={`px-4 py-3 rounded-lg shadow-sm text-[14px] leading-relaxed break-words ${
                       isMine 
                         ? 'bg-teal-600 text-white rounded-tr-sm' 
                         : 'bg-white border border-gray-100 text-gray-800 rounded-tl-sm'
@@ -231,13 +231,13 @@ export default function PCConsult({ clinicId, clinicName }) {
                 <div className="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm group-hover:bg-gray-50 transition-colors">
                   <ImageIcon className="w-5 h-5 text-gray-600" />
                 </div>
-                <span className="text-[11px] text-gray-600 font-medium">앨범</span>
+                <span className="text-[11px] text-gray-600 font-medium">?⑤쾾</span>
               </button>
               <button className="flex flex-col items-center gap-1.5 group">
                 <div className="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm group-hover:bg-gray-50 transition-colors">
                   <Camera className="w-5 h-5 text-gray-600" />
                 </div>
-                <span className="text-[11px] text-gray-600 font-medium">카메라</span>
+                <span className="text-[11px] text-gray-600 font-medium">移대찓??/span>
               </button>
             </div>
           )}
@@ -250,11 +250,11 @@ export default function PCConsult({ clinicId, clinicName }) {
               <Plus className={`w-5 h-5 transition-transform ${showAttachMenu ? 'rotate-45' : ''}`} />
             </button>
             
-            <form onSubmit={handleSend} className="flex flex-1 items-end bg-gray-100 rounded-2xl border border-gray-200 px-4 py-2 min-h-[48px] focus-within:ring-1 focus-within:ring-teal-500 transition-shadow">
+            <form onSubmit={handleSend} className="flex flex-1 items-end bg-gray-100 rounded-lg border border-gray-200 px-4 py-2 min-h-[48px] focus-within:ring-1 focus-within:ring-teal-500 transition-shadow">
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="메시지를 입력하세요."
+                placeholder="硫붿떆吏瑜??낅젰?섏꽭??"
                 className="flex-1 bg-transparent text-[14px] text-gray-900 focus:outline-none resize-none max-h-32 min-h-[24px] py-1"
                 rows={1}
                 onKeyDown={(e) => {
@@ -281,3 +281,4 @@ export default function PCConsult({ clinicId, clinicName }) {
     </div>
   );
 }
+

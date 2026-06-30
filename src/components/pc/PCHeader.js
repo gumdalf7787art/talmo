@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Suspense, useState, useEffect } from "react";
 import Link from "next/link";
@@ -10,24 +10,24 @@ function PCHeaderContent() {
   const searchParams = useSearchParams();
 
   const navItems = [
-    { href: "/community", label: "전체 탈모톡" },
-    { href: "/community?category=탈모수다", label: "탈모수다" },
-    { href: "/community?category=리얼후기", label: "리얼후기" },
-    { href: "/community?category=탈모정보", label: "탈모정보" },
-    { href: "/community?category=닥터칼럼", label: "닥터칼럼" },
+    { href: "/community", label: "?꾩껜 ?덈え?? },
+    { href: "/community?category=?덈え?섎떎", label: "?덈え?섎떎" },
+    { href: "/community?category=由ъ뼹?꾧린", label: "由ъ뼹?꾧린" },
+    { href: "/community?category=?덈え?뺣낫", label: "?덈え?뺣낫" },
+    { href: "/community?category=?ν꽣移쇰읆", label: "?ν꽣移쇰읆" },
   ];
 
   const highlightItems = [
-    { href: "/diagnosis", label: "Ai 탈모 분석" },
-    { href: "/consult", label: "1:1상담" },
+    { href: "/diagnosis", label: "Ai ?덈え 遺꾩꽍" },
+    { href: "/consult", label: "1:1?곷떞" },
   ];
 
   const searchTexts = [
-    "Ai 로 나의 탈모상태 분석",
-    "관리 및 이식에 대한 리얼후기",
-    "신뢰할만한 탈모 정보",
-    "1000만 탈모의 고민해결",
-    "원장님들이 작성하는 리얼칼럼",
+    "Ai 濡??섏쓽 ?덈え?곹깭 遺꾩꽍",
+    "愿由?諛??댁떇?????由ъ뼹?꾧린",
+    "?좊ː?좊쭔???덈え ?뺣낫",
+    "1000留??덈え??怨좊??닿껐",
+    "?먯옣?섎뱾???묒꽦?섎뒗 由ъ뼹移쇰읆",
   ];
   const [searchIndex, setSearchIndex] = useState(0);
 
@@ -52,7 +52,7 @@ function PCHeaderContent() {
         {/* Left Side: Logo & Search */}
         <div className="flex items-center gap-8 flex-1">
           <Link href="/" className="flex items-center shrink-0">
-            <img src="/logo-pc.png" alt="탈모톡 로고" className="h-14 w-auto object-contain" />
+            <img src="/logo-pc.png" alt="?덈え??濡쒓퀬" className="h-14 w-auto object-contain" />
           </Link>
 
           <Link
@@ -85,18 +85,18 @@ function PCHeaderContent() {
               </button>
               <Link
                 href="/mypage"
-                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 px-4 py-2.5 rounded-md hover:bg-gray-50 transition-colors"
               >
                 <User className="w-6 h-6" />
-                <span className="text-[15px] font-bold">마이페이지</span>
+                <span className="text-[15px] font-bold">留덉씠?섏씠吏</span>
               </Link>
             </>
           ) : mounted && !isLoggedIn ? (
             <Link
               href="/login"
-              className="bg-teal-600 hover:bg-teal-700 text-white font-bold text-[15px] px-6 py-2.5 rounded-xl transition-colors shadow-sm"
+              className="bg-teal-600 hover:bg-teal-700 text-white font-bold text-[15px] px-6 py-2.5 rounded-md transition-colors shadow-sm"
             >
-              로그인
+              濡쒓렇??
             </Link>
           ) : (
             <div className="w-20 h-10"></div>
@@ -107,9 +107,9 @@ function PCHeaderContent() {
       {/* Bottom Row: Navigation Links */}
       <div className="border-t-2 border-gray-200 bg-white">
         <div className="max-w-[1080px] w-full mx-auto px-6 h-14 flex items-center justify-center gap-6">
-          {/* Ai 탈모 분석 */}
+          {/* Ai ?덈え 遺꾩꽍 */}
           <nav className="flex items-center gap-1">
-            {highlightItems.filter(item => item.label === "Ai 탈모 분석").map((item) => {
+            {highlightItems.filter(item => item.label === "Ai ?덈え 遺꾩꽍").map((item) => {
               const isActive = pathname?.startsWith(item.href);
               return (
                 <Link
@@ -135,7 +135,7 @@ function PCHeaderContent() {
               const isActive = item.href.includes("?category=")
                 ? searchParams.get("category") === item.href.split("=")[1]
                 : item.href === "/community"
-                  ? pathname === "/community" && (!searchParams.get("category") || searchParams.get("category") === "전체")
+                  ? pathname === "/community" && (!searchParams.get("category") || searchParams.get("category") === "?꾩껜")
                   : pathname?.startsWith(item.href);
 
               return (
@@ -156,9 +156,9 @@ function PCHeaderContent() {
 
           <div className="w-[1px] h-4 bg-gray-300"></div>
 
-          {/* 1:1상담 */}
+          {/* 1:1?곷떞 */}
           <nav className="flex items-center gap-1">
-            {highlightItems.filter(item => item.label === "1:1상담").map((item) => {
+            {highlightItems.filter(item => item.label === "1:1?곷떞").map((item) => {
               const isActive = pathname?.startsWith(item.href);
               return (
                 <Link
@@ -188,3 +188,4 @@ export default function PCHeader() {
     </Suspense>
   );
 }
+

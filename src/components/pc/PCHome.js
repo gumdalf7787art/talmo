@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -27,13 +27,13 @@ export default function PCHome() {
       .then(res => res.json())
       .then(data => setTextPosts(data.posts || []));
       
-    fetch('/api/posts/list?category=리얼후기&limit=4')
+    fetch('/api/posts/list?category=由ъ뼹?꾧린&limit=4')
       .then(res => res.json())
       .then(data => setReviewPosts(data.posts || []));
       
-    fetch('/api/posts/list?category=탈모정보&limit=4')
+    fetch('/api/posts/list?category=?덈え?뺣낫&limit=4')
       .then(res => res.json())
-    fetch('/api/posts/list?category=탈모정보&limit=4')
+    fetch('/api/posts/list?category=?덈え?뺣낫&limit=4')
       .then(res => res.json())
       .then(data => setInfoPosts(data.posts || []));
       
@@ -57,10 +57,10 @@ export default function PCHome() {
   const infoPhotos = infoPosts.slice(0, 4);
 
   const columnPhotos = [
-    { id: 201, title: "절개 vs 비절개", imgUrl: "https://images.unsplash.com/photo-1620331311520-246422fd82f9?w=200&h=200&fit=crop" },
-    { id: 202, title: "3000모 이식 과정", imgUrl: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=200&h=200&fit=crop" },
-    { id: 203, title: "이식 후 생착률", imgUrl: "https://images.unsplash.com/photo-1551076805-e1869033e561?w=200&h=200&fit=crop" },
-    { id: 204, title: "병원 고르는 꿀팁", imgUrl: "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=200&h=200&fit=crop" },
+    { id: 201, title: "?덇컻 vs 鍮꾩젅媛?, imgUrl: "https://images.unsplash.com/photo-1620331311520-246422fd82f9?w=200&h=200&fit=crop" },
+    { id: 202, title: "3000紐??댁떇 怨쇱젙", imgUrl: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=200&h=200&fit=crop" },
+    { id: 203, title: "?댁떇 ???앹갑瑜?, imgUrl: "https://images.unsplash.com/photo-1551076805-e1869033e561?w=200&h=200&fit=crop" },
+    { id: 204, title: "蹂묒썝 怨좊Ⅴ??轅??, imgUrl: "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=200&h=200&fit=crop" },
   ];
 
   const [doctors, setDoctors] = useState([]);
@@ -71,20 +71,20 @@ export default function PCHome() {
       <div className="flex-1 min-w-0 flex flex-col gap-3">
         {/* Hero Banner */}
         {mounted && bannerType === "diagnosis" && (
-          <section className="relative overflow-hidden bg-gradient-to-r from-teal-500 to-teal-700 rounded-2xl p-8 text-white shadow-lg">
+          <section className="relative overflow-hidden bg-gradient-to-r from-teal-500 to-teal-700 rounded-lg p-8 text-white shadow-lg">
             <div className="relative z-10 flex items-center justify-between">
               <div className="flex items-center gap-5">
-                <div className="bg-white/20 p-3 rounded-xl backdrop-blur-sm">
+                <div className="bg-white/20 p-3 rounded-md backdrop-blur-sm">
                   <Camera className="w-8 h-8" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold">내 탈모는 평균일까?</h2>
-                  <p className="text-teal-100 text-sm mt-1">AI가 내 연령/성별 평균과 비교 분석해드립니다</p>
+                  <h2 className="text-xl font-bold">???덈え???됯퇏?쇨퉴?</h2>
+                  <p className="text-teal-100 text-sm mt-1">AI媛 ???곕졊/?깅퀎 ?됯퇏怨?鍮꾧탳 遺꾩꽍?대뱶由쎈땲??/p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Link href="/diagnosis" onClick={handleDismissDiagnosis} className="bg-white text-teal-600 font-bold px-6 py-2.5 rounded-xl shadow-sm hover:bg-gray-50 transition-colors">
-                  무료 AI 분석 시작
+                <Link href="/diagnosis" onClick={handleDismissDiagnosis} className="bg-white text-teal-600 font-bold px-6 py-2.5 rounded-md shadow-sm hover:bg-gray-50 transition-colors">
+                  臾대즺 AI 遺꾩꽍 ?쒖옉
                 </Link>
                 <button onClick={handleDismissDiagnosis} className="text-white/70 hover:text-white p-1">
                   <X className="w-5 h-5" />
@@ -96,41 +96,41 @@ export default function PCHome() {
         )}
 
         {mounted && bannerType === "community" && (
-          <section className="relative overflow-hidden bg-gray-900 rounded-2xl p-8 text-white shadow-lg">
+          <section className="relative overflow-hidden bg-gray-900 rounded-lg p-8 text-white shadow-lg">
             <div className="relative z-10 flex items-center justify-between">
               <div className="flex items-center gap-5">
-                <div className="bg-teal-500/20 p-3 rounded-xl backdrop-blur-sm border border-teal-500/30">
+                <div className="bg-teal-500/20 p-3 rounded-md backdrop-blur-sm border border-teal-500/30">
                   <MessageCircle className="w-8 h-8 text-teal-400" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-teal-50">1000만 탈모의 고민해결</h2>
-                  <p className="text-gray-400 text-sm mt-1">탈모커뮤니티 <span className="text-teal-400 font-bold">탈모톡</span>에서 함께 나눠요</p>
+                  <h2 className="text-xl font-bold text-teal-50">1000留??덈え??怨좊??닿껐</h2>
+                  <p className="text-gray-400 text-sm mt-1">?덈え而ㅻ??덊떚 <span className="text-teal-400 font-bold">?덈え??/span>?먯꽌 ?④퍡 ?섎닠??/p>
                 </div>
               </div>
-              <Link href="/community" className="bg-teal-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-sm hover:bg-teal-700 transition-colors">
-                커뮤니티 입장
+              <Link href="/community" className="bg-teal-600 text-white font-bold px-6 py-2.5 rounded-md shadow-sm hover:bg-teal-700 transition-colors">
+                而ㅻ??덊떚 ?낆옣
               </Link>
             </div>
             <div className="absolute right-0 top-0 w-40 h-40 bg-teal-500/10 rounded-full blur-2xl" />
           </section>
         )}
 
-        {/* 탈모 리얼후기 + 탈모 정보 - 2열 */}
+        {/* ?덈え 由ъ뼹?꾧린 + ?덈え ?뺣낫 - 2??*/}
         <div className="grid grid-cols-2 gap-3">
-          {/* 리얼후기 */}
-          <section className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+          {/* 由ъ뼹?꾧린 */}
+          <section className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-base"><span className="text-gray-900">관리 및 이식</span> <span className="text-teal-600">리얼후기</span></h3>
-              <Link href="/reviews" className="text-xs font-medium text-teal-600 flex items-center">더보기 <ChevronRight className="w-3 h-3" /></Link>
+              <h3 className="font-bold text-base"><span className="text-gray-900">愿由?諛??댁떇</span> <span className="text-teal-600">由ъ뼹?꾧린</span></h3>
+              <Link href="/reviews" className="text-xs font-medium text-teal-600 flex items-center">?붾낫湲?<ChevronRight className="w-3 h-3" /></Link>
             </div>
             <div className="grid grid-cols-2 gap-3">
               {reviewPhotos.map((photo) => (
                 <Link key={photo.id} href={`/community/detail?id=${photo.id}`} className="flex flex-col gap-2 group">
-                  <div className={`w-full aspect-square rounded-xl overflow-hidden border border-gray-100 shadow-sm flex items-center justify-center ${!photo.imageUrl && 'bg-gray-50'}`}>
+                  <div className={`w-full aspect-square rounded-md overflow-hidden border border-gray-100 shadow-sm flex items-center justify-center ${!photo.imageUrl && 'bg-gray-50'}`}>
                     {photo.imageUrl ? (
                       <img src={photo.imageUrl} alt={photo.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                     ) : (
-                      <span className="text-gray-400 text-[10px]">사진 없음</span>
+                      <span className="text-gray-400 text-[10px]">?ъ쭊 ?놁쓬</span>
                     )}
                   </div>
                   <h4 className="font-medium text-gray-800 text-[12px] leading-snug line-clamp-2 mt-0.5">{photo.title}</h4>
@@ -139,20 +139,20 @@ export default function PCHome() {
             </div>
           </section>
 
-          {/* 탈모 정보 */}
-          <section className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+          {/* ?덈え ?뺣낫 */}
+          <section className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-base text-gray-900">탈모 정보</h3>
-              <Link href="/community?category=탈모정보" className="text-xs font-medium text-teal-600 flex items-center">더보기 <ChevronRight className="w-3 h-3" /></Link>
+              <h3 className="font-bold text-base text-gray-900">?덈え ?뺣낫</h3>
+              <Link href="/community?category=?덈え?뺣낫" className="text-xs font-medium text-teal-600 flex items-center">?붾낫湲?<ChevronRight className="w-3 h-3" /></Link>
             </div>
             <div className="grid grid-cols-2 gap-3">
               {infoPhotos.map((photo) => (
                 <Link key={photo.id} href={`/community/detail?id=${photo.id}`} className="flex flex-col gap-2 group">
-                  <div className={`w-full aspect-square rounded-xl overflow-hidden border border-gray-100 shadow-sm flex items-center justify-center ${!photo.imageUrl && 'bg-gray-50'}`}>
+                  <div className={`w-full aspect-square rounded-md overflow-hidden border border-gray-100 shadow-sm flex items-center justify-center ${!photo.imageUrl && 'bg-gray-50'}`}>
                     {photo.imageUrl ? (
                       <img src={photo.imageUrl} alt={photo.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                     ) : (
-                      <span className="text-gray-400 text-[10px]">사진 없음</span>
+                      <span className="text-gray-400 text-[10px]">?ъ쭊 ?놁쓬</span>
                     )}
                   </div>
                   <h4 className="font-medium text-gray-800 text-[12px] leading-snug line-clamp-2 mt-0.5">{photo.title}</h4>
@@ -162,18 +162,18 @@ export default function PCHome() {
           </section>
         </div>
 
-        {/* 실시간 인기글 - Grid */}
-        <section className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+        {/* ?ㅼ떆媛??멸린湲 - Grid */}
+        <section className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-5">
-            <h3 className="font-bold text-lg text-gray-900">실시간 인기글</h3>
+            <h3 className="font-bold text-lg text-gray-900">?ㅼ떆媛??멸린湲</h3>
             <Link href="/community" className="text-sm font-medium text-teal-600 flex items-center hover:text-teal-700">
-              더보기 <ChevronRight className="w-4 h-4" />
+              ?붾낫湲?<ChevronRight className="w-4 h-4" />
             </Link>
           </div>
           <div className="grid grid-cols-6 gap-3 mb-5">
             {popularPhotos.map((photo) => (
               <Link key={photo.id} href={`/community/detail?id=${photo.id}`} className="flex flex-col gap-2 group">
-                <div className="w-full aspect-square rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+                <div className="w-full aspect-square rounded-md overflow-hidden border border-gray-100 shadow-sm">
                   <img src={photo.imageUrl} alt={photo.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 </div>
                 <h4 className="font-medium text-gray-800 text-[13px] line-clamp-1 group-hover:text-teal-600 transition-colors">{photo.title}</h4>
@@ -195,29 +195,29 @@ export default function PCHome() {
           </div>
         </section>
 
-        {/* 견적 배너 */}
-        <Link href="/quote" className="flex items-center justify-between bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl py-6 px-8 shadow-lg group relative overflow-hidden">
+        {/* 寃ъ쟻 諛곕꼫 */}
+        <Link href="/quote" className="flex items-center justify-between bg-gradient-to-r from-slate-800 to-slate-900 rounded-lg py-6 px-8 shadow-lg group relative overflow-hidden">
           <div className="absolute right-0 top-0 w-40 h-40 bg-teal-500/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-teal-500/20 transition-colors" />
           <div className="flex flex-col gap-1 z-10">
-            <span className="text-teal-400 text-sm font-bold">모발이식 비용, 직접 비교하세요!</span>
-            <h3 className="text-white font-bold text-xl">비대면 견적받기</h3>
+            <span className="text-teal-400 text-sm font-bold">紐⑤컻?댁떇 鍮꾩슜, 吏곸젒 鍮꾧탳?섏꽭??</span>
+            <h3 className="text-white font-bold text-xl">鍮꾨?硫?寃ъ쟻諛쏄린</h3>
           </div>
-          <div className="bg-teal-500 text-white font-bold px-6 py-2.5 rounded-xl z-10 shadow-md group-hover:bg-teal-400 transition-colors">시작하기</div>
+          <div className="bg-teal-500 text-white font-bold px-6 py-2.5 rounded-md z-10 shadow-md group-hover:bg-teal-400 transition-colors">?쒖옉?섍린</div>
         </Link>
 
-        {/* 원장님 칼럼 */}
-        <section className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+        {/* ?먯옣??移쇰읆 */}
+        <section className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
-              <h3 className="font-bold text-lg text-gray-900">원장님 리얼 칼럼</h3>
-              <span className="bg-gray-100 text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded">공식</span>
+              <h3 className="font-bold text-lg text-gray-900">?먯옣??由ъ뼹 移쇰읆</h3>
+              <span className="bg-gray-100 text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded">怨듭떇</span>
             </div>
-            <Link href="/transplant" className="text-sm font-medium text-teal-600 flex items-center">더보기 <ChevronRight className="w-4 h-4" /></Link>
+            <Link href="/transplant" className="text-sm font-medium text-teal-600 flex items-center">?붾낫湲?<ChevronRight className="w-4 h-4" /></Link>
           </div>
           <div className="grid grid-cols-4 gap-4">
             {columnPhotos.map((photo) => (
               <Link key={photo.id} href={`/transplant/${photo.id}`} className="flex flex-col gap-2 group">
-                <div className="w-full aspect-square rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+                <div className="w-full aspect-square rounded-md overflow-hidden border border-gray-100 shadow-sm">
                   <img src={photo.imgUrl} alt={photo.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 </div>
                 <h4 className="font-medium text-gray-800 text-[13px] line-clamp-1">{photo.title}</h4>
@@ -226,19 +226,19 @@ export default function PCHome() {
           </div>
         </section>
 
-        {/* 1:1 상담 의사 목록 */}
-        <section className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+        {/* 1:1 ?곷떞 ?섏궗 紐⑸줉 */}
+        <section className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
-              <h3 className="font-bold text-lg text-gray-900">모발이식 1:1 상담</h3>
-              <span className="bg-teal-50 text-teal-600 text-[10px] font-bold px-2 py-0.5 rounded">무료</span>
+              <h3 className="font-bold text-lg text-gray-900">紐⑤컻?댁떇 1:1 ?곷떞</h3>
+              <span className="bg-teal-50 text-teal-600 text-[10px] font-bold px-2 py-0.5 rounded">臾대즺</span>
             </div>
-            <Link href="/consult" className="text-sm font-medium text-teal-600 flex items-center">전체보기 <ChevronRight className="w-4 h-4" /></Link>
+            <Link href="/consult" className="text-sm font-medium text-teal-600 flex items-center">?꾩껜蹂닿린 <ChevronRight className="w-4 h-4" /></Link>
           </div>
           <div className="grid grid-cols-4 gap-4">
             {doctors.slice(0, 4).map((doc) => (
-              <Link key={doc.id} href={`/consult/detail?id=${doc.id}`} className="flex flex-col gap-3 group p-3 rounded-xl border border-gray-100 hover:border-teal-200 hover:shadow-md transition-all">
-                <div className="w-full aspect-square rounded-xl overflow-hidden border border-gray-100 flex items-center justify-center bg-gray-50">
+              <Link key={doc.id} href={`/consult/detail?id=${doc.id}`} className="flex flex-col gap-3 group p-3 rounded-md border border-gray-100 hover:border-teal-200 hover:shadow-md transition-all">
+                <div className="w-full aspect-square rounded-md overflow-hidden border border-gray-100 flex items-center justify-center bg-gray-50">
                   {doc.image_url ? (
                     <img src={doc.image_url} alt={doc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
@@ -251,9 +251,9 @@ export default function PCHome() {
                     <span className="text-[11px] text-gray-500 line-clamp-1">{doc.category}</span>
                   </div>
                   <div className="flex items-center gap-1 text-[11px] font-medium text-teal-600 mt-1">
-                    <MessageCircle className="w-3 h-3" /> 누적상담 {doc.consults}건
+                    <MessageCircle className="w-3 h-3" /> ?꾩쟻?곷떞 {doc.consults}嫄?
                   </div>
-                  <p className="text-[12px] text-gray-600 line-clamp-1 mt-1">{doc.description || "소개가 없습니다."}</p>
+                  <p className="text-[12px] text-gray-600 line-clamp-1 mt-1">{doc.description || "?뚭컻媛 ?놁뒿?덈떎."}</p>
                 </div>
               </Link>
             ))}
@@ -266,3 +266,4 @@ export default function PCHome() {
     </div>
   );
 }
+
