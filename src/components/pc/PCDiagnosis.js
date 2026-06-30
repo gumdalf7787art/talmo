@@ -291,7 +291,7 @@ function PCDiagnosisContent() {
           <div className="flex flex-col gap-5">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">AI 정밀 두피 분석</h2>
-              <p className="text-sm text-red-500 font-bold mb-1 bg-red-50 p-2 rounded border border-red-100 flex items-center gap-1.5"><AlertCircle className="w-4 h-4"/> ※ 눈/코/입 얼굴 전체가 나오지 않게 자르기(Crop)를 꼭 진행해 주세요.</p>
+              <p className="text-sm text-red-500 font-bold mb-1 bg-red-50 p-2 rounded border border-red-100 flex items-center gap-1.5"><AlertCircle className="w-4 h-4"/> ※ 개인정보 보호를 위해 얼굴이 나오지 않게, 이마와 두피 부위만 보이도록 직접 지정해 주세요.</p>
               <p className="text-sm text-gray-500">이마 라인이나 정수리가 잘 보이도록 사진을 1장 선택해 주세요.</p>
             </div>
             <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-gray-300 rounded-lg h-80 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer overflow-hidden transition-colors">
