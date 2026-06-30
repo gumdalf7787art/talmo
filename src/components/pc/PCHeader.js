@@ -1,18 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Search, User, Bell } from "lucide-react";
 
-export default function PCHeader() {
+function PCHeaderContent() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const navItems = [
-    { href: "/", label: "홈" },
-    { href: "/community", label: "커뮤니티" },
-    { href: "/diagnosis", label: "AI 분석" },
-    { href: "/consult", label: "1:1 상담" },
+    { href: "/community", label: "전체 탈모톡" },
+    { href: "/community?category=탈모수다", label: "탈모수다" },
+    { href: "/community?category=리얼후기", label: "리얼후기" },
+    { href: "/community?category=탈모정보", label: "탈모정보" },
+    { href: "/community?category=닥터칼럼", label: "닥터칼럼" },
+    { href: "/diagnosis", label: "Ai분석", highlight: true },
+    { href: "/consult", label: "1:1상담", highlight: true },
   ];
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -35,17 +39,24 @@ export default function PCHeader() {
           {/* Navigation */}
           <nav className="flex items-center gap-1">
             {navItems.map((item) => {
-              const isActive = item.href === "/"
-                ? pathname === "/"
-                : pathname?.startsWith(item.href);
+              const isActive = item.href.includes("?category=")
+                ? searchParams.get("category") === item.href.split("=")[1]
+                : item.href === "/community"
+                  ? pathname === "/community" && (!searchParams.get("category") || searchParams.get("category") === "전체")
+                  : pathname?.startsWith(item.href);
+
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`px-4 py-2 rounded-lg text-[15px] font-semibold transition-colors ${
-                    isActive
-                      ? "text-teal-600 bg-teal-50"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                  className={`px-3 py-2 rounded-lg text-[15px] transition-colors ${
+                    item.highlight
+                      ? isActive
+                        ? "text-teal-700 bg-teal-100 font-extrabold"
+                        : "text-teal-600 font-extrabold hover:bg-teal-50"
+                      : isActive
+                        ? "text-gray-900 bg-gray-100 font-bold"
+                        : "text-gray-600 font-semibold hover:text-gray-900 hover:bg-gray-50"
                   }`}
                 >
                   {item.label}
@@ -92,5 +103,13 @@ export default function PCHeader() {
         </div>
       </div>
     </header>
+  );
+}
+
+export default function PCHeader() {
+  return (
+    <Suspense fallback={<header className="sticky top-0 z-50 w-full h-16 bg-white border-b border-gray-200 shadow-sm"></header>}>
+      <PCHeaderContent />
+    </Suspense>
   );
 }
