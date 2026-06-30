@@ -109,14 +109,18 @@ function DiagnosisContent() {
         pixelRatio: 2, 
         backgroundColor: "#ffffff"
       });
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      
       const img = new Image();
       img.src = imgData;
       await new Promise(resolve => img.onload = resolve);
       
+      const pdfWidth = 210; // Base width in mm (A4 width)
       const pdfHeight = (img.height * pdfWidth) / img.width;
+      
+      const pdf = new jsPDF({
+        orientation: pdfHeight > pdfWidth ? "portrait" : "landscape",
+        unit: "mm",
+        format: [pdfWidth, pdfHeight]
+      });
       
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
       const fileName = `탈모톡_AI_리포트_${new Date().toISOString().slice(0,10)}.pdf`;
