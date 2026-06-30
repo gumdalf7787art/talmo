@@ -575,7 +575,12 @@ function DiagnosisContent() {
 
             {/* Uploaded Image Preview with Scan Effect */}
             <div className="relative w-full aspect-[4/3] bg-gray-900 rounded-xl overflow-hidden mb-6 flex items-center justify-center">
-              <img src={imagePreview} alt="Analyzed" crossOrigin="anonymous" className="w-full h-full object-cover opacity-60" />
+              <img 
+                src={imagePreview} 
+                alt="Analyzed" 
+                crossOrigin={imagePreview && imagePreview.startsWith('http') ? "anonymous" : undefined} 
+                className="w-full h-full object-cover opacity-60" 
+              />
               <div className="absolute inset-0 border-2 border-teal-500/50 rounded-xl"></div>
               {/* Scan line animation mockup */}
               <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-teal-400 shadow-[0_0_8px_2px_rgba(45,212,191,0.5)]"></div>
