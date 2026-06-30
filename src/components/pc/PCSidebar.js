@@ -6,11 +6,22 @@ import { MessageCircle, TrendingUp, MapPin, ChevronRight, Camera } from "lucide-
 
 export default function PCSidebar() {
   const [hotPosts, setHotPosts] = useState([]);
+  const [banners, setBanners] = useState({});
 
   useEffect(() => {
     fetch('/api/posts/list?sort=popular&limit=5')
       .then(res => res.json())
       .then(data => setHotPosts(data.posts || []));
+
+    fetch('/api/admin/banners')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          const bMap = {};
+          data.banners.forEach(b => { bMap[b.id] = b; });
+          setBanners(bMap);
+        }
+      });
   }, []);
 
   const hotKeywords = ["모발이식 비용", "핀페시아", "미녹시딜", "두피문신", "강남 병원"];
@@ -43,24 +54,30 @@ export default function PCSidebar() {
         </div>
       </div>
 
-      {/* 2. AI 진단 배너 */}
-      <Link href="/diagnosis" className="bg-gradient-to-br from-teal-500 to-teal-700 rounded-lg p-5 shadow-sm overflow-hidden relative group block">
-        <div className="absolute right-0 top-0 w-24 h-24 bg-white/10 rounded-full blur-xl -mr-8 -mt-8 group-hover:bg-white/20 transition-colors" />
-        <div className="relative z-10 flex flex-col gap-1">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="bg-white/20 p-2 rounded-lg backdrop-blur-sm">
-              <Camera className="w-5 h-5 text-white" />
+      {/* 2. AI 진단 배너 (main_b_1) */}
+      {banners.main_b_1?.is_active ? (
+        <Link href={banners.main_b_1.link_url || "#"} className="w-full rounded-lg shadow-sm overflow-hidden block border border-gray-200 group">
+          <img src={banners.main_b_1.image_url} alt={banners.main_b_1.title} className="w-full h-auto object-cover group-hover:opacity-90 transition-opacity" />
+        </Link>
+      ) : (
+        <Link href="/diagnosis" className="bg-gradient-to-br from-teal-500 to-teal-700 rounded-lg p-5 shadow-sm overflow-hidden relative group block">
+          <div className="absolute right-0 top-0 w-24 h-24 bg-white/10 rounded-full blur-xl -mr-8 -mt-8 group-hover:bg-white/20 transition-colors" />
+          <div className="relative z-10 flex flex-col gap-1">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="bg-white/20 p-2 rounded-lg backdrop-blur-sm">
+                <Camera className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-teal-100 text-[11px] font-bold">무료 스마트 분석</span>
             </div>
-            <span className="text-teal-100 text-[11px] font-bold">무료 스마트 분석</span>
+            <h3 className="text-white font-bold text-[16px] leading-snug mb-1">
+              내 탈모 상태,<br/>AI가 진단해드립니다
+            </h3>
+            <span className="text-teal-50 text-[12px] flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+              분석하기 <ChevronRight className="w-3 h-3" />
+            </span>
           </div>
-          <h3 className="text-white font-bold text-[16px] leading-snug mb-1">
-            내 탈모 상태,<br/>AI가 진단해드립니다
-          </h3>
-          <span className="text-teal-50 text-[12px] flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
-            분석하기 <ChevronRight className="w-3 h-3" />
-          </span>
-        </div>
-      </Link>
+        </Link>
+      )}
 
       {/* 3. 인기 검색어 */}
       <div className="bg-white rounded-lg border border-gray-200 p-5 shadow-sm">
@@ -78,22 +95,27 @@ export default function PCSidebar() {
         </div>
       </div>
 
-      {/* 4. 1:1 Ad Banner */}
-      <Link href="#" className="bg-gray-100 rounded-lg border border-gray-200 shadow-sm overflow-hidden aspect-square relative group block">
-        <img 
-          src="/shampoo_ad_banner.png" 
-          alt="탈모 샴푸 추천 광고" 
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
-        <div className="absolute top-3 right-3 bg-black/40 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded">
-          AD
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-5 pt-12">
-          <span className="text-teal-400 text-[11px] font-bold mb-1 block">프리미엄 탈모 샴푸</span>
-          <h3 className="text-white font-bold text-[16px] leading-snug">모근부터 튼튼하게,<br/>기적의 두피 케어</h3>
-        </div>
-      </Link>
-
+      {/* 4. 1:1 Ad Banner (main_b_2) */}
+      {banners.main_b_2?.is_active ? (
+        <Link href={banners.main_b_2.link_url || "#"} className="w-full rounded-lg shadow-sm overflow-hidden block border border-gray-200 group">
+          <img src={banners.main_b_2.image_url} alt={banners.main_b_2.title} className="w-full h-auto object-cover group-hover:opacity-90 transition-opacity" />
+        </Link>
+      ) : (
+        <Link href="#" className="bg-gray-100 rounded-lg border border-gray-200 shadow-sm overflow-hidden aspect-square relative group block">
+          <img 
+            src="/shampoo_ad_banner.png" 
+            alt="탈모 샴푸 추천 광고" 
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+          <div className="absolute top-3 right-3 bg-black/40 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded">
+            AD
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-5 pt-12">
+            <span className="text-teal-400 text-[11px] font-bold mb-1 block">프리미엄 탈모 샴푸</span>
+            <h3 className="text-white font-bold text-[16px] leading-snug">모근부터 튼튼하게,<br/>기적의 두피 케어</h3>
+          </div>
+        </Link>
+      )}
 
     </aside>
   );

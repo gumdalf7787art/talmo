@@ -41,9 +41,17 @@ export default function PCHome() {
           setDoctors(data.clinics || []);
         }
       });
+
+    fetch('/api/admin/banners')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          const bMap = {};
+          data.banners.forEach(b => { bMap[b.id] = b; });
+          setBanners(bMap);
+        }
+      });
   }, []);
-
-
 
   const reviewPhotos = reviewPosts.slice(0, 4);
   const infoPhotos = infoPosts.slice(0, 4);
@@ -56,28 +64,35 @@ export default function PCHome() {
   ];
 
   const [doctors, setDoctors] = useState([]);
+  const [banners, setBanners] = useState({});
 
   return (
     <div className="flex gap-6">
       {/* Main Content */}
       <div className="flex-1 min-w-0 flex flex-col gap-3">
-        {/* Hero Banner */}
-        <section className="relative overflow-hidden rounded-lg shadow-lg flex bg-gray-900 group w-full h-[180px] shrink-0">
-          <img src="/ai_diagnosis_banner.png" alt="AI 탈모분석 배너" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
-          
-          <div className="relative z-10 flex items-center justify-between w-full p-8 h-full">
-            <div className="flex flex-col justify-center h-full gap-2 mt-2">
-              <h2 className="text-3xl font-black text-white drop-shadow-md tracking-tight">Ai 탈모분석</h2>
-              <p className="text-gray-100 text-[17px] font-medium drop-shadow">지금 바로 분석하세요.</p>
+        {/* Hero Banner (main_a_1) */}
+        {banners.main_a_1?.is_active ? (
+          <Link href={banners.main_a_1.link_url || "#"} className="relative overflow-hidden rounded-lg shadow-lg flex group w-full h-[180px] shrink-0 border border-gray-100">
+            <img src={banners.main_a_1.image_url} alt={banners.main_a_1.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          </Link>
+        ) : (
+          <section className="relative overflow-hidden rounded-lg shadow-lg flex bg-gray-900 group w-full h-[180px] shrink-0">
+            <img src="/ai_diagnosis_banner.png" alt="AI 탈모분석 배너" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+            
+            <div className="relative z-10 flex items-center justify-between w-full p-8 h-full">
+              <div className="flex flex-col justify-center h-full gap-2 mt-2">
+                <h2 className="text-3xl font-black text-white drop-shadow-md tracking-tight">Ai 탈모분석</h2>
+                <p className="text-gray-100 text-[17px] font-medium drop-shadow">지금 바로 분석하세요.</p>
+              </div>
+              <div className="flex items-center gap-3 h-full pt-3">
+                <Link href="/diagnosis" className="bg-teal-500 hover:bg-teal-400 text-white font-bold px-7 py-3 rounded-md shadow-lg transition-all flex items-center gap-2 hover:-translate-y-1">
+                  분석 시작하기 <ChevronRight className="w-4 h-4" />
+                </Link>
+              </div>
             </div>
-            <div className="flex items-center gap-3 h-full pt-3">
-              <Link href="/diagnosis" className="bg-teal-500 hover:bg-teal-400 text-white font-bold px-7 py-3 rounded-md shadow-lg transition-all flex items-center gap-2 hover:-translate-y-1">
-                분석 시작하기 <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* 탈모 리얼후기 + 탈모 정보 - 2열 */}
         <div className="grid grid-cols-2 gap-3">
@@ -159,15 +174,21 @@ export default function PCHome() {
           </div>
         </section>
 
-        {/* 견적 배너 */}
-        <Link href="/quote" className="flex items-center justify-between bg-gradient-to-r from-slate-800 to-slate-900 rounded-lg py-6 px-8 shadow-lg group relative overflow-hidden">
-          <div className="absolute right-0 top-0 w-40 h-40 bg-teal-500/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-teal-500/20 transition-colors" />
-          <div className="flex flex-col gap-1 z-10">
-            <span className="text-teal-400 text-sm font-bold">모발이식 비용, 직접 비교하세요!</span>
-            <h3 className="text-white font-bold text-xl">비대면 견적받기</h3>
-          </div>
-          <div className="bg-teal-500 text-white font-bold px-6 py-2.5 rounded-md z-10 shadow-md group-hover:bg-teal-400 transition-colors">시작하기</div>
-        </Link>
+        {/* 견적 배너 (main_a_2) */}
+        {banners.main_a_2?.is_active ? (
+          <Link href={banners.main_a_2.link_url || "#"} className="w-full rounded-lg shadow-sm overflow-hidden block border border-gray-200 group">
+             <img src={banners.main_a_2.image_url} alt={banners.main_a_2.title} className="w-full h-auto object-cover group-hover:opacity-90 transition-opacity" />
+          </Link>
+        ) : (
+          <Link href="/quote" className="flex items-center justify-between bg-gradient-to-r from-slate-800 to-slate-900 rounded-lg py-6 px-8 shadow-lg group relative overflow-hidden">
+            <div className="absolute right-0 top-0 w-40 h-40 bg-teal-500/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-teal-500/20 transition-colors" />
+            <div className="flex flex-col gap-1 z-10">
+              <span className="text-teal-400 text-sm font-bold">모발이식 비용, 직접 비교하세요!</span>
+              <h3 className="text-white font-bold text-xl">비대면 견적받기</h3>
+            </div>
+            <div className="bg-teal-500 text-white font-bold px-6 py-2.5 rounded-md z-10 shadow-md group-hover:bg-teal-400 transition-colors">시작하기</div>
+          </Link>
+        )}
 
         {/* 원장님 칼럼 */}
         <section className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
