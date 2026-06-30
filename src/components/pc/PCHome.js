@@ -6,7 +6,6 @@ import { Camera, ChevronRight, MessageCircle, X, Search, TrendingUp, MapPin, Sta
 import PCSidebar from "@/components/pc/PCSidebar";
 
 export default function PCHome() {
-  const [bannerType, setBannerType] = useState(null);
   const [mounted, setMounted] = useState(false);
 
   const [popularPhotos, setPopularPhotos] = useState([]);
@@ -16,8 +15,6 @@ export default function PCHome() {
 
   useEffect(() => {
     setMounted(true);
-    const hasDiagnosed = localStorage.getItem("hasDiagnosed");
-    setBannerType(hasDiagnosed ? "community" : "diagnosis");
 
     fetch('/api/posts/list?sort=popular&hasImage=true&limit=6')
       .then(res => res.json())
@@ -46,10 +43,7 @@ export default function PCHome() {
       });
   }, []);
 
-  const handleDismissDiagnosis = () => {
-    localStorage.setItem("hasDiagnosed", "true");
-    setBannerType("community");
-  };
+  }, []);
 
 
 
@@ -70,47 +64,22 @@ export default function PCHome() {
       {/* Main Content */}
       <div className="flex-1 min-w-0 flex flex-col gap-3">
         {/* Hero Banner */}
-        {mounted && bannerType === "diagnosis" && (
-          <section className="relative overflow-hidden rounded-lg shadow-lg w-full flex bg-gray-900 group aspect-[728/150]">
-            <img src="/ai_diagnosis_banner.png" alt="AI 탈모분석 배너" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
-            
-            <div className="relative z-10 flex items-center justify-between w-full p-8 h-full">
-              <div className="flex flex-col justify-center h-full gap-2 mt-2">
-                <h2 className="text-3xl font-black text-white drop-shadow-md tracking-tight">Ai 탈모분석</h2>
-                <p className="text-gray-100 text-[17px] font-medium drop-shadow">지금 바로 분석하세요.</p>
-              </div>
-              <div className="flex items-center gap-3 h-full pt-3">
-                <Link href="/diagnosis" onClick={handleDismissDiagnosis} className="bg-teal-500 hover:bg-teal-400 text-white font-bold px-7 py-3 rounded-md shadow-lg transition-all flex items-center gap-2 hover:-translate-y-1">
-                  분석 시작하기 <ChevronRight className="w-4 h-4" />
-                </Link>
-                <button onClick={handleDismissDiagnosis} className="text-white/50 hover:text-white p-1 absolute top-4 right-4">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+        <section className="relative overflow-hidden rounded-lg shadow-lg w-full flex bg-gray-900 group aspect-[728/150]">
+          <img src="/ai_diagnosis_banner.png" alt="AI 탈모분석 배너" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+          
+          <div className="relative z-10 flex items-center justify-between w-full p-8 h-full">
+            <div className="flex flex-col justify-center h-full gap-2 mt-2">
+              <h2 className="text-3xl font-black text-white drop-shadow-md tracking-tight">Ai 탈모분석</h2>
+              <p className="text-gray-100 text-[17px] font-medium drop-shadow">지금 바로 분석하세요.</p>
             </div>
-          </section>
-        )}
-
-        {mounted && bannerType === "community" && (
-          <section className="relative overflow-hidden bg-gray-900 rounded-lg p-8 text-white shadow-lg">
-            <div className="relative z-10 flex items-center justify-between">
-              <div className="flex items-center gap-5">
-                <div className="bg-teal-500/20 p-3 rounded-md backdrop-blur-sm border border-teal-500/30">
-                  <MessageCircle className="w-8 h-8 text-teal-400" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-teal-50">1000만 탈모의 고민해결</h2>
-                  <p className="text-gray-400 text-sm mt-1">탈모커뮤니티 <span className="text-teal-400 font-bold">탈모톡</span>에서 함께 나눠요</p>
-                </div>
-              </div>
-              <Link href="/community" className="bg-teal-600 text-white font-bold px-6 py-2.5 rounded-md shadow-sm hover:bg-teal-700 transition-colors">
-                커뮤니티 입장
+            <div className="flex items-center gap-3 h-full pt-3">
+              <Link href="/diagnosis" className="bg-teal-500 hover:bg-teal-400 text-white font-bold px-7 py-3 rounded-md shadow-lg transition-all flex items-center gap-2 hover:-translate-y-1">
+                분석 시작하기 <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
-            <div className="absolute right-0 top-0 w-40 h-40 bg-teal-500/10 rounded-full blur-2xl" />
-          </section>
-        )}
+          </div>
+        </section>
 
         {/* 탈모 리얼후기 + 탈모 정보 - 2열 */}
         <div className="grid grid-cols-2 gap-3">
