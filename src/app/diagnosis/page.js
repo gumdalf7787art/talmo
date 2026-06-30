@@ -7,6 +7,7 @@ import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, Chevron
 import useMediaQuery from "@/hooks/useMediaQuery";
 import PCDiagnosis from "@/components/pc/PCDiagnosis";
 import RadarChart from "@/components/RadarChart";
+import { compressImage } from "@/lib/imageUtils";
 
 function DiagnosisContent() {
   const [imageFile, setImageFile] = useState(null);
@@ -134,7 +135,16 @@ function DiagnosisContent() {
     setResult(null);
 
     const formData = new FormData();
-    formData.append("image", imageFile);
+    try {
+      const optimizedBase64 = await compressImage(imageFile, 1920, 0.9);
+      const res = await fetch(optimizedBase64);
+      const blob = await res.blob();
+      formData.append("image", blob, "optimized.jpg");
+    } catch (err) {
+      console.warn("Image optimization failed, sending original...", err);
+      formData.append("image", imageFile);
+    }
+    
     if (user && user.id) {
       formData.append("userId", user.id);
     }
