@@ -103,7 +103,7 @@ function PCDiagnosisContent() {
       pdf.save(fileName);
     } catch (error) {
       console.error("PDF 생성 실패:", error);
-      alert("PDF 처리 중 오류가 발생했습니다.");
+      alert("PDF 처리 중 오류가 발생했습니다: " + (error.message || "알 수 없는 오류"));
     }
   };
 
@@ -232,7 +232,7 @@ function PCDiagnosisContent() {
                 image={imagePreview}
                 crop={crop}
                 zoom={zoom}
-                aspect={1}
+                aspect={4 / 3}
                 onCropChange={setCrop}
                 onCropComplete={onCropComplete}
                 onZoomChange={setZoom}
@@ -345,7 +345,7 @@ function PCDiagnosisContent() {
               </div>
             </div>
             
-            <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-gray-300 rounded-lg h-72 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer overflow-hidden transition-colors">
+            <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-gray-300 rounded-lg aspect-[4/3] flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer overflow-hidden transition-colors">
               {imagePreview ? (<img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />) : (
                 <div className="flex flex-col items-center text-gray-400 gap-3">
                   <div className="p-4 bg-white rounded-full shadow-sm"><Camera className="w-10 h-10 text-teal-500" /></div>
@@ -567,8 +567,8 @@ function PCDiagnosisContent() {
                     </div>
                   </div>
                   
-                  <div className="relative w-full h-48 bg-slate-100 rounded-lg overflow-hidden border border-slate-200">
-                    <img src={imagePreview} alt="Analyzed" className="w-full h-full object-cover opacity-80 mix-blend-multiply" />
+                  <div className="relative w-full aspect-[4/3] bg-slate-100 rounded-lg overflow-hidden border border-slate-200">
+                    <img src={imagePreview} alt="Analyzed" crossOrigin="anonymous" className="w-full h-full object-cover opacity-80 mix-blend-multiply" />
                     <div className="absolute top-2 left-2 bg-black/60 text-white text-[11px] px-2 py-1 rounded font-medium">스캔 원본 이미지</div>
                   </div>
                 </div>

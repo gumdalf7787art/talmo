@@ -134,7 +134,7 @@ function DiagnosisContent() {
       pdf.save(fileName);
     } catch (error) {
       console.error("PDF 생성 실패:", error);
-      alert("PDF 처리 중 오류가 발생했습니다.");
+      alert("PDF 처리 중 오류가 발생했습니다: " + (error.message || "알 수 없는 오류"));
     }
   };
 
@@ -262,7 +262,7 @@ function DiagnosisContent() {
                 image={imagePreview}
                 crop={crop}
                 zoom={zoom}
-                aspect={1}
+                aspect={16 / 9}
                 onCropChange={setCrop}
                 onCropComplete={onCropComplete}
                 onZoomChange={setZoom}
@@ -446,7 +446,7 @@ function DiagnosisContent() {
           
           <div 
             onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-gray-300 rounded-2xl h-56 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer overflow-hidden transition-colors mt-2"
+            className="border-2 border-dashed border-gray-300 rounded-2xl aspect-[4/3] flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer overflow-hidden transition-colors mt-2"
           >
             {imagePreview ? (
               <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
@@ -556,8 +556,8 @@ function DiagnosisContent() {
             </div>
 
             {/* Uploaded Image Preview with Scan Effect */}
-            <div className="relative w-full h-40 bg-gray-900 rounded-xl overflow-hidden mb-6 flex items-center justify-center">
-              <img src={imagePreview} alt="Analyzed" className="w-full h-full object-cover opacity-60" />
+            <div className="relative w-full aspect-[4/3] bg-gray-900 rounded-xl overflow-hidden mb-6 flex items-center justify-center">
+              <img src={imagePreview} alt="Analyzed" crossOrigin="anonymous" className="w-full h-full object-cover opacity-60" />
               <div className="absolute inset-0 border-2 border-teal-500/50 rounded-xl"></div>
               {/* Scan line animation mockup */}
               <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-teal-400 shadow-[0_0_8px_2px_rgba(45,212,191,0.5)]"></div>
