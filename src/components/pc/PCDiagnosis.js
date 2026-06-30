@@ -28,6 +28,7 @@ function PCDiagnosisContent() {
   const fileInputRef = useRef(null);
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState({ gender: "", birthYear: "", familyHistory: "" });
+  const [scanType, setScanType] = useState("이마/헤어라인");
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
@@ -155,6 +156,7 @@ function PCDiagnosisContent() {
       formData.append("gender", profile.gender);
       formData.append("birthYear", profile.birthYear);
       formData.append("familyHistory", profile.familyHistory);
+      formData.append("scanType", scanType);
       
       if (user && user.id) {
         formData.append("userId", user.id);
@@ -314,9 +316,16 @@ function PCDiagnosisContent() {
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">AI 정밀 두피 분석</h2>
               <p className="text-sm text-red-500 font-bold mb-1 bg-red-50 p-2 rounded border border-red-100 flex items-center gap-1.5"><AlertCircle className="w-4 h-4"/> ※ 개인정보 보호를 위해 얼굴이 나오지 않게, 이마와 두피 부위만 보이도록 직접 지정해 주세요.</p>
-              <p className="text-sm text-gray-500">이마 라인이나 정수리가 잘 보이도록 사진을 1장 선택해 주세요.</p>
+              <p className="text-sm text-gray-500 mb-4">분석할 부위를 선택한 후, 선명하게 잘 보이는 사진을 1장 선택해 주세요.</p>
+              
+              {/* Scan Type Selector */}
+              <div className="flex gap-3 w-full">
+                 <button onClick={() => setScanType('이마/헤어라인')} className={`flex-1 py-3 text-sm font-bold rounded-lg border-2 transition-all ${scanType === '이마/헤어라인' ? 'border-teal-500 bg-teal-50 text-teal-700 shadow-sm' : 'border-gray-200 bg-white text-gray-500 hover:bg-gray-50'}`}>이마/헤어라인</button>
+                 <button onClick={() => setScanType('정수리/가르마')} className={`flex-1 py-3 text-sm font-bold rounded-lg border-2 transition-all ${scanType === '정수리/가르마' ? 'border-teal-500 bg-teal-50 text-teal-700 shadow-sm' : 'border-gray-200 bg-white text-gray-500 hover:bg-gray-50'}`}>정수리/가르마</button>
+              </div>
             </div>
-            <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-gray-300 rounded-lg h-80 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer overflow-hidden transition-colors">
+            
+            <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-gray-300 rounded-lg h-72 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer overflow-hidden transition-colors">
               {imagePreview ? (<img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />) : (
                 <div className="flex flex-col items-center text-gray-400 gap-3">
                   <div className="p-4 bg-white rounded-full shadow-sm"><Camera className="w-10 h-10 text-teal-500" /></div>

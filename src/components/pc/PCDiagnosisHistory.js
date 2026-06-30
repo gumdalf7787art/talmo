@@ -1,6 +1,7 @@
 "use client";
 
-import { TrendingDown, TrendingUp, Minus, Activity, ArrowRight, Calendar, AlertCircle } from "lucide-react";
+import { useState } from "react";
+import { TrendingDown, TrendingUp, Minus, Activity, ArrowRight, Calendar, AlertCircle, Search } from "lucide-react";
 import Link from "next/link";
 import RadarChart from "../RadarChart";
 import {
@@ -14,6 +15,19 @@ import {
 } from "recharts";
 
 export default function PCDiagnosisHistory({ historyList }) {
+  const [filterTab, setFilterTab] = useState('전체');
+
+  const filteredHistory = historyList ? historyList.filter(item => {
+    if (filterTab === '전체') return true;
+    try {
+      const details = typeof item.details === 'string' ? JSON.parse(item.details) : item.details;
+      const type = details?.scanType || '알 수 없음';
+      return type === filterTab;
+    } catch(e) {
+      return false;
+    }
+  }) : [];
+
   if (!historyList || historyList.length === 0) {
     return (
       <div className="py-20 flex flex-col items-center justify-center text-gray-500">
@@ -27,13 +41,13 @@ export default function PCDiagnosisHistory({ historyList }) {
   }
 
   // Calculate stats
-  const latestScore = historyList[0]?.score || 0;
-  const previousScore = historyList.length > 1 ? historyList[1].score : latestScore;
+  const latestScore = filteredHistory[0]?.score || 0;
+  const previousScore = filteredHistory.length > 1 ? filteredHistory[1].score : latestScore;
   const diff = latestScore - previousScore;
   const trend = diff > 0 ? 'up' : diff < 0 ? 'down' : 'same';
 
   // Prepare chart data (Oldest -> Newest)
-  const chartData = [...historyList].reverse().map(item => {
+  const chartData = [...filteredHistory].reverse().map(item => {
     const d = new Date(item.created_at);
     return {
       date: `${d.getMonth() + 1}.${d.getDate()}`,
@@ -85,9 +99,31 @@ export default function PCDiagnosisHistory({ historyList }) {
 
       {/* History Grid */}
       <div className="flex flex-col gap-4">
-        <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2"><Calendar className="w-5 h-5 text-gray-500" /> 나의 두피 변화 트렌드</h3>
+        <div className="flex justify-between items-end mb-2">
+          <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2"><Calendar className="w-5 h-5 text-gray-500" /> 나의 두피 변화 트렌드</h3>
+          
+          {/* Tabs */}
+          <div className="flex bg-gray-100 p-1 rounded-lg">
+            {['전체', '이마/헤어라인', '정수리/가르마'].map(tab => (
+              <button 
+                key={tab} 
+                onClick={() => setFilterTab(tab)}
+                className={`px-4 py-1.5 text-sm font-bold rounded-md transition-all ${filterTab === tab ? 'bg-white text-teal-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+        </div>
         
-        {/* Chart View */}
+        {filteredHistory.length === 0 ? (
+          <div className="bg-white border border-gray-200 rounded-xl p-10 flex flex-col items-center justify-center text-gray-400">
+            <Search className="w-10 h-10 mb-3 text-gray-300" />
+            <p>해당 부위의 분석 기록이 없습니다.</p>
+          </div>
+        ) : (
+          <>
+            {/* Chart View */}
         <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm mb-4">
           <div className="flex justify-between items-center mb-6">
             <div>
@@ -127,60 +163,37 @@ export default function PCDiagnosisHistory({ historyList }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
-          {historyList.map((item) => {
-            const details = item.details ? JSON.parse(item.details) : null;
-            const summaryText = details?.analysis?.[0] || item.severity || "분석 내용이 없습니다.";
-
-            return (
-              <div key={item.id} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col min-h-[300px]">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <span className="px-2.5 py-1 bg-gray-100 text-gray-700 text-[12px] font-bold rounded mb-2 inline-block">
-                      {new Date(item.created_at).toLocaleDateString()}
-                    </span>
-                    <h4 className="font-bold text-gray-900 text-[16px] truncate">{item.severity}</h4>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-2xl font-black text-teal-600">{item.score}<span className="text-sm font-medium text-gray-400">점</span></span>
-                  </div>
-                </div>
-
-                <div className="flex-1 mb-4 flex gap-4">
-                  {/* Mock Image or Real Image */}
-                  <div className="w-24 h-24 rounded-md overflow-hidden shrink-0 bg-gray-100 border border-gray-200 mt-1">
-                     <img src={item.image_url && item.image_url !== 'placeholder_url' ? item.image_url : "https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?w=200&h=200&fit=crop"} alt="분석 사진" className="w-full h-full object-cover" />
-                  </div>
+             {/* List View */}
+            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm overflow-hidden">
+              <h4 className="font-bold text-gray-800 text-[15px] mb-4">분석 내역 상세</h4>
+              <div className="grid grid-cols-2 gap-4">
+                {filteredHistory.map((item, idx) => {
+                  let details = {};
+                  try {
+                    details = typeof item.details === 'string' ? JSON.parse(item.details) : item.details;
+                  } catch (e) {
+                    console.error("Failed to parse history details");
+                  }
                   
-                  {/* Details summary */}
-                  <div className="flex flex-col flex-1 text-[13px] text-gray-600">
-                    <p className="line-clamp-3 leading-relaxed break-keep font-medium mb-3">
-                      "{summaryText}"
-                    </p>
-                    {details?.breakdown && (
-                      <div className="flex flex-col gap-1.5 mt-auto">
-                         {details.breakdown.slice(0, 2).map((m, idx) => (
-                           <div key={idx} className="flex justify-between items-center text-[12px]">
-                             <span>{m.label.split(' ')[0]}</span>
-                             <span className={`font-bold text-${m.color}-500`}>{m.status}</span>
-                           </div>
-                         ))}
-                         <span className="text-[11px] text-gray-400 mt-1">+ 추가 지표</span>
+                  return (
+                    <Link href={`/diagnosis?id=${item.id}`} key={item.id} className="group border border-gray-200 rounded-lg p-5 hover:border-teal-500 hover:shadow-md transition-all bg-white relative">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex flex-col gap-1">
+                          <span className="text-[12px] font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded w-fit">{details?.scanType || '전체/알 수 없음'}</span>
+                          <span className="text-[13px] text-gray-500 font-medium flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5"/> {new Date(item.created_at).toLocaleDateString()}</span>
+                        </div>
+                        <span className="px-2.5 py-1 bg-yellow-100 text-yellow-800 text-[11px] font-bold rounded-md">진행 단계: {item.severity}</span>
                       </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-gray-100 mt-auto flex justify-between items-center">
-                   <span className="text-[12px] text-gray-400">분석 완료</span>
-                   <Link href={`/diagnosis?history=true&id=${item.id}`} className="text-[13px] text-teal-600 font-bold hover:text-teal-700 flex items-center gap-1 group">
-                     상세 리포트 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                   </Link>
-                </div>
+                      <div className="text-right">
+                        <span className="text-2xl font-black text-teal-600">{item.score}<span className="text-sm font-medium text-gray-400">점</span></span>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

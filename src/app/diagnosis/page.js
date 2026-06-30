@@ -29,13 +29,9 @@ function DiagnosisContent() {
   const consentAll = consent1 && consent2;
   const [result, setResult] = useState(null);
   const fileInputRef = useRef(null);
-
   const [user, setUser] = useState(null);
-  const [profile, setProfile] = useState({
-    gender: "",
-    birthYear: "",
-    familyHistory: ""
-  });
+  const [profile, setProfile] = useState({ gender: "", birthYear: "", familyHistory: "" });
+  const [scanType, setScanType] = useState("이마/헤어라인");
 
   // Load profile from local storage on mount
   useEffect(() => {
@@ -202,6 +198,8 @@ function DiagnosisContent() {
     if (user && user.id) {
       formData.append("userId", user.id);
     }
+    
+    formData.append("scanType", scanType);
 
     try {
       const response = await fetch("/api/diagnosis", {
@@ -421,9 +419,14 @@ function DiagnosisContent() {
           </div>
 
           {/* 업로드 영역 */}
+          <div className="flex gap-2 w-full">
+             <button onClick={() => setScanType('이마/헤어라인')} className={`flex-1 py-3 text-[13px] font-bold rounded-xl border-2 transition-all ${scanType === '이마/헤어라인' ? 'border-teal-500 bg-teal-50 text-teal-700 shadow-sm' : 'border-gray-200 bg-white text-gray-500 hover:bg-gray-50'}`}>이마/헤어라인</button>
+             <button onClick={() => setScanType('정수리/가르마')} className={`flex-1 py-3 text-[13px] font-bold rounded-xl border-2 transition-all ${scanType === '정수리/가르마' ? 'border-teal-500 bg-teal-50 text-teal-700 shadow-sm' : 'border-gray-200 bg-white text-gray-500 hover:bg-gray-50'}`}>정수리/가르마</button>
+          </div>
+          
           <div 
             onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-gray-300 rounded-2xl h-64 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer overflow-hidden transition-colors"
+            className="border-2 border-dashed border-gray-300 rounded-2xl h-56 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer overflow-hidden transition-colors mt-2"
           >
             {imagePreview ? (
               <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />

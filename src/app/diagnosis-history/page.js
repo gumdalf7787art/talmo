@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, Calendar, TrendingDown, TrendingUp, Minus, Activity, AlertCircle } from "lucide-react";
+import { ChevronLeft, Calendar, TrendingDown, TrendingUp, Minus, Activity, AlertCircle, Search } from "lucide-react";
 import {
   AreaChart,
   Area,
@@ -21,6 +21,18 @@ function DiagnosisHistoryContent() {
   const isPC = useMediaQuery("(min-width: 1024px)");
   const [historyList, setHistoryList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filterTab, setFilterTab] = useState('전체');
+
+  const filteredHistory = historyList ? historyList.filter(item => {
+    if (filterTab === '전체') return true;
+    try {
+      const details = typeof item.details === 'string' ? JSON.parse(item.details) : item.details;
+      const type = details?.scanType || '알 수 없음';
+      return type === filterTab;
+    } catch(e) {
+      return false;
+    }
+  }) : [];
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -97,13 +109,13 @@ function DiagnosisHistoryContent() {
     );
   }
 
-  const latestScore = historyList[0]?.score || 0;
-  const previousScore = historyList.length > 1 ? historyList[1].score : latestScore;
+  const latestScore = filteredHistory[0]?.score || 0;
+  const previousScore = filteredHistory.length > 1 ? filteredHistory[1].score : latestScore;
   const diff = latestScore - previousScore;
   const trend = diff > 0 ? 'up' : diff < 0 ? 'down' : 'same';
 
   // Prepare chart data
-  const chartData = [...historyList].reverse().map(item => {
+  const chartData = [...filteredHistory].reverse().map(item => {
     const d = new Date(item.created_at);
     return {
       date: `${d.getMonth() + 1}.${d.getDate()}`,
@@ -163,8 +175,28 @@ function DiagnosisHistoryContent() {
       {/* History List & Chart */}
       <main className="flex-1 p-4">
         
-        {/* Mobile Chart View */}
-        <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm mb-5">
+        {/* Tabs */}
+        <div className="flex bg-gray-200/50 p-1 rounded-xl mb-4">
+          {['전체', '이마/헤어라인', '정수리/가르마'].map(tab => (
+            <button 
+              key={tab} 
+              onClick={() => setFilterTab(tab)}
+              className={`flex-1 py-1.5 text-[13px] font-bold rounded-lg transition-all ${filterTab === tab ? 'bg-white text-teal-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+        
+        {filteredHistory.length === 0 ? (
+          <div className="bg-white border border-gray-100 rounded-2xl p-10 flex flex-col items-center justify-center text-gray-400 mb-5">
+            <Search className="w-8 h-8 mb-2 text-gray-300" />
+            <p className="text-[13px]">해당 부위의 기록이 없습니다.</p>
+          </div>
+        ) : (
+          <>
+            {/* Mobile Chart View */}
+            <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm mb-5">
           <div className="flex justify-between items-center mb-4">
             <div>
               <h4 className="font-bold text-gray-800 text-[14px]">점수 변화 추이</h4>
@@ -205,12 +237,12 @@ function DiagnosisHistoryContent() {
         </div>
 
         <div className="flex flex-col gap-3">
-          {historyList.map((item) => {
-            const details = item.details ? JSON.parse(item.details) : null;
+          {filteredHistory.map((item) => {
+            const details = item.details ? (typeof item.details === 'string' ? JSON.parse(item.details) : item.details) : null;
             const summaryText = details?.analysis?.[0] || item.severity || "분석 내용이 없습니다.";
             // Compare with next item to get trend
-            const currentIndex = historyList.findIndex(h => h.id === item.id);
-            const prevItem = historyList[currentIndex + 1];
+            const currentIndex = filteredHistory.findIndex(h => h.id === item.id);
+            const prevItem = filteredHistory[currentIndex + 1];
             const itemDiff = prevItem ? item.score - prevItem.score : 0;
             const itemTrend = itemDiff > 0 ? 'up' : itemDiff < 0 ? 'down' : 'same';
 
@@ -224,8 +256,9 @@ function DiagnosisHistoryContent() {
                 {/* Content */}
                 <div className="flex flex-col flex-1 min-w-0">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-[12px] text-gray-400 font-medium">{new Date(item.created_at).toLocaleDateString()}</span>
-                    <div className="flex items-center gap-1">
+                    <span className="text-[12px] font-bold text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded">{details?.scanType || '전체/알 수 없음'}</span>
+                    <span className="text-[11px] text-gray-400 font-medium ml-1">{new Date(item.created_at).toLocaleDateString()}</span>
+                    <div className="flex items-center gap-1 ml-auto">
                       {itemTrend === 'down' && <TrendingDown className="w-3.5 h-3.5 text-red-500" />}
                       {itemTrend === 'up' && <TrendingUp className="w-3.5 h-3.5 text-teal-500" />}
                       {itemTrend === 'same' && <Minus className="w-3.5 h-3.5 text-gray-400" />}
@@ -252,6 +285,8 @@ function DiagnosisHistoryContent() {
             )
           })}
         </div>
+          </>
+        )}
       </main>
     </div>
   );

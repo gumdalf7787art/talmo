@@ -8,6 +8,7 @@ export async function onRequestPost(context) {
     const gender = formData.get('gender') || '정보없음';
     const birthYear = formData.get('birthYear') || '정보없음';
     const familyHistory = formData.get('familyHistory') || '정보없음';
+    const scanType = formData.get('scanType') || '알 수 없음';
 
     const currentYear = new Date().getFullYear();
     const age = birthYear !== '정보없음' ? currentYear - parseInt(birthYear, 10) : '정보없음';
@@ -40,7 +41,7 @@ export async function onRequestPost(context) {
       for (const model of modelsToTry) {
         const promptText = `
 당신은 20년 경력의 세계적인 피부과 전문의이자 모발 이식 권위자입니다.
-환자의 기본 정보: [성별: ${gender}, 나이: ${age}세, 탈모 가족력: ${familyHistory}]
+환자의 기본 정보: [성별: ${gender}, 나이: ${age}세, 탈모 가족력: ${familyHistory}, 촬영 부위: ${scanType}]
 
 아래의 최신 의학적 지식(탈모 유형 및 진단 기준)과 첨부된 두피/모발 사진, 환자의 컨텍스트를 종합하여, 실제 의사가 발급하는 **'임상 정밀 진단 리포트'**를 작성해 주세요.
 
@@ -69,7 +70,7 @@ export async function onRequestPost(context) {
 
 {
   "diagnosis": {
-    "patientInfo": { "age": "${age}", "gender": "${gender}", "familyHistory": "${familyHistory}" },
+    "patientInfo": { "age": "${age}", "gender": "${gender}", "familyHistory": "${familyHistory}", "scanType": "${scanType}" },
     "summary": {
       "score": [위 평가 기준에 따른 종합 점수 0~100 정수],
       "severity": "[양호, 진행: 초기, 진행: 중기, 진행: 심각 중 하나]",
@@ -199,6 +200,12 @@ export async function onRequestPost(context) {
     if (db && userId) {
       const id = crypto.randomUUID();
       const now = new Date().toISOString();
+      
+      // Inject scanType into the saved details
+      if (aiDiagnosisResult && aiDiagnosisResult.diagnosis) {
+        aiDiagnosisResult.diagnosis.scanType = scanType;
+      }
+      
       const dbScore = aiDiagnosisResult?.diagnosis?.summary?.score || 0;
       const dbSeverity = aiDiagnosisResult?.diagnosis?.summary?.severity || '알 수 없음';
       const dbDetails = JSON.stringify(aiDiagnosisResult?.diagnosis || {});
