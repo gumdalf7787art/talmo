@@ -111,10 +111,30 @@ function DiagnosisContent() {
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`탈모톡_AI_리포트_${new Date().toISOString().slice(0,10)}.pdf`);
+      const fileName = `탈모톡_AI_리포트_${new Date().toISOString().slice(0,10)}.pdf`;
+      
+      // Try Web Share API (mobile/modern browsers)
+      if (navigator.share && navigator.canShare) {
+        try {
+          const blob = pdf.output('blob');
+          const file = new File([blob], fileName, { type: 'application/pdf' });
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              title: '탈모톡 AI 분석 리포트',
+              text: '탈모톡에서 분석한 나의 두피/탈모 진단 리포트입니다.',
+              files: [file]
+            });
+            return; // If shared successfully, don't download it automatically
+          }
+        } catch (e) {
+          console.log("Share failed or unsupported", e);
+        }
+      }
+      
+      pdf.save(fileName);
     } catch (error) {
       console.error("PDF 생성 실패:", error);
-      alert("PDF 저장 중 오류가 발생했습니다.");
+      alert("PDF 처리 중 오류가 발생했습니다.");
     }
   };
 
@@ -515,7 +535,7 @@ function DiagnosisContent() {
               onClick={handleDownloadPDF}
               className="flex items-center gap-1.5 bg-slate-800 text-white px-4 py-2 rounded-lg font-bold text-[13px] shadow-sm hover:bg-slate-900 transition-all active:scale-[0.98]"
             >
-              <Download className="w-3.5 h-3.5" /> 리포트 PDF 저장
+              <Download className="w-3.5 h-3.5" /> 리포트 PDF 저장/공유
             </button>
           </div>
 
