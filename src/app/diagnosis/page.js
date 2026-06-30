@@ -10,7 +10,7 @@ import RadarChart from "@/components/RadarChart";
 import { compressImage } from "@/lib/imageUtils";
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from "@/lib/cropUtils";
-import html2canvas from "html2canvas";
+import { toPng } from "html-to-image";
 import jsPDF from "jspdf";
 
 function DiagnosisContent() {
@@ -104,11 +104,19 @@ function DiagnosisContent() {
     if (!element) return;
     
     try {
-      const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
-      const imgData = canvas.toDataURL("image/png");
+      const imgData = await toPng(element, { 
+        quality: 1, 
+        pixelRatio: 2, 
+        backgroundColor: "#ffffff"
+      });
       const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      const img = new Image();
+      img.src = imgData;
+      await new Promise(resolve => img.onload = resolve);
+      
+      const pdfHeight = (img.height * pdfWidth) / img.width;
       
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
       const fileName = `탈모톡_AI_리포트_${new Date().toISOString().slice(0,10)}.pdf`;
