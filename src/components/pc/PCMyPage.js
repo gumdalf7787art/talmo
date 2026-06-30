@@ -8,6 +8,7 @@ export default function PCMyPage() {
   const [profileImage, setProfileImage] = useState(null);
   const fileInputRef = useRef(null);
   const [user, setUser] = useState(null);
+  const [unreadChatCount, setUnreadChatCount] = useState(0);
   const [profile, setProfile] = useState({ nickname: "", email: "", gender: "미설정", birthYear: "미설정", familyHistory: "미설정" });
 
   const [nicknameModalOpen, setNicknameModalOpen] = useState(false);
@@ -39,6 +40,20 @@ export default function PCMyPage() {
       setUser(parsed);
     }
   }, []);
+
+  useEffect(() => {
+    if (user?.id) {
+      fetch(`/api/chat/list?userId=${user.id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.rooms) {
+            const total = data.rooms.reduce((sum, r) => sum + (r.unreadCount || 0), 0);
+            setUnreadChatCount(total);
+          }
+        })
+        .catch(err => console.error(err));
+    }
+  }, [user?.id]);
 
   const updateProfileInBackend = async (updates) => {
     if (!user) return;
@@ -259,13 +274,13 @@ export default function PCMyPage() {
         <h3 className="font-bold text-gray-900 text-lg mb-4">나의 활동</h3>
         <div className="grid grid-cols-4 gap-4">
           {[
-            { href: "/chat-list", icon: MessageCircle, label: "나의 1:1 탈모톡", color: "bg-blue-50 text-blue-500", badge: 2 },
+            { href: "/chat-list", icon: MessageCircle, label: "나의 1:1 탈모톡", color: "bg-blue-50 text-blue-500", badge: unreadChatCount },
             { href: "/diagnosis-history", icon: FileText, label: "AI 분석 기록", color: "bg-teal-50 text-teal-600" },
             { href: "/my-posts", icon: FileText, label: "내가 작성한 글", color: "bg-orange-50 text-orange-500" },
             { href: "/my-bookmarks", icon: Bookmark, label: "스크랩한 글", color: "bg-purple-50 text-purple-500" },
           ].map((item) => (
             <Link key={item.href} href={item.href} className="flex flex-col items-center gap-3 p-5 rounded-md border border-gray-100 hover:border-teal-200 hover:shadow-md transition-all group relative">
-              {item.badge && <span className="absolute top-3 right-3 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">{item.badge}</span>}
+              {item.badge > 0 && <span className="absolute top-3 right-3 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">{item.badge > 99 ? '99+' : item.badge}</span>}
               <div className={`w-12 h-12 rounded-full ${item.color} flex items-center justify-center`}>
                 <item.icon className="w-5 h-5" />
               </div>

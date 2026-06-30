@@ -11,6 +11,7 @@ export default function MyPage() {
   const [profileImage, setProfileImage] = useState(null);
   const fileInputRef = useRef(null);
   const [user, setUser] = useState(null);
+  const [unreadChatCount, setUnreadChatCount] = useState(0);
 
   // Mock profile data
   const [profile, setProfile] = useState({
@@ -50,6 +51,20 @@ export default function MyPage() {
       setUser(parsed);
     }
   }, []);
+
+  useEffect(() => {
+    if (user?.id) {
+      fetch(`/api/chat/list?userId=${user.id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.rooms) {
+            const total = data.rooms.reduce((sum, r) => sum + (r.unreadCount || 0), 0);
+            setUnreadChatCount(total);
+          }
+        })
+        .catch(err => console.error(err));
+    }
+  }, [user?.id]);
 
   const updateProfileInBackend = async (updates) => {
     if (!user) return;
@@ -311,7 +326,9 @@ export default function MyPage() {
               <span className="text-[15px] font-medium text-gray-800">나의 1:1 탈모톡</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">2</span>
+              {unreadChatCount > 0 && (
+                <span className="w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">{unreadChatCount > 99 ? '99+' : unreadChatCount}</span>
+              )}
               <ChevronRight className="w-4 h-4 text-gray-400" />
             </div>
           </Link>
