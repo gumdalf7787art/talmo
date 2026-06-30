@@ -3,11 +3,13 @@
 import { useState, useRef, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, ChevronRight, FileText, Calendar, User, Activity, Pill, Heart, Home, CheckSquare, Square, X, Scissors } from "lucide-react";
+import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, ChevronRight, FileText, Calendar, User, Activity, Pill, Heart, Home, CheckSquare, Square, X, Scissors, Download } from "lucide-react";
 import RadarChart from "../RadarChart";
 import { compressImage } from "@/lib/imageUtils";
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from "@/lib/cropUtils";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 function PCDiagnosisContent() {
   const [imageFile, setImageFile] = useState(null);
@@ -63,6 +65,26 @@ function PCDiagnosisContent() {
     };
     fetchHistoryDetail();
   }, [searchParams, isHistory]);
+
+  const handleDownloadPDF = async () => {
+    const element = document.getElementById("pdf-report-area");
+    if (!element) return;
+    
+    try {
+      const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+      const imgData = canvas.toDataURL("image/png");
+      
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`탈모톡_AI_리포트_${new Date().toISOString().slice(0,10)}.pdf`);
+    } catch (error) {
+      console.error("PDF 생성 실패:", error);
+      alert("PDF 저장 중 오류가 발생했습니다.");
+    }
+  };
 
   const handleImageChange = (e) => { 
     const file = e.target.files[0]; 
@@ -441,7 +463,16 @@ function PCDiagnosisContent() {
             </div>
           )}
           
-          <div className="w-full bg-white border border-gray-300 shadow-lg rounded-sm overflow-hidden text-slate-800">
+          <div className="w-full flex justify-end mb-3">
+            <button 
+              onClick={handleDownloadPDF}
+              className="flex items-center gap-2 bg-slate-800 text-white px-5 py-2.5 rounded-lg font-bold text-[14px] shadow-sm hover:bg-slate-900 transition-all hover:scale-[1.02]"
+            >
+              <Download className="w-4 h-4" /> 리포트 PDF 저장
+            </button>
+          </div>
+
+          <div id="pdf-report-area" className="w-full bg-white border border-gray-300 shadow-lg rounded-sm overflow-hidden text-slate-800">
             {/* 리포트 헤더 */}
             <div className="border-b-[3px] border-slate-800 p-8 flex justify-between items-end bg-slate-50">
               <div>

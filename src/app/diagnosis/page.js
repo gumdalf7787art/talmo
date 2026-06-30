@@ -3,13 +3,15 @@
 import { useState, useRef, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, ChevronRight, ChevronLeft, CheckSquare, Square, X, Scissors, Pill, Home, Heart } from "lucide-react";
+import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, ChevronRight, ChevronLeft, CheckSquare, Square, X, Scissors, Pill, Home, Heart, Download } from "lucide-react";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import PCDiagnosis from "@/components/pc/PCDiagnosis";
 import RadarChart from "@/components/RadarChart";
 import { compressImage } from "@/lib/imageUtils";
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from "@/lib/cropUtils";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 function DiagnosisContent() {
   const [imageFile, setImageFile] = useState(null);
@@ -100,6 +102,25 @@ function DiagnosisContent() {
     };
     fetchHistoryDetail();
   }, [searchParams, isHistory]);
+
+  const handleDownloadPDF = async () => {
+    const element = document.getElementById("pdf-report-area");
+    if (!element) return;
+    
+    try {
+      const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`탈모톡_AI_리포트_${new Date().toISOString().slice(0,10)}.pdf`);
+    } catch (error) {
+      console.error("PDF 생성 실패:", error);
+      alert("PDF 저장 중 오류가 발생했습니다.");
+    }
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -485,7 +506,17 @@ function DiagnosisContent() {
       {/* 결과 영역 */}
       {result && (
         <div className={`flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500 ${isHistory ? 'px-4' : ''}`}>
-          <div className="bg-white border border-gray-100 p-5 rounded-2xl shadow-sm flex flex-col">
+          
+          <div className="w-full flex justify-end">
+            <button 
+              onClick={handleDownloadPDF}
+              className="flex items-center gap-1.5 bg-slate-800 text-white px-4 py-2 rounded-lg font-bold text-[13px] shadow-sm hover:bg-slate-900 transition-all active:scale-[0.98]"
+            >
+              <Download className="w-3.5 h-3.5" /> 리포트 PDF 저장
+            </button>
+          </div>
+
+          <div id="pdf-report-area" className="bg-white border border-gray-100 p-5 rounded-2xl shadow-sm flex flex-col">
             
             {/* Header & Score */}
             <div className="flex items-start justify-between border-b border-gray-100 pb-5 mb-5">

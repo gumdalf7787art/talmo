@@ -1,8 +1,17 @@
 "use client";
 
-import { TrendingDown, TrendingUp, Minus, Activity, ArrowRight } from "lucide-react";
+import { TrendingDown, TrendingUp, Minus, Activity, ArrowRight, Calendar, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import RadarChart from "../RadarChart";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 export default function PCDiagnosisHistory({ historyList }) {
   if (!historyList || historyList.length === 0) {
@@ -22,6 +31,30 @@ export default function PCDiagnosisHistory({ historyList }) {
   const previousScore = historyList.length > 1 ? historyList[1].score : latestScore;
   const diff = latestScore - previousScore;
   const trend = diff > 0 ? 'up' : diff < 0 ? 'down' : 'same';
+
+  // Prepare chart data (Oldest -> Newest)
+  const chartData = [...historyList].reverse().map(item => {
+    const d = new Date(item.created_at);
+    return {
+      date: `${d.getMonth() + 1}.${d.getDate()}`,
+      score: item.score,
+      severity: item.severity,
+      fullDate: d.toLocaleDateString()
+    };
+  });
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white/95 backdrop-blur-md border border-gray-200 p-3 rounded-lg shadow-xl">
+          <p className="text-[12px] text-gray-500 mb-1">{payload[0].payload.fullDate}</p>
+          <p className="text-[16px] font-black text-teal-700">{payload[0].value}점</p>
+          <p className="text-[12px] font-bold text-gray-700 mt-1">{payload[0].payload.severity}</p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="flex flex-col gap-8 w-full max-w-[1000px] mx-auto py-8">
@@ -52,7 +85,48 @@ export default function PCDiagnosisHistory({ historyList }) {
 
       {/* History Grid */}
       <div className="flex flex-col gap-4">
-        <h3 className="font-bold text-lg text-gray-900">나의 두피 변화 기록</h3>
+        <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2"><Calendar className="w-5 h-5 text-gray-500" /> 나의 두피 변화 트렌드</h3>
+        
+        {/* Chart View */}
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm mb-4">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h4 className="font-bold text-gray-800 text-[15px]">AI 점수 변화 추이</h4>
+              <p className="text-[12px] text-gray-500">최근 분석된 리포트 점수들의 시계열 변화입니다.</p>
+            </div>
+            <div className="flex items-center gap-2 text-[12px] font-bold text-gray-400 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
+              <AlertCircle className="w-4 h-4 text-teal-500" /> 꾸준한 관리로 우상향을 만들어보세요!
+            </div>
+          </div>
+          <div className="w-full h-[280px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#0d9488" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#0d9488" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
+                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#9ca3af', fontWeight: 600 }} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#9ca3af', fontWeight: 600 }} domain={['dataMin - 10', 'dataMax + 10']} />
+                <Tooltip content={<CustomTooltip />} />
+                <Area 
+                  type="monotone" 
+                  dataKey="score" 
+                  stroke="#0d9488" 
+                  strokeWidth={4} 
+                  fillOpacity={1} 
+                  fill="url(#colorScore)" 
+                  activeDot={{ r: 6, strokeWidth: 0, fill: '#0f766e' }}
+                  animationDuration={1500}
+                  animationEasing="ease-in-out"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
         <div className="grid grid-cols-2 gap-6">
           {historyList.map((item) => {
             const details = item.details ? JSON.parse(item.details) : null;

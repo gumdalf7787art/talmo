@@ -3,7 +3,16 @@
 import { useEffect, useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, Calendar, TrendingDown, TrendingUp, Minus, Activity } from "lucide-react";
+import { ChevronLeft, Calendar, TrendingDown, TrendingUp, Minus, Activity, AlertCircle } from "lucide-react";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import PCDiagnosisHistory from "@/components/pc/PCDiagnosisHistory";
 
@@ -93,6 +102,30 @@ function DiagnosisHistoryContent() {
   const diff = latestScore - previousScore;
   const trend = diff > 0 ? 'up' : diff < 0 ? 'down' : 'same';
 
+  // Prepare chart data
+  const chartData = [...historyList].reverse().map(item => {
+    const d = new Date(item.created_at);
+    return {
+      date: `${d.getMonth() + 1}.${d.getDate()}`,
+      score: item.score,
+      severity: item.severity,
+      fullDate: d.toLocaleDateString()
+    };
+  });
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white/95 backdrop-blur-md border border-gray-200 p-2.5 rounded-lg shadow-xl">
+          <p className="text-[10px] text-gray-500 mb-0.5">{payload[0].payload.fullDate}</p>
+          <p className="text-[14px] font-black text-teal-700">{payload[0].value}점</p>
+          <p className="text-[11px] font-bold text-gray-700 mt-0.5">{payload[0].payload.severity}</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 pb-safe">
       <header className="sticky top-0 z-50 bg-white flex items-center justify-between px-4 h-14 border-b border-gray-100 shadow-sm">
@@ -127,8 +160,45 @@ function DiagnosisHistoryContent() {
         </div>
       </div>
 
-      {/* History List */}
+      {/* History List & Chart */}
       <main className="flex-1 p-4">
+        
+        {/* Mobile Chart View */}
+        <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm mb-5">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h4 className="font-bold text-gray-800 text-[14px]">점수 변화 추이</h4>
+              <p className="text-[11px] text-gray-500">최근 분석된 시계열 데이터</p>
+            </div>
+          </div>
+          <div className="w-full h-[180px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorScoreMob" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#0d9488" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#0d9488" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
+                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9ca3af', fontWeight: 600 }} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9ca3af', fontWeight: 600 }} domain={['dataMin - 10', 'dataMax + 10']} />
+                <Tooltip content={<CustomTooltip />} />
+                <Area 
+                  type="monotone" 
+                  dataKey="score" 
+                  stroke="#0d9488" 
+                  strokeWidth={3} 
+                  fillOpacity={1} 
+                  fill="url(#colorScoreMob)" 
+                  activeDot={{ r: 5, strokeWidth: 0, fill: '#0f766e' }}
+                  animationDuration={1500}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
         <div className="flex items-center gap-1.5 mb-3.5 text-gray-600 px-1">
           <Calendar className="w-4 h-4" />
           <h2 className="text-[14px] font-bold">나의 두피 변화 기록</h2>
