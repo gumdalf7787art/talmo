@@ -43,8 +43,6 @@ export default function PCHome() {
       });
   }, []);
 
-  }, []);
-
 
 
   const reviewPhotos = reviewPosts.slice(0, 4);
