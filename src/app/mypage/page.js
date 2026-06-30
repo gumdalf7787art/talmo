@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Camera, User, FileText, MessageCircle, Heart, Lock, LogOut, ChevronRight, Activity, Users, X, Bookmark } from "lucide-react";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import PCMyPage from "@/components/pc/PCMyPage";
+import { compressImage } from "@/lib/imageUtils";
 
 export default function MyPage() {
   const isPC = useMediaQuery("(min-width: 1024px)");
@@ -12,6 +13,7 @@ export default function MyPage() {
   const fileInputRef = useRef(null);
   const [user, setUser] = useState(null);
   const [unreadChatCount, setUnreadChatCount] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Mock profile data
   const [profile, setProfile] = useState({
@@ -87,16 +89,36 @@ export default function MyPage() {
   // AI Profile edit state
   const [editProfileField, setEditProfileField] = useState(null); // 'gender' | 'birthYear' | 'familyHistory'
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result;
-        setProfileImage(base64String);
-        updateProfileInBackend({ profile_image: base64String });
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const compressedBase64 = await compressImage(file, 400, 0.8);
+      const res = await fetch(compressedBase64);
+      const blob = await res.blob();
+      
+      const formData = new FormData();
+      formData.append("image", blob, file.name || "profile.jpg");
+      
+      const uploadRes = await fetch("/api/user/upload-profile", {
+        method: "POST",
+        body: formData,
+      });
+      const uploadData = await uploadRes.json();
+      
+      if (uploadData.success) {
+        setProfileImage(uploadData.url);
+        updateProfileInBackend({ profile_image: uploadData.url });
+      } else {
+        alert(uploadData.error || "이미지 업로드 실패");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("이미지 처리 중 오류가 발생했습니다.");
+    } finally {
+      setIsUploading(false);
     }
   };
 
