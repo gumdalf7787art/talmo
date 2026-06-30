@@ -7,7 +7,7 @@ import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, Chevron
 import useMediaQuery from "@/hooks/useMediaQuery";
 import PCDiagnosis from "@/components/pc/PCDiagnosis";
 import RadarChart from "@/components/RadarChart";
-import { compressImage } from "@/lib/imageUtils";
+import { compressImage, dataURLtoFile } from "@/lib/imageUtils";
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from "@/lib/cropUtils";
 import { toJpeg } from "html-to-image";
@@ -177,9 +177,7 @@ function DiagnosisContent() {
     try {
       const croppedImageBase64 = await getCroppedImg(imagePreview, croppedAreaPixels);
       setImagePreview(croppedImageBase64);
-      const res = await fetch(croppedImageBase64);
-      const blob = await res.blob();
-      const file = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+      const file = dataURLtoFile(croppedImageBase64, "cropped.jpg");
       setImageFile(file);
       setIsCropping(false);
     } catch (e) {
@@ -228,9 +226,8 @@ function DiagnosisContent() {
     const formData = new FormData();
     try {
       const optimizedBase64 = await compressImage(imageFile, 1200, 0.8);
-      const res = await fetch(optimizedBase64);
-      const blob = await res.blob();
-      formData.append("image", blob, "optimized.jpg");
+      const file = dataURLtoFile(optimizedBase64, "optimized.jpg");
+      formData.append("image", file);
     } catch (err) {
       console.warn("Image optimization failed, sending original...", err);
       formData.append("image", imageFile);

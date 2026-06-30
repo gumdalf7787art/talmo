@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, ChevronRight, FileText, Calendar, User, Activity, Pill, Heart, Home, CheckSquare, Square, X, Scissors, Download } from "lucide-react";
 import RadarChart from "../RadarChart";
-import { compressImage } from "@/lib/imageUtils";
+import { compressImage, dataURLtoFile } from "@/lib/imageUtils";
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from "@/lib/cropUtils";
 import { toJpeg } from "html-to-image";
@@ -121,9 +121,7 @@ function PCDiagnosisContent() {
     try {
       const croppedImageBase64 = await getCroppedImg(imagePreview, croppedAreaPixels);
       setImagePreview(croppedImageBase64);
-      const res = await fetch(croppedImageBase64);
-      const blob = await res.blob();
-      const file = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+      const file = dataURLtoFile(croppedImageBase64, "cropped.jpg");
       setImageFile(file);
       setIsCropping(false);
     } catch (e) {
@@ -178,12 +176,10 @@ function PCDiagnosisContent() {
         formData.append("userId", user.id);
       }
 
-      // 프론트엔드에서 2048px로 이미지 최적화 (유저 요청: 최적의 타협점 해상도 유지)
       try {
         const optimizedBase64 = await compressImage(imageFile, 1200, 0.8); 
-        const res = await fetch(optimizedBase64);
-        const blob = await res.blob();
-        formData.append("image", blob, "optimized.jpg");
+        const file = dataURLtoFile(optimizedBase64, "optimized.jpg");
+        formData.append("image", file);
       } catch (err) {
         console.warn("Image optimization failed, sending original...", err);
         formData.append("image", imageFile);
