@@ -8,7 +8,7 @@ import RadarChart from "../RadarChart";
 import { compressImage } from "@/lib/imageUtils";
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from "@/lib/cropUtils";
-import { toPng } from "html-to-image";
+import { toJpeg } from "html-to-image";
 import jsPDF from "jspdf";
 
 function PCDiagnosisContent() {
@@ -72,8 +72,8 @@ function PCDiagnosisContent() {
     if (!element) return;
     
     try {
-      const imgData = await toPng(element, { 
-        quality: 1, 
+      const imgData = await toJpeg(element, { 
+        quality: 0.9, 
         pixelRatio: 2, 
         backgroundColor: "#ffffff"
       });
@@ -93,7 +93,7 @@ function PCDiagnosisContent() {
         format: [pdfWidth, pdfHeight]
       });
       
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
       const fileName = `탈모톡_AI_리포트_${new Date().toISOString().slice(0,10)}.pdf`;
       
       pdf.save(fileName);

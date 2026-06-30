@@ -10,7 +10,7 @@ import RadarChart from "@/components/RadarChart";
 import { compressImage } from "@/lib/imageUtils";
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from "@/lib/cropUtils";
-import { toPng } from "html-to-image";
+import { toJpeg } from "html-to-image";
 import jsPDF from "jspdf";
 
 function DiagnosisContent() {
@@ -104,9 +104,10 @@ function DiagnosisContent() {
     if (!element) return;
     
     try {
-      const imgData = await toPng(element, { 
-        quality: 1, 
-        pixelRatio: 2, 
+      // Use toJpeg instead of toPng and lower pixel ratio to prevent Mobile OOM crashes
+      const imgData = await toJpeg(element, { 
+        quality: 0.8, 
+        pixelRatio: 1.5, 
         backgroundColor: "#ffffff"
       });
       const img = new Image();
@@ -122,7 +123,7 @@ function DiagnosisContent() {
         format: [pdfWidth, pdfHeight]
       });
       
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
       const fileName = `탈모톡_AI_리포트_${new Date().toISOString().slice(0,10)}.pdf`;
       
       // Try Web Share API (mobile/modern browsers)
@@ -141,6 +142,14 @@ function DiagnosisContent() {
         } catch (e) {
           console.log("Share failed or unsupported", e);
         }
+      }
+      
+      // Fallback: Check if in-app browser (Kakao, Line, Instagram) before calling pdf.save()
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isInApp = /kakao|line|instagram|inapp|naver|snapchat|webview/.test(userAgent);
+      
+      if (isInApp) {
+        alert("현재 접속하신 브라우저(앱 내장 브라우저)에서는 파일 다운로드가 지원되지 않을 수 있습니다. 우측 상단 메뉴에서 '다른 브라우저로 열기(Safari/Chrome)'를 선택해 주세요.");
       }
       
       pdf.save(fileName);
