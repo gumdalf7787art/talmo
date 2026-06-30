@@ -727,20 +727,7 @@ function DiagnosisContent() {
             </div>
           </div>
 
-          {!isHistory && (
-            <button
-              onClick={() => {
-                setResult(null);
-                setImageFile(null);
-                setImagePreview(null);
-                // Remove query param without reloading the page if possible
-                window.history.replaceState(null, '', '/diagnosis');
-              }}
-              className="w-full py-3.5 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-colors"
-            >
-              다시 검사하기
-            </button>
-          )}
+
         </div>
       )}
     </div>

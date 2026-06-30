@@ -637,9 +637,7 @@ function PCDiagnosisContent() {
                     * 본 AI 리포트는 통계적 데이터 분석 결과이며, 의학적 진단을 대체하는 진단서가 아닙니다.
                   </div>
                   
-                  {!isHistory && (
-                    <button onClick={() => { setResult(null); setImageFile(null); setImagePreview(null); window.history.replaceState(null, '', '/diagnosis'); }} className="w-full mt-4 py-3 bg-slate-100 text-slate-700 border border-slate-200 rounded-lg font-bold hover:bg-slate-200 transition-colors">다시 진단하기</button>
-                  )}
+
                 </div>
               </div>
             </div>
