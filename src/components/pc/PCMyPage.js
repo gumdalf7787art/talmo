@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
@@ -8,7 +8,7 @@ export default function PCMyPage() {
   const [profileImage, setProfileImage] = useState(null);
   const fileInputRef = useRef(null);
   const [user, setUser] = useState(null);
-  const [profile, setProfile] = useState({ nickname: "", email: "", gender: "誘몄꽕??, birthYear: "誘몄꽕??, familyHistory: "誘몄꽕?? });
+  const [profile, setProfile] = useState({ nickname: "", email: "", gender: "미설정", birthYear: "미설정", familyHistory: "미설정" });
 
   const [nicknameModalOpen, setNicknameModalOpen] = useState(false);
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
@@ -27,11 +27,11 @@ export default function PCMyPage() {
     if (savedUser) {
       const parsed = JSON.parse(savedUser);
       setProfile({
-        nickname: parsed.nickname || "?됰꽕???놁쓬",
-        email: parsed.email || "?대찓???놁쓬",
-        gender: parsed.gender || "誘몄꽕??,
-        birthYear: parsed.birth_year || "誘몄꽕??,
-        familyHistory: parsed.family_history || "誘몄꽕??
+        nickname: parsed.nickname || "닉네임 없음",
+        email: parsed.email || "이메일 없음",
+        gender: parsed.gender || "미설정",
+        birthYear: parsed.birth_year || "미설정",
+        familyHistory: parsed.family_history || "미설정"
       });
       if (parsed.profile_image) {
         setProfileImage(parsed.profile_image);
@@ -68,23 +68,23 @@ export default function PCMyPage() {
   const handleCheckNickname = async () => {
     if (!tempNickname || tempNickname.trim() === "") return;
     setNicknameStatus("checking");
-    setNicknameMessage("以묐났 ?뺤씤 以?..");
+    setNicknameMessage("중복 확인 중...");
     try {
       const res = await fetch(`/api/user/check-nickname?nickname=${encodeURIComponent(tempNickname)}`);
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || "?쒕쾭 ?먮윭");
+        throw new Error(data.error || "서버 에러");
       }
       if (data.available || tempNickname === user.nickname) {
         setNicknameStatus("available");
-        setNicknameMessage("?ъ슜 媛?ν븳 ?됰꽕?꾩엯?덈떎.");
+        setNicknameMessage("사용 가능한 닉네임입니다.");
       } else {
         setNicknameStatus("duplicate");
-        setNicknameMessage("?대? ?ъ슜 以묒씤 ?됰꽕?꾩엯?덈떎.");
+        setNicknameMessage("이미 사용 중인 닉네임입니다.");
       }
     } catch (error) {
       setNicknameStatus("error");
-      setNicknameMessage(`?ㅻ쪟: ${error.message}`);
+      setNicknameMessage(`오류: ${error.message}`);
     }
   };
 
@@ -107,11 +107,11 @@ export default function PCMyPage() {
           setUser(updatedUser);
           setNicknameModalOpen(false);
         } else {
-          alert(data.error || "?됰꽕??蹂寃??ㅽ뙣");
+          alert(data.error || "닉네임 변경 실패");
         }
       } catch (e) {
         console.error(e);
-        alert("?ㅻ쪟媛 諛쒖깮?덉뒿?덈떎.");
+        alert("오류가 발생했습니다.");
       }
     }
   };
@@ -125,11 +125,11 @@ export default function PCMyPage() {
 
   const handleSavePassword = async () => {
     if (!currentPassword || !newPassword || !confirmPassword) {
-      alert("紐⑤뱺 ?꾨뱶瑜??낅젰?댁＜?몄슂.");
+      alert("모든 필드를 입력해주세요.");
       return;
     }
     if (newPassword !== confirmPassword) {
-      alert("??鍮꾨?踰덊샇媛 ?쇱튂?섏? ?딆뒿?덈떎.");
+      alert("새 비밀번호가 일치하지 않습니다.");
       return;
     }
     if (!user) return;
@@ -142,16 +142,16 @@ export default function PCMyPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        alert(data.message || "鍮꾨?踰덊샇媛 ?깃났?곸쑝濡?蹂寃쎈릺?덉뒿?덈떎.");
+        alert(data.message || "비밀번호가 성공적으로 변경되었습니다.");
         setPasswordModalOpen(false);
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
       } else {
-        alert(data.error || "鍮꾨?踰덊샇 蹂寃쎌뿉 ?ㅽ뙣?덉뒿?덈떎.");
+        alert(data.error || "비밀번호 변경에 실패했습니다.");
       }
     } catch (e) {
-      alert("?쒕쾭 ?ㅻ쪟媛 諛쒖깮?덉뒿?덈떎.");
+      alert("서버 오류가 발생했습니다.");
     }
   };
 
@@ -168,7 +168,7 @@ export default function PCMyPage() {
 
   const handleLogout = () => {
     localStorage.removeItem('isLoggedIn');
-    alert("濡쒓렇?꾩썐 ?섏뿀?듬땲??");
+    alert("로그아웃 되었습니다.");
     window.location.href = "/";
   };
 
@@ -187,7 +187,7 @@ export default function PCMyPage() {
 
   return (
     <div className="max-w-[800px] mx-auto flex flex-col gap-6">
-      <h1 className="text-2xl font-bold text-gray-900">留덉씠?섏씠吏</h1>
+      <h1 className="text-2xl font-bold text-gray-900">마이페이지</h1>
 
       {/* Profile + AI Profile - 2 columns */}
       <div className="grid grid-cols-2 gap-6">
@@ -207,24 +207,24 @@ export default function PCMyPage() {
               <h2 className="text-xl font-bold text-gray-900 mb-1 flex items-center gap-2">
                 {profile.nickname}
                 {user?.role === 'hospital' && (
-                  <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 text-[11px] font-bold rounded">蹂묒썝 沅뚰븳</span>
+                  <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 text-[11px] font-bold rounded">병원 권한</span>
                 )}
               </h2>
               <p className="text-sm text-gray-500">{profile.email}</p>
             </div>
           </div>
           <div className="flex gap-2">
-            <button onClick={handleEditNickname} className="flex-1 py-2.5 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-colors">?됰꽕??蹂寃?/button>
-            <button onClick={handleChangePassword} className="flex-1 py-2.5 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-colors">鍮꾨?踰덊샇 蹂寃?/button>
+            <button onClick={handleEditNickname} className="flex-1 py-2.5 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-colors">닉네임 변경</button>
+            <button onClick={handleChangePassword} className="flex-1 py-2.5 bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-colors">비밀번호 변경</button>
           </div>
           {user?.role === 'admin' && (
             <Link href="/admin/dashboard" className="mt-2 flex w-full items-center justify-center py-2.5 bg-gray-900 text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors">
-              留덉뒪???쒖뒪???묒냽
+              마스터 시스템 접속
             </Link>
           )}
           {user?.role === 'hospital' && (
             <Link href="/hospital/settings" className="mt-2 flex w-full items-center justify-center py-2.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors">
-              蹂묒썝 ?ㅼ젙
+              병원 설정
             </Link>
           )}
         </div>
@@ -234,16 +234,16 @@ export default function PCMyPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Activity className="w-5 h-5 text-teal-600" />
-              <h3 className="font-bold text-gray-900 text-[16px]">AI 遺꾩꽍 ?꾨줈??/h3>
+              <h3 className="font-bold text-gray-900 text-[16px]">AI 분석 프로필</h3>
             </div>
             <button onClick={handleEditAiProfile} className="text-[12px] font-bold text-gray-500 hover:text-teal-600 transition-colors bg-gray-100 hover:bg-teal-50 px-2.5 py-1 rounded-md">
-              ?섏젙
+              수정
             </button>
           </div>
           <div className="bg-teal-50/50 rounded-md p-4 border border-teal-100/50">
-            <p className="text-[12px] text-teal-800 mb-4">AI ?먰뵾 遺꾩꽍???뺥솗?꾨? ?믪씠湲??꾪븳 ?꾩닔 ?섎즺 ?뺣낫?낅땲??</p>
+            <p className="text-[12px] text-teal-800 mb-4">AI 두피 분석의 정확도를 높이기 위한 필수 의료 정보입니다.</p>
             <div className="flex flex-col gap-3">
-              {[{ label: "?깅퀎", value: profile.gender }, { label: "異쒖깮 ?곕룄", value: `${profile.birthYear}?꾩깮` }, { label: "?좎쟾??媛議깅젰", value: profile.familyHistory }].map((item) => (
+              {[{ label: "성별", value: profile.gender }, { label: "출생 연도", value: `${profile.birthYear}년생` }, { label: "유전적 가족력", value: profile.familyHistory }].map((item) => (
                 <div key={item.label} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
                   <span className="text-[14px] text-gray-500 font-medium">{item.label}</span>
                   <span className="font-bold text-gray-900 text-[14px]">{item.value}</span>
@@ -256,13 +256,13 @@ export default function PCMyPage() {
 
       {/* Activity Grid - 4 columns */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-        <h3 className="font-bold text-gray-900 text-lg mb-4">?섏쓽 ?쒕룞</h3>
+        <h3 className="font-bold text-gray-900 text-lg mb-4">나의 활동</h3>
         <div className="grid grid-cols-4 gap-4">
           {[
-            { href: "/chat-list", icon: MessageCircle, label: "?섏쓽 1:1 ?덈え??, color: "bg-blue-50 text-blue-500", badge: 2 },
-            { href: "/diagnosis-history", icon: FileText, label: "AI 遺꾩꽍 湲곕줉", color: "bg-teal-50 text-teal-600" },
-            { href: "/my-posts", icon: FileText, label: "?닿? ?묒꽦??湲", color: "bg-orange-50 text-orange-500" },
-            { href: "/my-bookmarks", icon: Bookmark, label: "?ㅽ겕?⑺븳 湲", color: "bg-purple-50 text-purple-500" },
+            { href: "/chat-list", icon: MessageCircle, label: "나의 1:1 탈모톡", color: "bg-blue-50 text-blue-500", badge: 2 },
+            { href: "/diagnosis-history", icon: FileText, label: "AI 분석 기록", color: "bg-teal-50 text-teal-600" },
+            { href: "/my-posts", icon: FileText, label: "내가 작성한 글", color: "bg-orange-50 text-orange-500" },
+            { href: "/my-bookmarks", icon: Bookmark, label: "스크랩한 글", color: "bg-purple-50 text-purple-500" },
           ].map((item) => (
             <Link key={item.href} href={item.href} className="flex flex-col items-center gap-3 p-5 rounded-md border border-gray-100 hover:border-teal-200 hover:shadow-md transition-all group relative">
               {item.badge && <span className="absolute top-3 right-3 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">{item.badge}</span>}
@@ -278,12 +278,12 @@ export default function PCMyPage() {
       {/* Account + Footer */}
       <div className="flex items-center justify-between bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
         <div className="flex items-center gap-4 text-sm text-gray-500">
-          <Link href="/terms" className="hover:text-gray-900">?댁슜?쎄?</Link>
+          <Link href="/terms" className="hover:text-gray-900">이용약관</Link>
           <span className="text-gray-300">|</span>
-          <Link href="/privacy" className="hover:text-gray-900">媛쒖씤?뺣낫 泥섎━諛⑹묠</Link>
+          <Link href="/privacy" className="hover:text-gray-900">개인정보 처리방침</Link>
         </div>
         <button onClick={handleLogout} className="flex items-center gap-2 text-red-500 hover:text-red-600 text-sm font-medium">
-          <LogOut className="w-4 h-4" /> 濡쒓렇?꾩썐
+          <LogOut className="w-4 h-4" /> 로그아웃
         </button>
       </div>
 
@@ -291,7 +291,7 @@ export default function PCMyPage() {
       {nicknameModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-all">
           <div className="bg-white rounded-lg w-full max-w-[400px] p-6 shadow-xl animate-in fade-in zoom-in-95 duration-200">
-            <h3 className="font-bold text-gray-900 text-lg mb-4">?됰꽕??蹂寃?/h3>
+            <h3 className="font-bold text-gray-900 text-lg mb-4">닉네임 변경</h3>
             <div className="flex flex-col gap-1.5 mb-6">
               <div className="flex gap-2">
                 <input 
@@ -301,21 +301,21 @@ export default function PCMyPage() {
                     setTempNickname(e.target.value);
                     if(e.target.value !== user?.nickname) {
                       setNicknameStatus("valid");
-                      setNicknameMessage("以묐났?뺤씤??吏꾪뻾?댁＜?몄슂.");
+                      setNicknameMessage("중복확인을 진행해주세요.");
                     } else {
                       setNicknameStatus("available");
                       setNicknameMessage("");
                     }
                   }}
                   className="w-full bg-gray-50 border border-gray-200 rounded-md px-4 py-3 text-[14px] focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium"
-                  placeholder="?덈줈???됰꽕?꾩쓣 ?낅젰?섏꽭??
+                  placeholder="새로운 닉네임을 입력하세요"
                 />
                 <button 
                   onClick={handleCheckNickname}
                   disabled={nicknameStatus !== 'valid'}
                   className={`px-4 py-3 rounded-md text-[14px] font-bold whitespace-nowrap transition-colors ${nicknameStatus === 'valid' ? 'bg-teal-600 text-white hover:bg-teal-700' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
                 >
-                  以묐났?뺤씤
+                  중복확인
                 </button>
               </div>
               {nicknameMessage && (
@@ -325,8 +325,8 @@ export default function PCMyPage() {
               )}
             </div>
             <div className="flex gap-2">
-              <button onClick={() => setNicknameModalOpen(false)} className="flex-1 py-3 bg-gray-100 text-gray-700 font-bold text-[14px] rounded-md hover:bg-gray-200 transition-colors">痍⑥냼</button>
-              <button onClick={handleSaveNickname} disabled={nicknameStatus !== "available"} className={`flex-1 py-3 font-bold text-[14px] rounded-md transition-colors shadow-sm ${nicknameStatus === 'available' ? 'bg-teal-600 text-white hover:bg-teal-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>??ν븯湲?/button>
+              <button onClick={() => setNicknameModalOpen(false)} className="flex-1 py-3 bg-gray-100 text-gray-700 font-bold text-[14px] rounded-md hover:bg-gray-200 transition-colors">취소</button>
+              <button onClick={handleSaveNickname} disabled={nicknameStatus !== "available"} className={`flex-1 py-3 font-bold text-[14px] rounded-md transition-colors shadow-sm ${nicknameStatus === 'available' ? 'bg-teal-600 text-white hover:bg-teal-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>저장하기</button>
             </div>
           </div>
         </div>
@@ -335,33 +335,33 @@ export default function PCMyPage() {
       {passwordModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-all">
           <div className="bg-white rounded-lg w-full max-w-[360px] p-6 shadow-xl animate-in fade-in zoom-in-95 duration-200">
-            <h3 className="font-bold text-gray-900 text-lg mb-4">鍮꾨?踰덊샇 蹂寃?/h3>
+            <h3 className="font-bold text-gray-900 text-lg mb-4">비밀번호 변경</h3>
             <div className="flex flex-col gap-3 mb-6">
               <input 
                 type="password" 
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 className="w-full bg-gray-50 border border-gray-200 rounded-md px-4 py-3 text-[14px] focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium placeholder-gray-400"
-                placeholder="?꾩옱 鍮꾨?踰덊샇"
+                placeholder="현재 비밀번호"
               />
               <input 
                 type="password" 
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 className="w-full bg-gray-50 border border-gray-200 rounded-md px-4 py-3 text-[14px] focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium placeholder-gray-400"
-                placeholder="??鍮꾨?踰덊샇"
+                placeholder="새 비밀번호"
               />
               <input 
                 type="password" 
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full bg-gray-50 border border-gray-200 rounded-md px-4 py-3 text-[14px] focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium placeholder-gray-400"
-                placeholder="??鍮꾨?踰덊샇 ?뺤씤"
+                placeholder="새 비밀번호 확인"
               />
             </div>
             <div className="flex gap-2">
-              <button onClick={() => setPasswordModalOpen(false)} className="flex-1 py-3 bg-gray-100 text-gray-700 font-bold text-[14px] rounded-md hover:bg-gray-200 transition-colors">痍⑥냼</button>
-              <button onClick={handleSavePassword} className="flex-1 py-3 bg-teal-600 text-white font-bold text-[14px] rounded-md hover:bg-teal-700 transition-colors shadow-sm">蹂寃쏀븯湲?/button>
+              <button onClick={() => setPasswordModalOpen(false)} className="flex-1 py-3 bg-gray-100 text-gray-700 font-bold text-[14px] rounded-md hover:bg-gray-200 transition-colors">취소</button>
+              <button onClick={handleSavePassword} className="flex-1 py-3 bg-teal-600 text-white font-bold text-[14px] rounded-md hover:bg-teal-700 transition-colors shadow-sm">변경하기</button>
             </div>
           </div>
         </div>
@@ -370,41 +370,41 @@ export default function PCMyPage() {
       {aiProfileModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-all">
           <div className="bg-white rounded-lg w-full max-w-[400px] p-6 shadow-xl animate-in fade-in zoom-in-95 duration-200">
-            <h3 className="font-bold text-gray-900 text-lg mb-4">AI 遺꾩꽍 ?꾨줈???섏젙</h3>
+            <h3 className="font-bold text-gray-900 text-lg mb-4">AI 분석 프로필 수정</h3>
             <div className="flex flex-col gap-5 mb-6">
               <div className="flex flex-col gap-2.5">
-                <span className="text-[13px] text-gray-500 font-medium">?깅퀎</span>
+                <span className="text-[13px] text-gray-500 font-medium">성별</span>
                 <div className="flex gap-2">
-                  {["?⑥꽦", "?ъ꽦"].map(g => (
+                  {["남성", "여성"].map(g => (
                     <button key={g} onClick={() => setTempProfile(prev => ({ ...prev, gender: g }))} className={`flex-1 py-2.5 rounded-lg text-[13px] font-bold transition-colors ${tempProfile.gender === g ? 'bg-teal-600 text-white shadow-sm' : 'bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100'}`}>{g}</button>
                   ))}
                 </div>
               </div>
               <div className="flex flex-col gap-2.5">
-                <span className="text-[13px] text-gray-500 font-medium">異쒖깮 ?곕룄</span>
+                <span className="text-[13px] text-gray-500 font-medium">출생 연도</span>
                 <select 
-                  value={tempProfile.birthYear === "誘몄꽕?? ? "" : tempProfile.birthYear} 
+                  value={tempProfile.birthYear === "미설정" ? "" : tempProfile.birthYear} 
                   onChange={(e) => setTempProfile(prev => ({ ...prev, birthYear: e.target.value }))}
                   className="w-full bg-gray-50 border border-gray-200 rounded-md px-4 py-3 text-[14px] focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium text-gray-900"
                 >
-                  <option value="" disabled>?곕룄 ?좏깮</option>
+                  <option value="" disabled>연도 선택</option>
                   {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(year => (
-                    <option key={year} value={year}>{year}??/option>
+                    <option key={year} value={year}>{year}년</option>
                   ))}
                 </select>
               </div>
               <div className="flex flex-col gap-2.5">
-                <span className="text-[13px] text-gray-500 font-medium">?좎쟾??媛議깅젰</span>
+                <span className="text-[13px] text-gray-500 font-medium">유전적 가족력</span>
                 <div className="flex flex-wrap gap-2">
-                  {["?덉쓬 (遺怨?", "?덉쓬 (紐④퀎)", "?놁쓬", "紐⑤쫫"].map(h => (
+                  {["있음 (부계)", "있음 (모계)", "없음", "모름"].map(h => (
                     <button key={h} onClick={() => setTempProfile(prev => ({ ...prev, familyHistory: h }))} className={`flex-1 min-w-[45%] py-2.5 rounded-lg text-[12px] font-bold transition-colors ${tempProfile.familyHistory === h ? 'bg-teal-600 text-white shadow-sm' : 'bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100'}`}>{h}</button>
                   ))}
                 </div>
               </div>
             </div>
             <div className="flex gap-2">
-              <button onClick={() => setAiProfileModalOpen(false)} className="flex-1 py-3 bg-gray-100 text-gray-700 font-bold text-[14px] rounded-md hover:bg-gray-200 transition-colors">痍⑥냼</button>
-              <button onClick={handleSaveAiProfile} className="flex-1 py-3 bg-teal-600 text-white font-bold text-[14px] rounded-md hover:bg-teal-700 transition-colors shadow-sm">??ν븯湲?/button>
+              <button onClick={() => setAiProfileModalOpen(false)} className="flex-1 py-3 bg-gray-100 text-gray-700 font-bold text-[14px] rounded-md hover:bg-gray-200 transition-colors">취소</button>
+              <button onClick={handleSaveAiProfile} className="flex-1 py-3 bg-teal-600 text-white font-bold text-[14px] rounded-md hover:bg-teal-700 transition-colors shadow-sm">저장하기</button>
             </div>
           </div>
         </div>
@@ -412,4 +412,3 @@ export default function PCMyPage() {
     </div>
   );
 }
-

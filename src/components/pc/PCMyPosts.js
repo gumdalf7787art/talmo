@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
@@ -7,10 +7,10 @@ import PCSidebar from "@/components/pc/PCSidebar";
 export default function PCMyPosts({ posts }) {
   const categoryColor = (cat) => {
     switch(cat) {
-      case '?덈え?섎떎': return 'text-orange-500 bg-orange-50';
-      case '由ъ뼹?꾧린': return 'text-teal-600 bg-teal-50';
-      case '?덈え?뺣낫': return 'text-blue-500 bg-blue-50';
-      case '?ν꽣移쇰읆': return 'text-indigo-500 bg-indigo-50';
+      case '탈모수다': return 'text-orange-500 bg-orange-50';
+      case '리얼후기': return 'text-teal-600 bg-teal-50';
+      case '탈모정보': return 'text-blue-500 bg-blue-50';
+      case '닥터칼럼': return 'text-indigo-500 bg-indigo-50';
       default: return 'text-gray-500 bg-gray-50';
     }
   };
@@ -22,22 +22,22 @@ export default function PCMyPosts({ posts }) {
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex flex-col">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
             <h3 className="font-bold text-gray-900 text-base">
-              ?닿? ?묒꽦??湲 <span className="text-teal-600 ml-1">{posts.length}</span>
+              내가 작성한 글 <span className="text-teal-600 ml-1">{posts.length}</span>
             </h3>
           </div>
           
           {/* Table Header */}
           <div className="grid grid-cols-[80px_1fr_120px_80px_60px] px-5 py-3 bg-gray-50 border-b border-gray-200 text-[13px] font-bold text-gray-500">
-            <span>移댄뀒怨좊━</span>
-            <span>?쒕ぉ</span>
-            <span>?묒꽦??/span>
-            <span className="text-center">議고쉶</span>
-            <span className="text-center">?볤?</span>
+            <span>카테고리</span>
+            <span>제목</span>
+            <span>작성일</span>
+            <span className="text-center">조회</span>
+            <span className="text-center">댓글</span>
           </div>
 
           {/* Table Rows */}
           {posts.length === 0 ? (
-            <div className="py-10 text-center text-gray-500 text-sm">?묒꽦??寃뚯떆湲???놁뒿?덈떎.</div>
+            <div className="py-10 text-center text-gray-500 text-sm">작성한 게시글이 없습니다.</div>
           ) : (
             posts.map((post) => (
               <Link key={post.id} href={`/community/detail?id=${post.id}`} className="grid grid-cols-[80px_1fr_120px_80px_60px] items-center px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
@@ -66,4 +66,3 @@ export default function PCMyPosts({ posts }) {
     </div>
   );
 }
-

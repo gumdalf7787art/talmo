@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -9,7 +9,7 @@ import AuthorPopover from "@/components/common/AuthorPopover";
 
 export default function PCCommunity({ initialTab }) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState(initialTab || "?꾩껜");
+  const [activeTab, setActiveTab] = useState(initialTab || "전체");
   const [isNoticeOpen, setIsNoticeOpen] = useState(true);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +21,7 @@ export default function PCCommunity({ initialTab }) {
     }
   };
   
-  const tabs = ["?꾩껜", "?덈え?섎떎", "由ъ뼹?꾧린", "?덈え?뺣낫", "?ν꽣移쇰읆"];
+  const tabs = ["전체", "탈모수다", "리얼후기", "탈모정보", "닥터칼럼"];
 
   useEffect(() => {
     fetch('/api/posts/list')
@@ -37,18 +37,18 @@ export default function PCCommunity({ initialTab }) {
 
 
   const notices = [
-    { id: 101, title: "[?꾨룆] ?대┛??而ㅻ??덊떚 ?댁슜???꾪븳 5媛吏 洹쒖튃", date: "06.21" },
-    { id: 102, title: "?덈え??蹂묒썝 ?좎씤 諛?釉뚮줈而??좉퀬 ?ъ긽湲??덈궡", date: "06.20" },
+    { id: 101, title: "[필독] 클린한 커뮤니티 이용을 위한 5가지 규칙", date: "06.21" },
+    { id: 102, title: "탈모톡 병원 할인 및 브로커 신고 포상금 안내", date: "06.20" },
   ];
 
-  const filteredPosts = activeTab === "?꾩껜" ? posts : posts.filter(p => p.category === activeTab);
+  const filteredPosts = activeTab === "전체" ? posts : posts.filter(p => p.category === activeTab);
 
   const categoryColor = (cat) => {
     switch(cat) {
-      case '?덈え?섎떎': return 'text-orange-500 bg-orange-50';
-      case '由ъ뼹?꾧린': return 'text-teal-600 bg-teal-50';
-      case '?덈え?뺣낫': return 'text-blue-500 bg-blue-50';
-      case '?ν꽣移쇰읆': return 'text-indigo-500 bg-indigo-50';
+      case '탈모수다': return 'text-orange-500 bg-orange-50';
+      case '리얼후기': return 'text-teal-600 bg-teal-50';
+      case '탈모정보': return 'text-blue-500 bg-blue-50';
+      case '닥터칼럼': return 'text-indigo-500 bg-indigo-50';
       default: return 'text-gray-500 bg-gray-50';
     }
   };
@@ -66,7 +66,7 @@ export default function PCCommunity({ initialTab }) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleSearch}
-              placeholder="愿?ъ엳???덈え ?ㅼ썙?쒕? 寃?됲빐蹂댁꽭?? 
+              placeholder="관심있는 탈모 키워드를 검색해보세요" 
               className="w-full bg-gray-100 rounded-md py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-teal-100 transition-shadow" 
             />
           </div>
@@ -84,16 +84,16 @@ export default function PCCommunity({ initialTab }) {
           <div className="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-200 cursor-pointer" onClick={() => setIsNoticeOpen(!isNoticeOpen)}>
             <div className="flex items-center gap-2">
               <Bell className="w-4 h-4 text-gray-500" />
-              <span className="font-bold text-sm text-gray-700">怨듭??ы빆</span>
+              <span className="font-bold text-sm text-gray-700">공지사항</span>
             </div>
             <button className="flex items-center gap-1 text-xs text-gray-400 font-medium">
-              {isNoticeOpen ? "?묎린" : "?쇱튂湲?}
+              {isNoticeOpen ? "접기" : "펼치기"}
               {isNoticeOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </button>
           </div>
           {isNoticeOpen && notices.map(notice => (
             <Link key={notice.id} href={`/community/${notice.id}`} className="flex items-center gap-3 py-3 px-5 border-b border-gray-100 bg-gray-50/50 hover:bg-gray-100 transition-colors">
-              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-red-100 text-red-600 shrink-0">怨듭?</span>
+              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-red-100 text-red-600 shrink-0">공지</span>
               <span className="text-[14px] font-medium text-gray-800 flex-1 line-clamp-1">{notice.title}</span>
               <span className="text-[12px] text-gray-400 shrink-0">{notice.date}</span>
             </Link>
@@ -104,17 +104,17 @@ export default function PCCommunity({ initialTab }) {
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
           {/* Table Header */}
           <div className="grid grid-cols-[80px_1fr_120px_80px_60px] px-5 py-3 bg-gray-50 border-b border-gray-200 text-[13px] font-bold text-gray-500">
-            <span>移댄뀒怨좊━</span>
-            <span>?쒕ぉ</span>
-            <span>?묒꽦??/span>
-            <span className="text-center">議고쉶</span>
-            <span className="text-center">?볤?</span>
+            <span>카테고리</span>
+            <span>제목</span>
+            <span>작성자</span>
+            <span className="text-center">조회</span>
+            <span className="text-center">댓글</span>
           </div>
           {/* Table Rows */}
           {loading ? (
-            <div className="py-10 text-center text-gray-500 text-sm">紐⑸줉??遺덈윭?ㅻ뒗 以묒엯?덈떎...</div>
+            <div className="py-10 text-center text-gray-500 text-sm">목록을 불러오는 중입니다...</div>
           ) : filteredPosts.length === 0 ? (
-            <div className="py-10 text-center text-gray-500 text-sm">?깅줉??寃뚯떆湲???놁뒿?덈떎.</div>
+            <div className="py-10 text-center text-gray-500 text-sm">등록된 게시글이 없습니다.</div>
           ) : filteredPosts.map((post) => (
             <Link key={post.id} href={`/community/detail?id=${post.id}`} className="grid grid-cols-[80px_1fr_120px_80px_60px] items-center px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
               <span className={`text-[12px] font-bold px-2 py-0.5 rounded w-fit ${categoryColor(post.category)}`}>{post.category}</span>
@@ -140,7 +140,7 @@ export default function PCCommunity({ initialTab }) {
         {/* Write Button */}
         <div className="flex justify-end">
           <Link href="/write" className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 py-3 rounded-md flex items-center gap-2 shadow-sm transition-colors">
-            <Edit3 className="w-4 h-4" /> 湲?곌린
+            <Edit3 className="w-4 h-4" /> 글쓰기
           </Link>
         </div>
       </div>
@@ -150,4 +150,3 @@ export default function PCCommunity({ initialTab }) {
     </div>
   );
 }
-
