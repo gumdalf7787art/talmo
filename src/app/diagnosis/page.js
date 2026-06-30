@@ -372,7 +372,7 @@ function DiagnosisContent() {
       {!isHistory && (
         <div className="flex flex-col gap-1">
           <h2 className="text-xl font-bold text-gray-900">AI 정밀 두피 분석</h2>
-          <p className="text-[12px] text-red-500 font-bold mb-1 bg-red-50 p-2 rounded-lg border border-red-100 flex items-center gap-1.5"><AlertCircle className="w-4 h-4 shrink-0"/> ※ 개인정보 보호를 위해 얼굴이 나오지 않게, 이마와 두피 부위만 보이도록 직접 지정해 주세요.</p>
+          <p className="text-[12px] text-red-500 font-bold mb-1 bg-red-50 p-2 rounded-lg border border-red-100 flex items-center gap-1.5"><AlertCircle className="w-4 h-4 shrink-0"/> ※ 개인정보 보호를 위해 얼굴이 나오지 않도록, 이마와 두피 부위만 보이게 지정해 주세요.</p>
           <p className="text-[13px] text-gray-500">
             이마 라인이나 정수리가 잘 보이도록 사진을 1장 선택해 주세요.
           </p>
