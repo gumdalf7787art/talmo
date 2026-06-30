@@ -92,24 +92,6 @@ function PCDiagnosisContent() {
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
       const fileName = `탈모톡_AI_리포트_${new Date().toISOString().slice(0,10)}.pdf`;
       
-      // Try Web Share API if available
-      if (navigator.share && navigator.canShare) {
-        try {
-          const blob = pdf.output('blob');
-          const file = new File([blob], fileName, { type: 'application/pdf' });
-          if (navigator.canShare({ files: [file] })) {
-            await navigator.share({
-              title: '탈모톡 AI 분석 리포트',
-              text: '탈모톡에서 분석한 나의 두피/탈모 진단 리포트입니다.',
-              files: [file]
-            });
-            return;
-          }
-        } catch (e) {
-          console.log("Share cancelled or failed", e);
-        }
-      }
-      
       pdf.save(fileName);
     } catch (error) {
       console.error("PDF 생성 실패:", error);
