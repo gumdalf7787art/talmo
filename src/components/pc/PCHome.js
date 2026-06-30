@@ -66,7 +66,7 @@ export default function PCHome() {
   const [doctors, setDoctors] = useState([]);
 
   return (
-    <div className="flex gap-3">
+    <div className="flex gap-6">
       {/* Main Content */}
       <div className="flex-1 min-w-0 flex flex-col gap-3">
         {/* Hero Banner */}

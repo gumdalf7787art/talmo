@@ -16,7 +16,7 @@ export default function PCSidebar() {
   const hotKeywords = ["모발이식 비용", "핀페시아", "미녹시딜", "두피문신", "강남 병원"];
 
   return (
-    <aside className="w-[280px] shrink-0 flex flex-col gap-4">
+    <aside className="w-[280px] shrink-0 flex flex-col gap-2">
       {/* 실시간 인기글 */}
       <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
         <div className="flex items-center gap-2 mb-4">
