@@ -71,27 +71,24 @@ export default function PCHome() {
       <div className="flex-1 min-w-0 flex flex-col gap-3">
         {/* Hero Banner */}
         {mounted && bannerType === "diagnosis" && (
-          <section className="relative overflow-hidden bg-gradient-to-r from-teal-500 to-teal-700 rounded-lg p-8 text-white shadow-lg">
-            <div className="relative z-10 flex items-center justify-between">
-              <div className="flex items-center gap-5">
-                <div className="bg-white/20 p-3 rounded-md backdrop-blur-sm">
-                  <Camera className="w-8 h-8" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold">내 탈모는 평균일까?</h2>
-                  <p className="text-teal-100 text-sm mt-1">AI가 내 연령/성별 평균과 비교 분석해드립니다</p>
-                </div>
+          <section className="relative overflow-hidden rounded-lg shadow-lg w-full flex bg-gray-900 group aspect-[728/150]">
+            <img src="/ai_diagnosis_banner.png" alt="AI 탈모분석 배너" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+            
+            <div className="relative z-10 flex items-center justify-between w-full p-8 h-full">
+              <div className="flex flex-col justify-center h-full gap-2 mt-2">
+                <h2 className="text-3xl font-black text-white drop-shadow-md tracking-tight">Ai 탈모분석</h2>
+                <p className="text-gray-100 text-[17px] font-medium drop-shadow">지금 바로 분석하세요.</p>
               </div>
-              <div className="flex items-center gap-3">
-                <Link href="/diagnosis" onClick={handleDismissDiagnosis} className="bg-white text-teal-600 font-bold px-6 py-2.5 rounded-md shadow-sm hover:bg-gray-50 transition-colors">
-                  무료 AI 분석 시작
+              <div className="flex items-center gap-3 h-full pt-3">
+                <Link href="/diagnosis" onClick={handleDismissDiagnosis} className="bg-teal-500 hover:bg-teal-400 text-white font-bold px-7 py-3 rounded-md shadow-lg transition-all flex items-center gap-2 hover:-translate-y-1">
+                  분석 시작하기 <ChevronRight className="w-4 h-4" />
                 </Link>
-                <button onClick={handleDismissDiagnosis} className="text-white/70 hover:text-white p-1">
+                <button onClick={handleDismissDiagnosis} className="text-white/50 hover:text-white p-1 absolute top-4 right-4">
                   <X className="w-5 h-5" />
                 </button>
               </div>
             </div>
-            <div className="absolute -right-8 -bottom-8 w-40 h-40 bg-white/10 rounded-full blur-xl" />
           </section>
         )}
 
