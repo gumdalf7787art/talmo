@@ -228,26 +228,34 @@ function DiagnosisContent() {
     setIsAnalyzing(true);
     setResult(null);
 
-    const formData = new FormData();
+    const payload = {
+      userId: user?.id || null,
+      scanType: scanType,
+      gender: profile.gender,
+      birthYear: profile.birthYear,
+      familyHistory: profile.familyHistory,
+      image: null
+    };
+
     try {
       const optimizedBase64 = await compressImage(imageFile, 1200, 0.8);
-      const file = dataURLtoFile(optimizedBase64, "optimized.jpg");
-      formData.append("image", file);
+      payload.image = optimizedBase64;
     } catch (err) {
-      console.warn("Image optimization failed, sending original...", err);
-      formData.append("image", imageFile);
+      console.warn("Image optimization failed, sending original as base64...", err);
+      // Fallback: convert original file to base64
+      const reader = new FileReader();
+      const base64Promise = new Promise((resolve) => {
+        reader.onload = (e) => resolve(e.target.result);
+        reader.readAsDataURL(imageFile);
+      });
+      payload.image = await base64Promise;
     }
-    
-    if (user && user.id) {
-      formData.append("userId", user.id);
-    }
-    
-    formData.append("scanType", scanType);
 
     try {
       const response = await fetch("/api/diagnosis", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {

@@ -2,28 +2,61 @@ export async function onRequestPost(context) {
   const { request, env } = context;
 
   try {
-    const formData = await request.formData();
-    const image = formData.get('image');
-    const userId = formData.get('userId');
-    const gender = formData.get('gender') || '정보없음';
-    const birthYear = formData.get('birthYear') || '정보없음';
-    const familyHistory = formData.get('familyHistory') || '정보없음';
-    const scanType = formData.get('scanType') || '알 수 없음';
+    const contentType = request.headers.get('content-type') || '';
+    
+    let userId, gender, birthYear, familyHistory, scanType, base64Image, mimeType;
+    let rawFileForStorage = null;
+
+    if (contentType.includes('application/json')) {
+      const data = await request.json();
+      userId = data.userId;
+      gender = data.gender || '정보없음';
+      birthYear = data.birthYear || '정보없음';
+      familyHistory = data.familyHistory || '정보없음';
+      scanType = data.scanType || '알 수 없음';
+      
+      const b64Data = data.image; // "data:image/jpeg;base64,/9j/4AAQSk..."
+      if (!b64Data) {
+        return new Response(JSON.stringify({ error: '이미지가 없습니다.' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+      }
+      
+      const parts = b64Data.split(',');
+      if (parts.length === 2) {
+        mimeType = parts[0].match(/:(.*?);/)[1] || 'image/jpeg';
+        base64Image = parts[1];
+      } else {
+        mimeType = 'image/jpeg';
+        base64Image = b64Data;
+      }
+      
+      // Convert base64 to buffer for R2 storage
+      const binaryString = atob(base64Image);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      rawFileForStorage = bytes.buffer;
+    } else {
+      const formData = await request.formData();
+      const image = formData.get('image');
+      userId = formData.get('userId');
+      gender = formData.get('gender') || '정보없음';
+      birthYear = formData.get('birthYear') || '정보없음';
+      familyHistory = formData.get('familyHistory') || '정보없음';
+      scanType = formData.get('scanType') || '알 수 없음';
+
+      if (!image) {
+        return new Response(JSON.stringify({ error: '이미지가 없습니다.' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+      }
+
+      const arrayBuffer = await image.arrayBuffer();
+      base64Image = arrayBufferToBase64(arrayBuffer);
+      mimeType = image.type || 'image/jpeg';
+      rawFileForStorage = arrayBuffer;
+    }
 
     const currentYear = new Date().getFullYear();
     const age = birthYear !== '정보없음' ? currentYear - parseInt(birthYear, 10) : '정보없음';
-
-    if (!image) {
-      return new Response(JSON.stringify({ error: '이미지가 없습니다.' }), { 
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    // 1. 이미지를 Base64로 변환
-    const arrayBuffer = await image.arrayBuffer();
-    const base64Image = arrayBufferToBase64(arrayBuffer);
-    const mimeType = image.type || 'image/jpeg';
 
     // 2. 환경 변수에서 Gemini API Key 가져오기
     const apiKey = env.GEMINI_API_KEY || "YOUR_DUMMY_API_KEY_HERE";
@@ -216,8 +249,7 @@ export async function onRequestPost(context) {
       if (env.STORAGE) {
         try {
           const imageKey = `diagnostics/images/${id}.jpg`;
-          const imageFile = formData.get('image'); 
-          await env.STORAGE.put(imageKey, imageFile);
+          await env.STORAGE.put(imageKey, rawFileForStorage);
           imageUrl = `/api/images/${id}`;
         } catch (e) {
           console.error("R2 Upload failed:", e);

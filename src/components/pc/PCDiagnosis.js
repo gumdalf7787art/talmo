@@ -170,27 +170,33 @@ function PCDiagnosisContent() {
 
     setIsAnalyzing(true); setResult(null);
     try {
-      const formData = new FormData();
-      // 백엔드 AI 고도화를 위한 환자 정보 추가 전달
-      formData.append("gender", profile.gender);
-      formData.append("birthYear", profile.birthYear);
-      formData.append("familyHistory", profile.familyHistory);
-      formData.append("scanType", scanType);
-      
-      if (user && user.id) {
-        formData.append("userId", user.id);
-      }
+      const payload = {
+        gender: profile.gender,
+        birthYear: profile.birthYear,
+        familyHistory: profile.familyHistory,
+        scanType: scanType,
+        userId: user?.id || null,
+        image: null
+      };
 
       try {
         const optimizedBase64 = await compressImage(imageFile, 1200, 0.8); 
-        const file = dataURLtoFile(optimizedBase64, "optimized.jpg");
-        formData.append("image", file);
+        payload.image = optimizedBase64;
       } catch (err) {
-        console.warn("Image optimization failed, sending original...", err);
-        formData.append("image", imageFile);
+        console.warn("Image optimization failed, sending original as base64...", err);
+        const reader = new FileReader();
+        const base64Promise = new Promise((resolve) => {
+          reader.onload = (e) => resolve(e.target.result);
+          reader.readAsDataURL(imageFile);
+        });
+        payload.image = await base64Promise;
       }
 
-      const response = await fetch("/api/diagnosis", { method: "POST", body: formData });
+      const response = await fetch("/api/diagnosis", { 
+        method: "POST", 
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload) 
+      });
       if (response.ok) { 
         const data = await response.json(); 
         setResult(data.diagnosis); 
