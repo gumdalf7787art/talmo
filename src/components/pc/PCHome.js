@@ -62,7 +62,7 @@ export default function PCHome() {
       {/* Main Content */}
       <div className="flex-1 min-w-0 flex flex-col gap-3">
         {/* Hero Banner */}
-        <section className="relative overflow-hidden rounded-lg shadow-lg flex bg-gray-900 group w-[728px] h-[150px] shrink-0">
+        <section className="relative overflow-hidden rounded-lg shadow-lg flex bg-gray-900 group w-full h-[150px] shrink-0">
           <img src="/ai_diagnosis_banner.png" alt="AI 탈모분석 배너" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
           
