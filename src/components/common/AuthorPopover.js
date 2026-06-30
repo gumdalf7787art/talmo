@@ -79,7 +79,7 @@ export default function AuthorPopover({ author, authorImage, authorId }) {
     e.preventDefault();
     e.stopPropagation();
     setIsOpen(false);
-    router.push(`/community/user/${encodeURIComponent(author)}`);
+    router.push(`/community/user?nickname=${encodeURIComponent(author)}`);
   };
 
   const submitReport = async () => {
@@ -203,7 +203,7 @@ export default function AuthorPopover({ author, authorImage, authorId }) {
               )}
             </div>
             <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-2">
-               <button onClick={(e) => { e.stopPropagation(); setShowProfile(false); router.push(`/community/user/${encodeURIComponent(author)}`); }} className="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-bold text-sm transition-colors">
+               <button onClick={(e) => { e.stopPropagation(); setShowProfile(false); router.push(`/community/user?nickname=${encodeURIComponent(author)}`); }} className="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-bold text-sm transition-colors">
                 작성한 글 보기
               </button>
             </div>

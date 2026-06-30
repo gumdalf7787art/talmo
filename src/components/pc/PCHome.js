@@ -66,9 +66,9 @@ export default function PCHome() {
   const [doctors, setDoctors] = useState([]);
 
   return (
-    <div className="flex gap-6">
+    <div className="flex gap-3">
       {/* Main Content */}
-      <div className="flex-1 min-w-0 flex flex-col gap-6">
+      <div className="flex-1 min-w-0 flex flex-col gap-3">
         {/* Hero Banner */}
         {mounted && bannerType === "diagnosis" && (
           <section className="relative overflow-hidden bg-gradient-to-r from-teal-500 to-teal-700 rounded-2xl p-8 text-white shadow-lg">
@@ -116,7 +116,7 @@ export default function PCHome() {
         )}
 
         {/* 탈모 리얼후기 + 탈모 정보 - 2열 */}
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 gap-3">
           {/* 리얼후기 */}
           <section className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
             <div className="flex items-center justify-between mb-4">
