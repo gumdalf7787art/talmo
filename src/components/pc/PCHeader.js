@@ -107,6 +107,28 @@ function PCHeaderContent() {
       {/* Bottom Row: Navigation Links */}
       <div className="border-t-2 border-gray-200 bg-white">
         <div className="max-w-[1080px] w-full mx-auto px-6 h-14 flex items-center justify-center gap-6">
+          {/* Ai 탈모 분석 */}
+          <nav className="flex items-center gap-1">
+            {highlightItems.filter(item => item.label === "Ai 탈모 분석").map((item) => {
+              const isActive = pathname?.startsWith(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`px-4 py-2 rounded-lg text-[15px] transition-all flex items-center gap-1.5 ${
+                    isActive
+                      ? "text-teal-700 bg-teal-50 font-bold"
+                      : "text-teal-600 font-semibold hover:bg-teal-50"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className="w-[1px] h-4 bg-gray-300"></div>
+
           {/* Community Links */}
           <nav className="flex items-center gap-1">
             {navItems.map((item) => {
@@ -134,9 +156,9 @@ function PCHeaderContent() {
 
           <div className="w-[1px] h-4 bg-gray-300"></div>
 
-          {/* Highlighted Links */}
+          {/* 1:1상담 */}
           <nav className="flex items-center gap-1">
-            {highlightItems.map((item) => {
+            {highlightItems.filter(item => item.label === "1:1상담").map((item) => {
               const isActive = pathname?.startsWith(item.href);
               return (
                 <Link
