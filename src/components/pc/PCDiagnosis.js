@@ -3,13 +3,21 @@
 import { useState, useRef, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, ChevronRight, FileText, Calendar, User, Activity, Pill, Heart, Home, CheckSquare, Square } from "lucide-react";
+import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, ChevronRight, FileText, Calendar, User, Activity, Pill, Heart, Home, CheckSquare, Square, X, Scissors } from "lucide-react";
 import RadarChart from "../RadarChart";
 import { compressImage } from "@/lib/imageUtils";
+import Cropper from 'react-easy-crop';
+import { getCroppedImg } from "@/lib/cropUtils";
 
 function PCDiagnosisContent() {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [isCropping, setIsCropping] = useState(false);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [termsModal, setTermsModal] = useState(null);
+
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [consent1, setConsent1] = useState(false);
   const [consent2, setConsent2] = useState(false);
@@ -56,7 +64,35 @@ function PCDiagnosisContent() {
     fetchHistoryDetail();
   }, [searchParams, isHistory]);
 
-  const handleImageChange = (e) => { const file = e.target.files[0]; if (file) { setImageFile(file); setImagePreview(URL.createObjectURL(file)); setResult(null); } };
+  const handleImageChange = (e) => { 
+    const file = e.target.files[0]; 
+    if (file) { 
+      setImagePreview(URL.createObjectURL(file)); 
+      setIsCropping(true); 
+      setResult(null); 
+      e.target.value = null;
+    } 
+  };
+
+  const onCropComplete = (croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
+
+  const handleCropDone = async () => {
+    try {
+      const croppedImageBase64 = await getCroppedImg(imagePreview, croppedAreaPixels);
+      setImagePreview(croppedImageBase64);
+      const res = await fetch(croppedImageBase64);
+      const blob = await res.blob();
+      const file = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+      setImageFile(file);
+      setIsCropping(false);
+    } catch (e) {
+      console.error(e);
+      alert("크롭 처리 중 오류가 발생했습니다.");
+      setIsCropping(false);
+    }
+  };
 
   const handleAnalyze = async () => {
     if (!imageFile || !isProfileComplete || !consentAll) return;
@@ -134,6 +170,78 @@ function PCDiagnosisContent() {
 
   return (
     <div className="max-w-[1000px] mx-auto pb-10 relative">
+      {/* Crop Modal */}
+      {isCropping && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/90 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-lg w-full max-w-[600px] flex flex-col overflow-hidden shadow-2xl">
+            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-white z-10">
+              <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                <Scissors className="w-5 h-5 text-teal-600" />
+                얼굴이 보이지 않게 크롭해주세요
+              </h3>
+              <button onClick={() => setIsCropping(false)} className="text-gray-400 hover:text-gray-700">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="relative w-full h-[60vh] bg-black">
+              <Cropper
+                image={imagePreview}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onCropComplete={onCropComplete}
+                onZoomChange={setZoom}
+              />
+            </div>
+            <div className="p-4 bg-white flex flex-col gap-4">
+              <div>
+                <label className="text-xs text-gray-500 font-bold mb-1 block">확대/축소</label>
+                <input
+                  type="range"
+                  value={zoom}
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  aria-labelledby="Zoom"
+                  onChange={(e) => setZoom(e.target.value)}
+                  className="w-full accent-teal-600"
+                />
+              </div>
+              <button onClick={handleCropDone} className="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition-colors">
+                이대로 자르고 업로드하기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Terms Modal */}
+      {termsModal && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-lg w-full max-w-[400px] overflow-hidden shadow-2xl flex flex-col animate-in fade-in zoom-in duration-200">
+            <div className="flex justify-between items-center p-4 border-b border-gray-100">
+              <h3 className="font-bold text-gray-900">
+                {termsModal === 'service' ? '개인정보 수집 및 이용 동의' : '면책 조항 동의'}
+              </h3>
+              <button onClick={() => setTermsModal(null)} className="p-1 text-gray-400 hover:text-gray-700">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-5 text-[13px] text-gray-600 max-h-[60vh] overflow-y-auto leading-relaxed whitespace-pre-wrap">
+              {termsModal === 'service' 
+                ? "서비스 품질 향상 및 AI 초개인화 학습을 위해 회원님의 사진 및 입력하신 건강/신체 정보(나이, 성별, 가족력)를 수집합니다.\n\n수집된 데이터는 AI 모델 학습 및 서비스 개선 목적 외에는 사용되지 않으며, 얼굴 등 개인을 식별할 수 있는 민감 정보는 업로드 전 직접 제외(크롭)해 주셔야 합니다.\n\n수집된 데이터는 회원 탈퇴 시 파기됩니다."
+                : "탈모톡의 AI 분석 결과는 통계적 데이터와 이미지 분석에 기반한 '참고용 리포트'입니다.\n\n이는 의학적 진단이나 의료 행위를 대체할 수 없으며, 질병의 진단 및 치료를 위해서는 반드시 피부과 등 전문 의료기관을 방문하여 전문의의 상담을 받으셔야 합니다.\n\n본 리포트에 따른 행동 결과에 대해 탈모톡은 법적 책임을 지지 않습니다."
+              }
+            </div>
+            <div className="p-4 border-t border-gray-100">
+              <button onClick={() => setTermsModal(null)} className="w-full py-2.5 bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-900 transition-colors">
+                확인했습니다
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Loading Modal */}
       {isAnalyzing && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
@@ -183,7 +291,8 @@ function PCDiagnosisContent() {
           <div className="flex flex-col gap-5">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">AI 정밀 두피 분석</h2>
-              <p className="text-sm text-gray-500">이마 라인이나 정수리가 잘 보이도록 사진을 찍어주세요.</p>
+              <p className="text-sm text-red-500 font-bold mb-1 bg-red-50 p-2 rounded border border-red-100 flex items-center gap-1.5"><AlertCircle className="w-4 h-4"/> ※ 눈/코/입 얼굴 전체가 나오지 않게 자르기(Crop)를 꼭 진행해 주세요.</p>
+              <p className="text-sm text-gray-500">이마 라인이나 정수리가 잘 보이도록 사진을 1장 선택해 주세요.</p>
             </div>
             <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-gray-300 rounded-lg h-80 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer overflow-hidden transition-colors">
               {imagePreview ? (<img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />) : (
@@ -289,22 +398,24 @@ function PCDiagnosisContent() {
                 <span className="text-[14px] font-bold text-slate-800">전체 동의하기</span>
               </div>
               
-              <div onClick={() => setConsent1(!consent1)} className="flex items-start gap-2 cursor-pointer pl-1">
-                <div className="mt-0.5 text-teal-600 shrink-0">
+              <div className="flex items-start gap-2 pl-1 group">
+                <div onClick={() => setConsent1(!consent1)} className="mt-0.5 text-teal-600 shrink-0 cursor-pointer">
                   {consent1 ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4 text-gray-400" />}
                 </div>
-                <span className="text-[12px] text-gray-600 leading-snug">
-                  (필수) 서비스 품질 향상 및 AI 학습을 위해, 사진과 분석 결과 데이터를 수집하고 활용하는 것에 동의합니다.
+                <span onClick={() => setConsent1(!consent1)} className="text-[12px] text-gray-600 leading-snug cursor-pointer flex-1">
+                  (필수) 서비스 품질 향상 및 AI 학습을 위해, 데이터 수집에 동의합니다.
                 </span>
+                <button onClick={() => setTermsModal('service')} className="text-[11px] font-bold text-gray-400 hover:text-teal-600 underline underline-offset-2 shrink-0 px-1">[보기]</button>
               </div>
 
-              <div onClick={() => setConsent2(!consent2)} className="flex items-start gap-2 cursor-pointer pl-1 mt-1">
-                <div className="mt-0.5 text-teal-600 shrink-0">
+              <div className="flex items-start gap-2 pl-1 mt-1 group">
+                <div onClick={() => setConsent2(!consent2)} className="mt-0.5 text-teal-600 shrink-0 cursor-pointer">
                   {consent2 ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4 text-gray-400" />}
                 </div>
-                <span className="text-[12px] text-gray-600 leading-snug">
-                  (필수) AI의 분석 결과는 참고용이며, 의학적 진단을 완전 대체할 수 없습니다.
+                <span onClick={() => setConsent2(!consent2)} className="text-[12px] text-gray-600 leading-snug cursor-pointer flex-1">
+                  (필수) AI의 분석 결과는 참고용이며, 의학적 진단을 대체할 수 없습니다.
                 </span>
+                <button onClick={() => setTermsModal('medical')} className="text-[11px] font-bold text-gray-400 hover:text-teal-600 underline underline-offset-2 shrink-0 px-1">[보기]</button>
               </div>
             </div>
 
@@ -334,7 +445,7 @@ function PCDiagnosisContent() {
             {/* 리포트 헤더 */}
             <div className="border-b-[3px] border-slate-800 p-8 flex justify-between items-end bg-slate-50">
               <div>
-                <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">탈모톡 분석 결과지</h1>
+                <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">탈모톡 AI 리포트</h1>
                 <p className="text-sm font-medium text-slate-500">TalmoTalk Precision AI Assessment Report</p>
               </div>
               <div className="text-right text-[13px] text-slate-600 space-y-1">
@@ -412,13 +523,13 @@ function PCDiagnosisContent() {
                     <div className="p-5 text-[14px] text-slate-700 leading-relaxed space-y-4">
                       {report?.medicalAnalysis?.finding && (
                         <div>
-                          <strong className="text-slate-900 block mb-1">관찰 소견 (Finding):</strong>
+                          <strong className="text-slate-900 block mb-1">특징 분석:</strong>
                           <p dangerouslySetInnerHTML={{ __html: report.medicalAnalysis.finding }} />
                         </div>
                       )}
                       {report?.medicalAnalysis?.cause && (
                         <div>
-                          <strong className="text-slate-900 block mb-1">원인 분석 (Cause):</strong>
+                          <strong className="text-slate-900 block mb-1">추정 요인:</strong>
                           <p dangerouslySetInnerHTML={{ __html: report.medicalAnalysis.cause }} />
                         </div>
                       )}
@@ -463,7 +574,7 @@ function PCDiagnosisContent() {
                   </div>
                   
                   <div className="text-[11px] text-slate-400 text-center mt-2">
-                    * AI의 분석 결과는 참고용이며, 의학적 진단을 대체하는것은 아닙니다.
+                    * 본 AI 리포트는 통계적 데이터 분석 결과이며, 의학적 진단을 대체하는 진단서가 아닙니다.
                   </div>
                   
                   {!isHistory && (

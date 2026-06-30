@@ -3,16 +3,28 @@
 import { useState, useRef, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, ChevronRight, ChevronLeft } from "lucide-react";
+import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, ChevronRight, ChevronLeft, CheckSquare, Square, X, Scissors, Pill, Home, Heart } from "lucide-react";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import PCDiagnosis from "@/components/pc/PCDiagnosis";
 import RadarChart from "@/components/RadarChart";
 import { compressImage } from "@/lib/imageUtils";
+import Cropper from 'react-easy-crop';
+import { getCroppedImg } from "@/lib/cropUtils";
 
 function DiagnosisContent() {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  
+  const [isCropping, setIsCropping] = useState(false);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [termsModal, setTermsModal] = useState(null);
+
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [consent1, setConsent1] = useState(false);
+  const [consent2, setConsent2] = useState(false);
+  const consentAll = consent1 && consent2;
   const [result, setResult] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -92,14 +104,35 @@ function DiagnosisContent() {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
+      setIsCropping(true);
       setResult(null); // 새로운 사진 올리면 결과 초기화
+      e.target.value = null;
+    }
+  };
+
+  const onCropComplete = (croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
+
+  const handleCropDone = async () => {
+    try {
+      const croppedImageBase64 = await getCroppedImg(imagePreview, croppedAreaPixels);
+      setImagePreview(croppedImageBase64);
+      const res = await fetch(croppedImageBase64);
+      const blob = await res.blob();
+      const file = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+      setImageFile(file);
+      setIsCropping(false);
+    } catch (e) {
+      console.error(e);
+      alert("크롭 처리 중 오류가 발생했습니다.");
+      setIsCropping(false);
     }
   };
 
   const handleAnalyze = async () => {
-    if (!imageFile || !isProfileComplete) return;
+    if (!imageFile || !isProfileComplete || !consentAll) return;
 
     // Auto-save profile if it was empty or changed
     if (user) {
@@ -172,6 +205,78 @@ function DiagnosisContent() {
   return (
     <div className={`flex flex-col relative ${isHistory ? 'gap-4 p-0' : 'gap-6 p-4'}`}>
       
+      {/* Crop Modal */}
+      {isCropping && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/90 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl w-full max-w-[400px] flex flex-col overflow-hidden shadow-2xl">
+            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-white z-10">
+              <h3 className="font-bold text-gray-900 flex items-center gap-2 text-[14px]">
+                <Scissors className="w-4 h-4 text-teal-600" />
+                얼굴이 보이지 않게 크롭해주세요
+              </h3>
+              <button onClick={() => setIsCropping(false)} className="text-gray-400 hover:text-gray-700">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="relative w-full h-[50vh] bg-black">
+              <Cropper
+                image={imagePreview}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onCropComplete={onCropComplete}
+                onZoomChange={setZoom}
+              />
+            </div>
+            <div className="p-4 bg-white flex flex-col gap-4">
+              <div>
+                <label className="text-xs text-gray-500 font-bold mb-1 block">확대/축소</label>
+                <input
+                  type="range"
+                  value={zoom}
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  aria-labelledby="Zoom"
+                  onChange={(e) => setZoom(e.target.value)}
+                  className="w-full accent-teal-600"
+                />
+              </div>
+              <button onClick={handleCropDone} className="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl transition-colors text-[14px]">
+                이대로 자르고 업로드하기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Terms Modal */}
+      {termsModal && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl w-full max-w-[400px] overflow-hidden shadow-2xl flex flex-col animate-in fade-in zoom-in duration-200">
+            <div className="flex justify-between items-center p-4 border-b border-gray-100">
+              <h3 className="font-bold text-gray-900 text-[15px]">
+                {termsModal === 'service' ? '개인정보 수집 및 이용 동의' : '면책 조항 동의'}
+              </h3>
+              <button onClick={() => setTermsModal(null)} className="p-1 text-gray-400 hover:text-gray-700">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-5 text-[13px] text-gray-600 max-h-[60vh] overflow-y-auto leading-relaxed whitespace-pre-wrap">
+              {termsModal === 'service' 
+                ? "서비스 품질 향상 및 AI 초개인화 학습을 위해 회원님의 사진 및 입력하신 건강/신체 정보(나이, 성별, 가족력)를 수집합니다.\n\n수집된 데이터는 AI 모델 학습 및 서비스 개선 목적 외에는 사용되지 않으며, 얼굴 등 개인을 식별할 수 있는 민감 정보는 업로드 전 직접 제외(크롭)해 주셔야 합니다.\n\n수집된 데이터는 회원 탈퇴 시 파기됩니다."
+                : "탈모톡의 AI 분석 결과는 통계적 데이터와 이미지 분석에 기반한 '참고용 리포트'입니다.\n\n이는 의학적 진단이나 의료 행위를 대체할 수 없으며, 질병의 진단 및 치료를 위해서는 반드시 피부과 등 전문 의료기관을 방문하여 전문의의 상담을 받으셔야 합니다.\n\n본 리포트에 따른 행동 결과에 대해 탈모톡은 법적 책임을 지지 않습니다."
+              }
+            </div>
+            <div className="p-4 border-t border-gray-100">
+              <button onClick={() => setTermsModal(null)} className="w-full py-3 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-900 transition-colors text-[14px]">
+                확인했습니다
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Loading Modal */}
       {isAnalyzing && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
@@ -227,9 +332,10 @@ function DiagnosisContent() {
       {/* Default Title for Tool Mode */}
       {!isHistory && (
         <div className="flex flex-col gap-1">
-          <h2 className="text-xl font-bold text-gray-900">AI 두피 분석</h2>
-          <p className="text-sm text-gray-500">
-            이마 라인이나 정수리가 잘 보이도록 사진을 찍어주세요. (독립 AI 분석 테스트)
+          <h2 className="text-xl font-bold text-gray-900">AI 정밀 두피 분석</h2>
+          <p className="text-[12px] text-red-500 font-bold mb-1 bg-red-50 p-2 rounded-lg border border-red-100 flex items-center gap-1.5"><AlertCircle className="w-4 h-4 shrink-0"/> ※ 눈/코/입 얼굴이 나오지 않게 잘라(Crop)주세요.</p>
+          <p className="text-[13px] text-gray-500">
+            이마 라인이나 정수리가 잘 보이도록 사진을 1장 선택해 주세요.
           </p>
         </div>
       )}
@@ -317,13 +423,45 @@ function DiagnosisContent() {
             />
           </div>
 
+          <div className="flex flex-col gap-2 bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm mt-1">
+            <div 
+              onClick={() => { const val = !consentAll; setConsent1(val); setConsent2(val); }} 
+              className="flex items-center gap-2 cursor-pointer border-b border-gray-100 pb-2.5 mb-1"
+            >
+              <div className="text-teal-600">
+                {consentAll ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4 text-gray-400" />}
+              </div>
+              <span className="text-[13px] font-bold text-gray-800">전체 동의하기</span>
+            </div>
+            
+            <div className="flex items-start gap-1.5 group mt-1.5">
+              <div onClick={() => setConsent1(!consent1)} className="mt-0.5 text-teal-600 shrink-0 cursor-pointer">
+                {consent1 ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5 text-gray-400" />}
+              </div>
+              <span onClick={() => setConsent1(!consent1)} className="text-[11px] text-gray-600 leading-snug cursor-pointer flex-1">
+                (필수) 서비스 향상 및 AI 학습을 위한 데이터 수집 동의
+              </span>
+              <button onClick={() => setTermsModal('service')} className="text-[11px] font-bold text-gray-400 hover:text-teal-600 underline underline-offset-2 shrink-0 px-1 py-0.5">[보기]</button>
+            </div>
+
+            <div className="flex items-start gap-1.5 group mt-1.5">
+              <div onClick={() => setConsent2(!consent2)} className="mt-0.5 text-teal-600 shrink-0 cursor-pointer">
+                {consent2 ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5 text-gray-400" />}
+              </div>
+              <span onClick={() => setConsent2(!consent2)} className="text-[11px] text-gray-600 leading-snug cursor-pointer flex-1">
+                (필수) 본 리포트는 의학적 진단을 대체할 수 없음에 동의
+              </span>
+              <button onClick={() => setTermsModal('medical')} className="text-[11px] font-bold text-gray-400 hover:text-teal-600 underline underline-offset-2 shrink-0 px-1 py-0.5">[보기]</button>
+            </div>
+          </div>
+
           {/* 분석 버튼 */}
           <div className="flex flex-col gap-2">
             <button
               onClick={handleAnalyze}
-              disabled={!imageFile || isAnalyzing || !isProfileComplete}
+              disabled={!imageFile || isAnalyzing || !isProfileComplete || !consentAll}
               className={`w-full py-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition-all duration-300 ${
-                !imageFile || !isProfileComplete 
+                !imageFile || !isProfileComplete || !consentAll
                   ? "bg-gray-300 cursor-not-allowed" 
                   : "bg-teal-600 hover:bg-teal-700 hover:-translate-y-1 hover:shadow-lg shadow-md"
               }`}
@@ -352,8 +490,8 @@ function DiagnosisContent() {
             {/* Header & Score */}
             <div className="flex items-start justify-between border-b border-gray-100 pb-5 mb-5">
               <div className="flex flex-col gap-1">
-                <h3 className="font-bold text-[18px] text-gray-900">AI 정밀 분석 결과</h3>
-                <span className="text-[13px] text-gray-500">이미지 스캔 완료 (정확도 94.2%)</span>
+                <h3 className="font-bold text-[18px] text-gray-900">탈모톡 AI 리포트</h3>
+                <span className="text-[12px] text-gray-500">TalmoTalk AI Assessment</span>
               </div>
               <div className="flex flex-col items-end">
                 <span className="px-2.5 py-1 bg-yellow-100 text-yellow-800 text-[12px] font-bold rounded-md mb-1">
@@ -399,31 +537,83 @@ function DiagnosisContent() {
             </div>
 
             {/* Comprehensive Opinion */}
-            <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 mb-5">
-              <h4 className="font-bold text-[14px] text-gray-900 mb-2">종합 소견</h4>
-              <ul className="text-[13px] text-gray-700 leading-relaxed space-y-1.5 list-disc pl-4 marker:text-gray-400">
-                {(result.analysis || [
-                  "현재 동일 연령대(30대 남성) 평균 대비 <b>M자 헤어라인의 후퇴가 확연하게 관찰</b>됩니다.",
-                  "정수리 부근의 모발 밀도는 정상 범위의 하한선에 위치해 있어 꾸준한 관리가 필요합니다.",
-                  "두피 상태는 매우 깨끗하며 염증 소견은 발견되지 않았습니다."
-                ]).map((text, idx) => (
-                  <li key={idx} dangerouslySetInnerHTML={{ __html: text }} />
-                ))}
-              </ul>
+            <div className="border border-gray-200 rounded-xl overflow-hidden mb-5">
+              <div className="bg-gray-100 p-3 border-b border-gray-200">
+                <h3 className="text-[14px] font-bold text-gray-900 flex items-center gap-1.5"><Activity className="w-4 h-4 text-gray-600" /> 탈모톡 소견</h3>
+              </div>
+              <div className="p-4 text-[13px] text-gray-700 leading-relaxed space-y-4">
+                {result?.medicalAnalysis?.finding && (
+                  <div>
+                    <strong className="text-gray-900 block mb-1">특징 분석:</strong>
+                    <p dangerouslySetInnerHTML={{ __html: result.medicalAnalysis.finding }} />
+                  </div>
+                )}
+                {result?.medicalAnalysis?.cause && (
+                  <div>
+                    <strong className="text-gray-900 block mb-1">추정 요인:</strong>
+                    <p dangerouslySetInnerHTML={{ __html: result.medicalAnalysis.cause }} />
+                  </div>
+                )}
+                
+                {/* Fallback for old history format */}
+                {(!result?.medicalAnalysis && result?.analysis) && (
+                  <div>
+                    <strong className="text-gray-900 block mb-1">종합 분석:</strong>
+                    <ul className="list-disc pl-4 space-y-1">
+                      {result.analysis.map((text, idx) => (
+                        <li key={idx} dangerouslySetInnerHTML={{ __html: text }} />
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Recommendation Box */}
-            <div className="bg-teal-50 p-3.5 rounded-xl border border-teal-100 flex items-start gap-2.5 mb-2">
-              <AlertCircle className="w-5 h-5 text-teal-600 shrink-0 mt-0.5" />
-              <div className="flex flex-col gap-1">
-                <span className="text-[13px] font-bold text-teal-900">맞춤 솔루션 제안</span>
-                <ul className="text-[12px] text-teal-800 leading-relaxed list-disc pl-4">
-                  {(result.recommendations || [
-                    "피나스테리드 계열 약물 복용 상담이 시급하며, M자 라인의 경우 모발이식 상담을 병행하는 것을 강력히 권장합니다."
-                  ]).map((text, idx) => (
-                    <li key={idx}>{text}</li>
-                  ))}
-                </ul>
+            <div className="border border-teal-200 rounded-xl overflow-hidden mb-2 shadow-sm">
+              <div className="bg-teal-700 p-3 border-b border-teal-800">
+                <h3 className="text-[14px] font-bold text-white flex items-center gap-1.5"><AlertCircle className="w-4 h-4 text-teal-200" /> 맞춤 관리 가이드</h3>
+              </div>
+              <div className="p-4 space-y-4 bg-teal-50/30">
+                
+                {result?.treatmentPlan?.medical?.length > 0 && (
+                  <div>
+                    <h4 className="flex items-center gap-1.5 text-[13px] font-bold text-teal-800 mb-1.5"><Pill className="w-3.5 h-3.5" /> 권고사항</h4>
+                    <ul className="list-disc pl-4 text-[12px] text-teal-900 space-y-1 marker:text-teal-500 leading-snug">
+                      {result.treatmentPlan.medical.map((text, i) => <li key={i} dangerouslySetInnerHTML={{ __html: text }} />)}
+                    </ul>
+                  </div>
+                )}
+
+                {result?.treatmentPlan?.homeCare?.length > 0 && (
+                  <div>
+                    <h4 className="flex items-center gap-1.5 text-[13px] font-bold text-blue-700 mb-1.5"><Home className="w-3.5 h-3.5" /> 자가 관리</h4>
+                    <ul className="list-disc pl-4 text-[12px] text-blue-900 space-y-1 marker:text-blue-500 leading-snug">
+                      {result.treatmentPlan.homeCare.map((text, i) => <li key={i} dangerouslySetInnerHTML={{ __html: text }} />)}
+                    </ul>
+                  </div>
+                )}
+
+                {result?.treatmentPlan?.lifestyle?.length > 0 && (
+                  <div>
+                    <h4 className="flex items-center gap-1.5 text-[13px] font-bold text-orange-700 mb-1.5"><Heart className="w-3.5 h-3.5" /> 생활 습관</h4>
+                    <ul className="list-disc pl-4 text-[12px] text-orange-900 space-y-1 marker:text-orange-400 leading-snug">
+                      {result.treatmentPlan.lifestyle.map((text, i) => <li key={i} dangerouslySetInnerHTML={{ __html: text }} />)}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Fallback for old history format */}
+                {(!result?.treatmentPlan && result?.recommendations) && (
+                  <div>
+                    <h4 className="flex items-center gap-1.5 text-[13px] font-bold text-teal-800 mb-1.5"><Pill className="w-3.5 h-3.5" /> 맞춤 솔루션</h4>
+                    <ul className="list-disc pl-4 text-[12px] text-teal-900 space-y-1 marker:text-teal-500 leading-snug">
+                      {result.recommendations.map((text, idx) => (
+                        <li key={idx} dangerouslySetInnerHTML={{ __html: text }} />
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -431,7 +621,7 @@ function DiagnosisContent() {
             <div className="bg-gray-100/50 p-3.5 rounded-xl border border-gray-200 mt-2">
               <h5 className="text-[11px] font-bold text-gray-500 mb-1.5">※ 면책 조항 및 주의사항</h5>
               <p className="text-[11px] text-gray-400 leading-relaxed break-keep">
-                본 AI 두피 분석 결과는 보조적인 참고 자료일 뿐, 의학적 진단을 대체할 수 없습니다. 촬영 환경(조명, 각도, 화질 등) 및 AI 모델의 한계로 인해 분석 결과가 실제 상태와 다르거나 부정확할 수 있습니다. 정확한 탈모 진단 및 치료 계획은 반드시 가까운 병원에 방문하여 전문 의료진과 상담하시기 바랍니다.
+                본 AI 리포트는 통계적 분석 결과로, 의학적 진단을 대체하는 진단서가 아닙니다. 정확한 진단 및 치료 계획은 반드시 병원을 방문하여 전문의의 상담을 받으시기 바랍니다. 탈모톡은 본 리포트에 따른 결과에 대해 법적 책임을 지지 않습니다.
               </p>
             </div>
           </div>
