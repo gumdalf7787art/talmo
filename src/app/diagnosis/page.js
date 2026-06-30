@@ -136,7 +136,7 @@ function DiagnosisContent() {
 
     const formData = new FormData();
     try {
-      const optimizedBase64 = await compressImage(imageFile, 3000, 0.9);
+      const optimizedBase64 = await compressImage(imageFile, 2048, 0.9);
       const res = await fetch(optimizedBase64);
       const blob = await res.blob();
       formData.append("image", blob, "optimized.jpg");

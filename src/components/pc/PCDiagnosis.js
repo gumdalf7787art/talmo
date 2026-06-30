@@ -102,9 +102,9 @@ function PCDiagnosisContent() {
         formData.append("userId", user.id);
       }
 
-      // 프론트엔드에서 3000px로 이미지 최적화 (유저 요청: 최대 해상도 유지)
+      // 프론트엔드에서 2048px로 이미지 최적화 (유저 요청: 최적의 타협점 해상도 유지)
       try {
-        const optimizedBase64 = await compressImage(imageFile, 3000, 0.9); 
+        const optimizedBase64 = await compressImage(imageFile, 2048, 0.9); 
         const res = await fetch(optimizedBase64);
         const blob = await res.blob();
         formData.append("image", blob, "optimized.jpg");
