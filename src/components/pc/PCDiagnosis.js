@@ -103,11 +103,16 @@ function PCDiagnosisContent() {
     }
   };
 
-  const handleImageChange = (e) => { 
-    const file = e.target.files[0]; 
-    if (file) { 
-      setImagePreview(URL.createObjectURL(file)); 
-      setIsCropping(true); 
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      try {
+        const compressedBase64 = await compressImage(file, 1600, 0.9);
+        setImagePreview(compressedBase64);
+      } catch (err) {
+        setImagePreview(URL.createObjectURL(file));
+      }
+      setIsCropping(true);
       setResult(null); 
       e.target.value = null;
     } 
@@ -560,7 +565,12 @@ function PCDiagnosisContent() {
                   </div>
                   
                   <div className="relative w-full aspect-[4/3] bg-slate-100 rounded-lg overflow-hidden border border-slate-200">
-                    <img src={imagePreview} alt="Analyzed" crossOrigin="anonymous" className="w-full h-full object-cover opacity-80 mix-blend-multiply" />
+                    <img 
+                      src={imagePreview} 
+                      alt="Analyzed" 
+                      crossOrigin={imagePreview && imagePreview.startsWith('http') ? "anonymous" : undefined}
+                      className="w-full h-full object-cover opacity-80 mix-blend-multiply" 
+                    />
                     <div className="absolute top-2 left-2 bg-black/60 text-white text-[11px] px-2 py-1 rounded font-medium">스캔 원본 이미지</div>
                   </div>
                 </div>

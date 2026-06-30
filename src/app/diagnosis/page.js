@@ -159,10 +159,15 @@ function DiagnosisContent() {
     }
   };
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImagePreview(URL.createObjectURL(file));
+      try {
+        const compressedBase64 = await compressImage(file, 1600, 0.9);
+        setImagePreview(compressedBase64);
+      } catch (err) {
+        setImagePreview(URL.createObjectURL(file));
+      }
       setIsCropping(true);
       setResult(null); // 새로운 사진 올리면 결과 초기화
       e.target.value = null;
@@ -567,9 +572,9 @@ function DiagnosisContent() {
               </div>
               <div className="flex flex-col items-end">
                 <span className="px-2.5 py-1 bg-yellow-100 text-yellow-800 text-[12px] font-bold rounded-md mb-1">
-                  진행 단계: {result.severity}
+                  진행 단계: {result.summary?.severity || result.severity || "진단중"}
                 </span>
-                <span className="text-[20px] font-black text-teal-600 tracking-tight">{result.score}<span className="text-[14px] text-gray-400 font-medium"> /100점</span></span>
+                <span className="text-[20px] font-black text-teal-600 tracking-tight">{result.summary?.score || result.score || 0}<span className="text-[14px] text-gray-400 font-medium"> /100점</span></span>
               </div>
             </div>
 
@@ -600,8 +605,8 @@ function DiagnosisContent() {
                     <span className={`text-${m.color}-500 font-bold`}>{m.status} ({m.score}점)</span>
                   </div>
                   <div className="relative w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                    <div className={`bg-gradient-to-r from-${m.color}-400 to-${m.color}-500 h-full rounded-full relative z-0`} style={{ width: `${m.score}%` }}></div>
-                    <div className="absolute top-0 bottom-0 w-[2px] bg-gray-400 z-10 opacity-70" style={{ left: `${m.avgScore || 70}%` }} title={`연령대 평균: ${m.avgScore || 70}점`} />
+                    <div className={`bg-gradient-to-r from-${m.color}-400 to-${m.color}-500 h-full rounded-full relative z-0`} style={{ width: `${isNaN(parseFloat(m.score)) ? 0 : parseFloat(m.score)}%` }}></div>
+                    <div className="absolute top-0 bottom-0 w-[2px] bg-gray-400 z-10 opacity-70" style={{ left: `${isNaN(parseFloat(m.avgScore)) ? 70 : parseFloat(m.avgScore)}%` }} title={`연령대 평균: ${m.avgScore || 70}점`} />
                   </div>
                 </div>
               ))}

@@ -8,8 +8,10 @@ export default function RadarChart({ breakdown }) {
   // Calculate coordinates for a given value (0-100) and index (0-3)
   // Indices: 0: Top, 1: Right, 2: Bottom, 3: Left
   const getCoordinates = (value, index) => {
+    let numValue = parseFloat(value);
+    if (isNaN(numValue)) numValue = 0;
     const angle = (Math.PI / 2) - (index * (Math.PI / 2));
-    const r = (value / 100) * radius;
+    const r = (numValue / 100) * radius;
     return {
       x: center + r * Math.cos(angle),
       y: center - r * Math.sin(angle)
