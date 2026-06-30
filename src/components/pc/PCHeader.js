@@ -18,9 +18,18 @@ function PCHeaderContent() {
   ];
 
   const highlightItems = [
-    { href: "/diagnosis", label: "Ai분석" },
+    { href: "/diagnosis", label: "Ai 탈모 분석" },
     { href: "/consult", label: "1:1상담" },
   ];
+
+  const searchTexts = [
+    "Ai 로 나의 탈모상태 분석",
+    "관리 및 이식에 대한 리얼후기",
+    "신뢰할만한 탈모 정보",
+    "1000만 탈모의 고민해결",
+    "원장님들이 작성하는 리얼칼럼",
+  ];
+  const [searchIndex, setSearchIndex] = useState(0);
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -28,7 +37,12 @@ function PCHeaderContent() {
   useEffect(() => {
     setMounted(true);
     setIsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
-  }, [pathname]);
+    
+    const interval = setInterval(() => {
+      setSearchIndex((prev) => (prev + 1) % searchTexts.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [pathname, searchTexts.length]);
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-200 shadow-sm flex flex-col">
@@ -43,10 +57,21 @@ function PCHeaderContent() {
 
           <Link
             href="/search"
-            className="flex items-center gap-3 bg-white border-2 border-teal-500 hover:bg-teal-50 rounded-full px-5 py-2.5 text-gray-500 transition-colors w-full max-w-[320px] shadow-sm"
+            className="flex items-center gap-3 bg-white border-2 border-teal-500 hover:bg-teal-50 rounded-full px-5 py-2.5 text-gray-500 transition-colors w-full max-w-[320px] shadow-sm overflow-hidden"
           >
-            <Search className="w-5 h-5 text-teal-600" />
-            <span className="text-[15px] font-bold text-gray-400">탈모에 대한 모든 것 검색</span>
+            <Search className="w-5 h-5 text-teal-600 shrink-0" />
+            <div className="h-[22px] overflow-hidden flex-1 relative">
+              <div 
+                className="flex flex-col transition-transform duration-500 ease-in-out absolute w-full top-0 left-0"
+                style={{ transform: `translateY(-${searchIndex * 22}px)` }}
+              >
+                {searchTexts.map((text, idx) => (
+                  <span key={idx} className="h-[22px] flex items-center text-[15px] font-bold text-gray-400 truncate">
+                    {text}
+                  </span>
+                ))}
+              </div>
+            </div>
           </Link>
         </div>
 
@@ -80,10 +105,10 @@ function PCHeaderContent() {
       </div>
 
       {/* Bottom Row: Navigation Links */}
-      <div className="border-t border-gray-100 bg-white">
-        <div className="max-w-[1080px] w-full mx-auto px-6 h-14 flex items-center justify-between">
+      <div className="border-t-2 border-gray-200 bg-white">
+        <div className="max-w-[1080px] w-full mx-auto px-6 h-14 flex items-center justify-center gap-6">
           {/* Community Links */}
-          <nav className="flex items-center gap-2">
+          <nav className="flex items-center gap-1">
             {navItems.map((item) => {
               const isActive = item.href.includes("?category=")
                 ? searchParams.get("category") === item.href.split("=")[1]
@@ -97,8 +122,8 @@ function PCHeaderContent() {
                   href={item.href}
                   className={`px-4 py-2 rounded-lg text-[15px] transition-colors ${
                     isActive
-                      ? "text-gray-900 bg-gray-100 font-bold"
-                      : "text-gray-600 font-semibold hover:text-gray-900 hover:bg-gray-50"
+                      ? "text-black bg-gray-100 font-semibold"
+                      : "text-gray-700 font-medium hover:text-gray-900 hover:bg-gray-50"
                   }`}
                 >
                   {item.label}
@@ -107,18 +132,20 @@ function PCHeaderContent() {
             })}
           </nav>
 
+          <div className="w-[1px] h-4 bg-gray-300"></div>
+
           {/* Highlighted Links */}
-          <nav className="flex items-center gap-3">
+          <nav className="flex items-center gap-1">
             {highlightItems.map((item) => {
               const isActive = pathname?.startsWith(item.href);
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`px-5 py-2 rounded-lg text-[15px] transition-all flex items-center gap-1.5 ${
+                  className={`px-4 py-2 rounded-lg text-[15px] transition-all flex items-center gap-1.5 ${
                     isActive
-                      ? "text-teal-700 bg-teal-100 font-extrabold"
-                      : "text-teal-600 font-extrabold hover:bg-teal-50"
+                      ? "text-teal-700 bg-teal-50 font-bold"
+                      : "text-teal-600 font-semibold hover:bg-teal-50"
                   }`}
                 >
                   {item.label}
