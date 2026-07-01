@@ -342,7 +342,7 @@ export default function MyPage() {
             <button 
               onClick={() => {
                 const rawCode = user?.referral_code ? user.referral_code.trim() : '';
-                const inviteUrl = `https://talmotalk.pages.dev/signup?ref=${rawCode}`;
+                const inviteUrl = `https://talmotalk.com/signup?ref=${rawCode}`;
                 const safeInviteUrl = encodeURI(inviteUrl);
 
                 if (typeof window !== "undefined" && window.Kakao && window.Kakao.isInitialized()) {
@@ -351,7 +351,7 @@ export default function MyPage() {
                     content: {
                       title: '🎁 탈모톡에 가입하고 AI 분석 티켓을 받아보세요!',
                       description: `초대장을 클릭하고 간편가입 하시면 AI 탈모분석 티켓 4장(기본2+보너스2)이 즉시 발급됩니다.\n추천인 코드: ${rawCode}`,
-                      imageUrl: 'https://talmotalk.pages.dev/ai_diagnosis_banner.png',
+                      imageUrl: 'https://talmotalk.com/ai_diagnosis_banner.png',
                       link: {
                         mobileWebUrl: safeInviteUrl,
                         webUrl: safeInviteUrl,
