@@ -317,33 +317,17 @@ export default function PCMyPage() {
                     const rawCode = user?.referral_code ? user.referral_code.trim() : '';
                     const inviteUrl = `https://talmotalk.pages.dev/signup?ref=${rawCode}`;
                     const safeInviteUrl = encodeURI(inviteUrl);
+                    
+                    const shareText = `🎁 탈모톡에 가입하고 AI 분석 티켓 4장을 무료로 받아보세요!\n\n가입 링크: ${safeInviteUrl}\n추천인 코드: ${rawCode}`;
 
-                    if (typeof window !== "undefined" && window.Kakao && window.Kakao.isInitialized()) {
-                      window.Kakao.Share.sendDefault({
-                        objectType: 'feed',
-                        content: {
-                          title: '🎁 탈모톡에 가입하고 AI 분석 티켓을 받아보세요!',
-                          description: `초대장을 클릭하고 간편가입 하시면 AI 탈모분석 티켓 4장(기본2+보너스2)이 즉시 발급됩니다.\n추천인 코드: ${rawCode}`,
-                          imageUrl: 'https://talmotalk.pages.dev/ai_diagnosis_banner.png',
-                          link: {
-                            mobileWebUrl: safeInviteUrl,
-                            webUrl: safeInviteUrl,
-                          },
-                        },
-                        buttons: [
-                          {
-                            title: '탈모톡 시작하기',
-                            link: {
-                              mobileWebUrl: inviteUrl,
-                              webUrl: inviteUrl,
-                            },
-                          },
-                        ],
-                      });
+                    if (navigator.share) {
+                      navigator.share({ 
+                        title: '탈모톡 초대', 
+                        text: shareText 
+                      }).catch(console.error);
                     } else {
-                      const text = `🎁 탈모톡에 가입하고 AI 분석 티켓 4장을 무료로 받아보세요!\n\n가입 링크: ${inviteUrl}\n추천인 코드: ${user?.referral_code}`;
-                      navigator.clipboard.writeText(text);
-                      alert("초대 링크와 코드가 복사되었습니다!");
+                      navigator.clipboard.writeText(shareText);
+                      alert("초대 링크와 코드가 복사되었습니다!\n카카오톡에 붙여넣기 해주세요.");
                     }
                   }}
                   className="bg-[#FEE500] text-black text-[11px] font-bold px-3 py-2 rounded-lg hover:opacity-90 transition-opacity whitespace-nowrap"
