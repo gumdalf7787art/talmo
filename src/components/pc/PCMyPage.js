@@ -319,8 +319,8 @@ export default function PCMyPage() {
                       window.Kakao.Share.sendDefault({
                         objectType: 'feed',
                         content: {
-                          title: '탈모톡에 가입하고 Ai 탈모분석 티켓을 받아보세요!',
-                          description: `초대장을 클릭하고 간편가입을 하시면 Ai 탈모분석 티켓 6장이 즉시 발급됩니다.\n추천인 코드: ${user?.referral_code}`,
+                          title: '🎁 탈모톡에 가입하고 AI 분석 티켓을 받아보세요!',
+                          description: `초대장을 클릭하고 간편가입 하시면 AI 탈모분석 티켓 4장(기본2+보너스2)이 즉시 발급됩니다.\n추천인 코드: ${user?.referral_code}`,
                           imageUrl: 'https://talmotalk.pages.dev/ai_diagnosis_banner.png',
                           link: {
                             mobileWebUrl: inviteUrl,
@@ -338,7 +338,7 @@ export default function PCMyPage() {
                         ],
                       });
                     } else {
-                      const text = `탈모톡에 가입하고 AI 분석 티켓 6장을 무료로 받아보세요!\n\n가입 링크: ${inviteUrl}\n추천인 코드: ${user?.referral_code}`;
+                      const text = `🎁 탈모톡에 가입하고 AI 분석 티켓 4장을 무료로 받아보세요!\n\n가입 링크: ${inviteUrl}\n추천인 코드: ${user?.referral_code}`;
                       navigator.clipboard.writeText(text);
                       alert("초대 링크와 코드가 복사되었습니다!");
                     }
