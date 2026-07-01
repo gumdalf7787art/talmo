@@ -314,7 +314,7 @@ export default function PCMyPage() {
                 </div>
                 <button 
                   onClick={() => {
-                    const inviteUrl = `${window.location.origin}/signup?ref=${user?.referral_code || ''}`;
+                    const inviteUrl = `https://talmotalk.pages.dev/signup?ref=${user?.referral_code || ''}`;
                     if (typeof window !== "undefined" && window.Kakao && window.Kakao.isInitialized()) {
                       window.Kakao.Share.sendDefault({
                         objectType: 'feed',
