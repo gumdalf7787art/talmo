@@ -341,32 +341,35 @@ export default function MyPage() {
             </div>
             <button 
               onClick={() => {
-                const inviteUrl = `https://talmotalk.pages.dev/signup?ref=${user?.referral_code || ''}`;
+                const rawCode = user?.referral_code ? user.referral_code.trim() : '';
+                const inviteUrl = `https://talmotalk.pages.dev/signup?ref=${rawCode}`;
+                const safeInviteUrl = encodeURI(inviteUrl);
+
                 if (typeof window !== "undefined" && window.Kakao && window.Kakao.isInitialized()) {
                   window.Kakao.Share.sendDefault({
                     objectType: 'feed',
                     content: {
                       title: '🎁 탈모톡에 가입하고 AI 분석 티켓을 받아보세요!',
-                      description: `초대장을 클릭하고 간편가입 하시면 AI 탈모분석 티켓 4장(기본2+보너스2)이 즉시 발급됩니다.\n추천인 코드: ${user?.referral_code}`,
+                      description: `초대장을 클릭하고 간편가입 하시면 AI 탈모분석 티켓 4장(기본2+보너스2)이 즉시 발급됩니다.\n추천인 코드: ${rawCode}`,
                       imageUrl: 'https://talmotalk.pages.dev/ai_diagnosis_banner.png',
                       link: {
-                        mobileWebUrl: inviteUrl,
-                        webUrl: inviteUrl,
+                        mobileWebUrl: safeInviteUrl,
+                        webUrl: safeInviteUrl,
                       },
                     },
                     buttons: [
                       {
                         title: '탈모톡 시작하기',
                         link: {
-                          mobileWebUrl: inviteUrl,
-                          webUrl: inviteUrl,
+                          mobileWebUrl: safeInviteUrl,
+                          webUrl: safeInviteUrl,
                         },
                       },
                     ],
                   });
                 } else {
                   // Fallback
-                  const text = `🎁 탈모톡에 가입하고 AI 분석 티켓 4장을 무료로 받아보세요!\n\n가입 링크: ${inviteUrl}\n추천인 코드: ${user?.referral_code}`;
+                  const text = `🎁 탈모톡에 가입하고 AI 분석 티켓 4장을 무료로 받아보세요!\n\n가입 링크: ${safeInviteUrl}\n추천인 코드: ${rawCode}`;
                   if (navigator.share) {
                     navigator.share({ title: '탈모톡 초대', text: text });
                   } else {
