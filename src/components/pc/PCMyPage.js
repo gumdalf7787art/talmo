@@ -323,6 +323,7 @@ export default function PCMyPage() {
                           description: `초대장을 클릭하고 간편가입 하시면 AI 탈모분석 티켓 4장(기본2+보너스2)이 즉시 발급됩니다.\n추천인 코드: ${user?.referral_code}`,
                           imageUrl: 'https://talmotalk.pages.dev/ai_diagnosis_banner.png',
                           link: {
+                            mobileWebUrl: inviteUrl,
                             webUrl: inviteUrl,
                           },
                         },
@@ -330,6 +331,7 @@ export default function PCMyPage() {
                           {
                             title: '탈모톡 시작하기',
                             link: {
+                              mobileWebUrl: inviteUrl,
                               webUrl: inviteUrl,
                             },
                           },
