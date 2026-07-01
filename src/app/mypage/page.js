@@ -52,6 +52,13 @@ export default function MyPage() {
       setNewNickname(parsed.nickname || "");
       setUser(parsed);
 
+      // Initialize Kakao SDK
+      if (typeof window !== "undefined" && window.Kakao) {
+        if (!window.Kakao.isInitialized()) {
+          window.Kakao.init('f557c50a623379e0c2abb685232ade41');
+        }
+      }
+
       // Fetch fresh user data including tickets and referral_code
       fetch(`/api/user/me?userId=${parsed.id}`)
         .then(res => res.json())
@@ -335,17 +342,42 @@ export default function MyPage() {
             <button 
               onClick={() => {
                 const inviteUrl = `${window.location.origin}/signup?ref=${user?.referral_code || ''}`;
-                const text = `탈모톡에 가입하고 AI 분석 티켓 6장을 무료로 받아보세요!\n\n가입 링크: ${inviteUrl}\n추천인 코드: ${user?.referral_code}`;
-                if (navigator.share) {
-                  navigator.share({ title: '탈모톡 초대', text: text });
+                if (typeof window !== "undefined" && window.Kakao && window.Kakao.isInitialized()) {
+                  window.Kakao.Share.sendDefault({
+                    objectType: 'feed',
+                    content: {
+                      title: '탈모톡에 가입하고 AI 분석 티켓을 받아보세요!',
+                      description: `가입 시 추천인 코드를 입력하면 분석 티켓 6장이 즉시 지급됩니다.\n추천인 코드: ${user?.referral_code}`,
+                      imageUrl: 'https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?w=800&h=400&fit=crop',
+                      link: {
+                        mobileWebUrl: inviteUrl,
+                        webUrl: inviteUrl,
+                      },
+                    },
+                    buttons: [
+                      {
+                        title: '탈모톡 시작하기',
+                        link: {
+                          mobileWebUrl: inviteUrl,
+                          webUrl: inviteUrl,
+                        },
+                      },
+                    ],
+                  });
                 } else {
-                  navigator.clipboard.writeText(text);
-                  alert("초대 링크와 코드가 복사되었습니다!");
+                  // Fallback
+                  const text = `탈모톡에 가입하고 AI 분석 티켓 6장을 무료로 받아보세요!\n\n가입 링크: ${inviteUrl}\n추천인 코드: ${user?.referral_code}`;
+                  if (navigator.share) {
+                    navigator.share({ title: '탈모톡 초대', text: text });
+                  } else {
+                    navigator.clipboard.writeText(text);
+                    alert("초대 링크와 코드가 복사되었습니다!");
+                  }
                 }
               }}
-              className="bg-gray-800 text-white text-[12px] font-bold px-4 py-2.5 rounded-lg hover:bg-gray-700 transition-colors whitespace-nowrap"
+              className="bg-[#FEE500] text-black text-[12px] font-bold px-4 py-2.5 rounded-lg hover:opacity-90 transition-opacity whitespace-nowrap flex items-center gap-1.5"
             >
-              초대하기
+              카카오톡 초대
             </button>
           </div>
         </div>
