@@ -122,7 +122,7 @@ export async function onRequestGet(context) {
           }
         }
 
-        let ticketsPremium = 4;
+        let ticketsPremium = 0;
         let referredById = null;
 
         if (referredByCode) {
@@ -130,7 +130,7 @@ export async function onRequestGet(context) {
           const referrerResult = await db.prepare('SELECT id, tickets_premium FROM users WHERE referral_code = ?').bind(upperReferredCode).first();
           if (referrerResult) {
             referredById = referrerResult.id;
-            ticketsPremium = 6;
+            ticketsPremium = 2;
             await db.prepare('UPDATE users SET tickets_premium = tickets_premium + 4 WHERE id = ?').bind(referredById).run();
           }
         }

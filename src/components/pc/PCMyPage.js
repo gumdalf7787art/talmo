@@ -304,7 +304,10 @@ export default function PCMyPage() {
             <p className="text-[11px] text-teal-600 -mt-2">기본 {user?.tickets_basic || 0}장 + 프리미엄 {user?.tickets_premium || 0}장</p>
             
             <div className="pt-3 border-t border-teal-100 flex flex-col gap-2">
-              <span className="text-[12px] font-bold text-teal-800">🎁 친구 초대하고 티켓 받기!</span>
+              <div className="flex flex-col gap-1">
+                <span className="text-[12px] font-bold text-teal-800">🎁 친구 초대하고 티켓 받기!</span>
+                <span className="text-[11px] text-teal-600">친구 가입 시 나도 4장, 친구도 4장!</span>
+              </div>
               <div className="flex items-center gap-2">
                 <div className="flex-1 bg-white border border-teal-200 rounded-lg px-2 py-1.5 flex items-center justify-between">
                   <span className="text-[12px] font-mono font-bold text-teal-700">{user?.referral_code || '------'}</span>
