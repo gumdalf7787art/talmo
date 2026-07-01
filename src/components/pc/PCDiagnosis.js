@@ -107,7 +107,7 @@ function PCDiagnosisContent() {
     const file = e.target.files[0];
     if (file) {
       try {
-        const compressedBase64 = await compressImage(file, 1600, 0.9);
+        const compressedBase64 = await compressImage(file, 2048, 0.9);
         setImagePreview(compressedBase64);
       } catch (err) {
         setImagePreview(URL.createObjectURL(file));
@@ -180,7 +180,7 @@ function PCDiagnosisContent() {
       };
 
       try {
-        const optimizedBase64 = await compressImage(imageFile, 1200, 0.8); 
+        const optimizedBase64 = await compressImage(imageFile, 2048, 0.8); 
         payload.image = optimizedBase64;
       } catch (err) {
         console.warn("Image optimization failed, sending original as base64...", err);
