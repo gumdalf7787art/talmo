@@ -2,10 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Users, Camera, MessageCircle, User } from "lucide-react";
+import { Home, Users, Camera, MessageCircle, User, LogIn } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setIsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
+  }, [pathname]);
 
   const hideRoutes = ["/login", "/signup", "/write", "/find-id", "/find-password", "/terms", "/privacy"];
   const isPostDetail = pathname?.startsWith("/community/") && pathname !== "/community";
@@ -21,7 +27,11 @@ export default function BottomNav() {
     { href: "/community", label: "커뮤니티", icon: Users },
     { href: "/diagnosis", label: "AI진단", icon: Camera },
     { href: "/consult", label: "1:1상담", icon: MessageCircle },
-    { href: "/mypage", label: "마이페이지", icon: User },
+    { 
+      href: isLoggedIn ? "/mypage" : "/login", 
+      label: isLoggedIn ? "마이페이지" : "로그인", 
+      icon: isLoggedIn ? User : LogIn 
+    },
   ];
 
   return (
