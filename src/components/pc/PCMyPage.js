@@ -316,9 +316,9 @@ export default function PCMyPage() {
                       window.Kakao.Share.sendDefault({
                         objectType: 'feed',
                         content: {
-                          title: '탈모톡에 가입하고 AI 분석 티켓을 받아보세요!',
-                          description: `가입 시 추천인 코드를 입력하면 분석 티켓 6장이 즉시 지급됩니다.\n추천인 코드: ${user?.referral_code}`,
-                          imageUrl: 'https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?w=800&h=400&fit=crop',
+                          title: '탈모톡에 가입하고 Ai 탈모분석 티켓을 받아보세요!',
+                          description: `초대장을 클릭하고 간편가입을 하시면 Ai 탈모분석 티켓 6장이 즉시 발급됩니다.\n추천인 코드: ${user?.referral_code}`,
+                          imageUrl: 'https://talmotalk.pages.dev/ai_diagnosis_banner.png',
                           link: {
                             mobileWebUrl: inviteUrl,
                             webUrl: inviteUrl,
