@@ -8,6 +8,11 @@ CREATE TABLE IF NOT EXISTS users (
   birth_year TEXT,
   family_history TEXT,
   role TEXT DEFAULT 'user',
+  referral_code TEXT UNIQUE,
+  referred_by TEXT,
+  tickets_basic INTEGER DEFAULT 2,
+  tickets_premium INTEGER DEFAULT 0,
+  last_ticket_reset DATETIME,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME
 );

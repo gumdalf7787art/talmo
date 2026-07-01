@@ -51,6 +51,27 @@ export default function MyPage() {
       }
       setNewNickname(parsed.nickname || "");
       setUser(parsed);
+
+      // Fetch fresh user data including tickets and referral_code
+      fetch(`/api/user/me?userId=${parsed.id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.user) {
+            localStorage.setItem('user', JSON.stringify(data.user));
+            setUser(data.user);
+            setProfile({
+              nickname: data.user.nickname || "닉네임 없음",
+              email: data.user.email || "이메일 없음",
+              gender: data.user.gender || "미설정",
+              birthYear: data.user.birth_year || "미설정",
+              familyHistory: data.user.family_history || "미설정"
+            });
+            if (data.user.profile_image) {
+              setProfileImage(data.user.profile_image);
+            }
+          }
+        })
+        .catch(err => console.error(err));
     }
   }, []);
 
@@ -285,6 +306,49 @@ export default function MyPage() {
             병원 설정
           </Link>
         )}
+      </div>
+
+      {/* Tickets & Referral Section */}
+      <div className="bg-white p-5 border-b border-gray-100 mb-2 flex flex-col gap-4">
+        <div className="flex justify-between items-center p-4 bg-teal-50 rounded-xl border border-teal-100">
+          <div className="flex flex-col">
+            <span className="text-sm font-bold text-teal-800">보유한 AI 분석 티켓</span>
+            <span className="text-xs text-teal-600 mt-1">기본 {user?.tickets_basic || 0}장 + 프리미엄 {user?.tickets_premium || 0}장</span>
+          </div>
+          <div className="text-2xl font-black text-teal-600">
+            {(user?.tickets_basic || 0) + (user?.tickets_premium || 0)}<span className="text-sm font-bold ml-1">장</span>
+          </div>
+        </div>
+
+        <div className="bg-gray-50 rounded-xl p-4 flex flex-col gap-3 border border-gray-100">
+          <div className="flex justify-between items-start">
+            <div className="flex flex-col gap-1">
+              <span className="text-[13px] font-bold text-gray-800">🎁 친구 초대하고 티켓 받기!</span>
+              <span className="text-[11px] text-gray-500">친구 가입 시 4장, 친구는 6장!</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 flex items-center justify-between">
+              <span className="text-[13px] font-mono font-bold text-gray-700">{user?.referral_code || '------'}</span>
+              <span className="text-[10px] text-gray-400">내 코드</span>
+            </div>
+            <button 
+              onClick={() => {
+                const inviteUrl = `${window.location.origin}/signup?ref=${user?.referral_code || ''}`;
+                const text = `탈모톡에 가입하고 AI 분석 티켓 6장을 무료로 받아보세요!\n\n가입 링크: ${inviteUrl}\n추천인 코드: ${user?.referral_code}`;
+                if (navigator.share) {
+                  navigator.share({ title: '탈모톡 초대', text: text });
+                } else {
+                  navigator.clipboard.writeText(text);
+                  alert("초대 링크와 코드가 복사되었습니다!");
+                }
+              }}
+              className="bg-gray-800 text-white text-[12px] font-bold px-4 py-2.5 rounded-lg hover:bg-gray-700 transition-colors whitespace-nowrap"
+            >
+              초대하기
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* AI Health Profile Section */}

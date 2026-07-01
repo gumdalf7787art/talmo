@@ -5,7 +5,7 @@ export async function onRequestPost(context) {
 
   try {
     const body = await request.json();
-    const { email, password, nickname } = body;
+    const { email, password, nickname, referredByCode } = body;
 
     if (!email || !password) {
       return new Response(JSON.stringify({ error: 'Missing required fields' }), { 
@@ -67,12 +67,43 @@ export async function onRequestPost(context) {
     // Generate UUID v4 for id
     const id = crypto.randomUUID();
     const now = new Date().toISOString();
+    
+    // Generate 6-char referral code
+    let referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+    let isCodeUnique = false;
+    let codeAttempts = 0;
+    while (!isCodeUnique && codeAttempts < 5) {
+      const codeCheck = await db.prepare('SELECT id FROM users WHERE referral_code = ?').bind(referralCode).all();
+      if (codeCheck.results && codeCheck.results.length > 0) {
+        referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+        codeAttempts++;
+      } else {
+        isCodeUnique = true;
+      }
+    }
+
+    let ticketsPremium = 4;
+    let referredById = null;
+
+    // Process referral code if provided
+    if (referredByCode) {
+      const upperReferredCode = referredByCode.toUpperCase();
+      const referrerResult = await db.prepare('SELECT id, tickets_premium FROM users WHERE referral_code = ?').bind(upperReferredCode).first();
+      
+      if (referrerResult) {
+        referredById = referrerResult.id;
+        ticketsPremium = 6; // Bonus for joining via referral
+        
+        // Reward referrer (+4 tickets)
+        await db.prepare('UPDATE users SET tickets_premium = tickets_premium + 4 WHERE id = ?').bind(referredById).run();
+      }
+    }
 
     // Insert into DB
     const insertStmt = db.prepare(`
-      INSERT INTO users (id, email, password, nickname, role, created_at, updated_at) 
-      VALUES (?, ?, ?, ?, 'user', ?, ?)
-    `).bind(id, email, hashedPassword, finalNickname, now, now);
+      INSERT INTO users (id, email, password, nickname, role, referral_code, referred_by, tickets_basic, tickets_premium, last_ticket_reset, created_at, updated_at) 
+      VALUES (?, ?, ?, ?, 'user', ?, ?, 2, ?, ?, ?, ?)
+    `).bind(id, email, hashedPassword, finalNickname, referralCode, referredById, ticketsPremium, now, now, now);
 
     await insertStmt.run();
 

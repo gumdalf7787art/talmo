@@ -14,6 +14,13 @@ export default function LayoutShell({ children }) {
       fetch('/api/track', { method: 'POST' }).catch(() => {});
       sessionStorage.setItem('tracked', 'true');
     }
+
+    // Capture referral code from URL and save to cookie (expires in 1 day)
+    const params = new URLSearchParams(window.location.search);
+    const refCode = params.get('ref');
+    if (refCode) {
+      document.cookie = `referral_code=${refCode}; path=/; max-age=86400`;
+    }
   }, []);
 
   if (isPC) {

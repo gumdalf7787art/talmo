@@ -40,6 +40,27 @@ export default function PCMyPage() {
         setProfileImage(parsed.profile_image);
       }
       setUser(parsed);
+
+      // Fetch fresh user data
+      fetch(`/api/user/me?userId=${parsed.id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.user) {
+            localStorage.setItem('user', JSON.stringify(data.user));
+            setUser(data.user);
+            setProfile({
+              nickname: data.user.nickname || "닉네임 없음",
+              email: data.user.email || "이메일 없음",
+              gender: data.user.gender || "미설정",
+              birthYear: data.user.birth_year || "미설정",
+              familyHistory: data.user.family_history || "미설정"
+            });
+            if (data.user.profile_image) {
+              setProfileImage(data.user.profile_image);
+            }
+          }
+        })
+        .catch(err => console.error(err));
     }
   }, []);
 
@@ -264,6 +285,37 @@ export default function PCMyPage() {
               병원 설정
             </Link>
           )}
+
+          {/* Tickets & Referral Mini Card */}
+          <div className="mt-5 p-4 bg-teal-50 rounded-xl border border-teal-100 flex flex-col gap-3">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-bold text-teal-800">AI 분석 티켓</span>
+              <div className="text-xl font-black text-teal-600">
+                {(user?.tickets_basic || 0) + (user?.tickets_premium || 0)}<span className="text-sm font-bold ml-1">장</span>
+              </div>
+            </div>
+            <p className="text-[11px] text-teal-600 -mt-2">기본 {user?.tickets_basic || 0}장 + 프리미엄 {user?.tickets_premium || 0}장</p>
+            
+            <div className="pt-3 border-t border-teal-100 flex flex-col gap-2">
+              <span className="text-[12px] font-bold text-teal-800">🎁 친구 초대하고 티켓 받기!</span>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 bg-white border border-teal-200 rounded-lg px-2 py-1.5 flex items-center justify-between">
+                  <span className="text-[12px] font-mono font-bold text-teal-700">{user?.referral_code || '------'}</span>
+                </div>
+                <button 
+                  onClick={() => {
+                    const inviteUrl = `${window.location.origin}/signup?ref=${user?.referral_code || ''}`;
+                    const text = `탈모톡에 가입하고 AI 분석 티켓 6장을 무료로 받아보세요!\n\n가입 링크: ${inviteUrl}\n추천인 코드: ${user?.referral_code}`;
+                    navigator.clipboard.writeText(text);
+                    alert("초대 링크와 코드가 복사되었습니다!");
+                  }}
+                  className="bg-teal-600 text-white text-[11px] font-bold px-3 py-2 rounded-lg hover:bg-teal-700 transition-colors whitespace-nowrap"
+                >
+                  복사
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* AI Profile */}

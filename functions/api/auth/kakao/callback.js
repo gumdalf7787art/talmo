@@ -72,6 +72,14 @@ export async function onRequestGet(context) {
       return new Response('DB connection missing', { status: 500 });
     }
 
+    // Extract referral code from cookie if present
+    const cookieHeader = request.headers.get('Cookie');
+    let referredByCode = null;
+    if (cookieHeader) {
+      const match = cookieHeader.match(/(?:^|;\s*)referral_code=([^;]*)/);
+      if (match) referredByCode = match[1];
+    }
+
     // 3. Check if user exists by Kakao ID
     const stmt = db.prepare('SELECT * FROM users WHERE provider = ? AND provider_id = ?').bind('kakao', kakaoId);
     let user = await stmt.first();
@@ -100,10 +108,37 @@ export async function onRequestGet(context) {
         const randomPassword = crypto.randomUUID(); // Dummy password
         const hashedPassword = await hashPassword(randomPassword);
 
+        // Generate 6-char referral code
+        let referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+        let isCodeUnique = false;
+        let codeAttempts = 0;
+        while (!isCodeUnique && codeAttempts < 5) {
+          const codeCheck = await db.prepare('SELECT id FROM users WHERE referral_code = ?').bind(referralCode).all();
+          if (codeCheck.results && codeCheck.results.length > 0) {
+            referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+            codeAttempts++;
+          } else {
+            isCodeUnique = true;
+          }
+        }
+
+        let ticketsPremium = 4;
+        let referredById = null;
+
+        if (referredByCode) {
+          const upperReferredCode = referredByCode.toUpperCase();
+          const referrerResult = await db.prepare('SELECT id, tickets_premium FROM users WHERE referral_code = ?').bind(upperReferredCode).first();
+          if (referrerResult) {
+            referredById = referrerResult.id;
+            ticketsPremium = 6;
+            await db.prepare('UPDATE users SET tickets_premium = tickets_premium + 4 WHERE id = ?').bind(referredById).run();
+          }
+        }
+
         const insertStmt = db.prepare(`
-          INSERT INTO users (id, email, password, nickname, profile_image, role, provider, provider_id, created_at, updated_at) 
-          VALUES (?, ?, ?, ?, ?, 'user', 'kakao', ?, ?, ?)
-        `).bind(id, finalEmail, hashedPassword, nickname, profileImage, kakaoId, now, now);
+          INSERT INTO users (id, email, password, nickname, profile_image, role, provider, provider_id, referral_code, referred_by, tickets_basic, tickets_premium, last_ticket_reset, created_at, updated_at) 
+          VALUES (?, ?, ?, ?, ?, 'user', 'kakao', ?, ?, ?, 2, ?, ?, ?, ?)
+        `).bind(id, finalEmail, hashedPassword, nickname, profileImage, kakaoId, referralCode, referredById, ticketsPremium, now, now, now);
 
         await insertStmt.run();
 
@@ -133,11 +168,17 @@ export async function onRequestGet(context) {
       </html>
     `;
 
+    const headers = new Headers({
+      'Content-Type': 'text/html;charset=utf-8',
+    });
+    // Clear the referral_code cookie if it existed
+    if (referredByCode) {
+      headers.set('Set-Cookie', 'referral_code=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT');
+    }
+
     return new Response(htmlResponse, {
       status: 200,
-      headers: {
-        'Content-Type': 'text/html;charset=utf-8',
-      }
+      headers: headers
     });
 
   } catch (error) {

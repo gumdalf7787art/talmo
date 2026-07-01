@@ -200,10 +200,24 @@ function PCDiagnosisContent() {
       if (response.ok) { 
         const data = await response.json(); 
         setResult(data.diagnosis); 
+        
+        // update user's tickets silently
+        if (user) {
+          fetch(`/api/user/me?userId=${user.id}`).then(r => r.json()).then(d => {
+            if (d.success && d.user) {
+              localStorage.setItem('user', JSON.stringify(d.user));
+              setUser(d.user);
+            }
+          }).catch(e => {});
+        }
       } else { 
         const errData = await response.json().catch(() => ({}));
-        alert(`분석 중 오류가 발생했습니다: ${errData.error || response.statusText || '서버 에러'}`); 
-        console.error("API Error Response:", errData);
+        if (response.status === 403 && errData.error) {
+          alert(errData.error);
+        } else {
+          alert(`분석 중 오류가 발생했습니다: ${errData.error || response.statusText || '서버 에러'}`); 
+          console.error("API Error Response:", errData);
+        }
       }
     } catch (error) { 
       alert(`서버와 통신할 수 없습니다: ${error.message}`); 
@@ -473,17 +487,28 @@ function PCDiagnosisContent() {
               </div>
             </div>
 
-            <button 
-              onClick={handleAnalyze} 
-              disabled={!imageFile || isAnalyzing || !isProfileComplete || !consentAll} 
-              className={`w-full py-4 rounded-md font-bold text-white flex items-center justify-center gap-2 text-lg transition-all duration-300 mt-2 
-              ${!imageFile || !isProfileComplete || !consentAll 
-                ? "bg-gray-300 cursor-not-allowed" 
-                : "bg-slate-800 hover:bg-slate-900 hover:-translate-y-1 hover:shadow-lg shadow-md"
-              }`}
-            >
-              {isAnalyzing ? (<><RefreshCcw className="w-5 h-5 animate-spin" /> 임상 리포트 생성 중...</>) : (<><FileText className="w-5 h-5" /> AI 분석 실행</>)}
-            </button>
+            <div className="flex flex-col gap-2 mt-2">
+              <div className="flex justify-between items-center px-1">
+                <span className="text-sm font-bold text-slate-700">남은 분석 티켓</span>
+                <span className="text-lg font-bold text-teal-600">
+                  {user ? (user.tickets_basic || 0) + (user.tickets_premium || 0) : 0}장
+                </span>
+              </div>
+              <button 
+                onClick={handleAnalyze} 
+                disabled={!imageFile || isAnalyzing || !isProfileComplete || !consentAll} 
+                className={`w-full py-4 rounded-md font-bold text-white flex items-center justify-center gap-2 text-lg transition-all duration-300
+                ${!imageFile || !isProfileComplete || !consentAll 
+                  ? "bg-gray-300 cursor-not-allowed" 
+                  : "bg-slate-800 hover:bg-slate-900 hover:-translate-y-1 hover:shadow-lg shadow-md"
+                }`}
+              >
+                {isAnalyzing ? (<><RefreshCcw className="w-5 h-5 animate-spin" /> 임상 리포트 생성 중...</>) : (<><FileText className="w-5 h-5" /> AI 분석 실행 (1장 차감)</>)}
+              </button>
+              {user && (user.tickets_basic || 0) + (user.tickets_premium || 0) === 0 && (
+                <p className="text-center text-sm text-red-500 font-bold mt-1">티켓이 부족합니다. 마이페이지에서 친구를 초대하고 티켓을 받아보세요!</p>
+              )}
+            </div>
           </div>
         </div>
       ) : result ? (

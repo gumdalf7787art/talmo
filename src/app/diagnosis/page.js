@@ -261,8 +261,23 @@ function DiagnosisContent() {
       if (response.ok) {
         const data = await response.json();
         setResult(data.diagnosis);
+        
+        // update user's tickets in local storage silently by fetching me again
+        if (user) {
+          fetch(`/api/user/me?userId=${user.id}`).then(r => r.json()).then(d => {
+            if (d.success && d.user) {
+              localStorage.setItem('user', JSON.stringify(d.user));
+              setUser(d.user);
+            }
+          }).catch(e => {});
+        }
       } else {
-        alert("분석 중 오류가 발생했습니다.");
+        const errorData = await response.json().catch(() => null);
+        if (response.status === 403 && errorData?.error) {
+          alert(errorData.error);
+        } else {
+          alert("분석 중 오류가 발생했습니다.");
+        }
       }
     } catch (error) {
       console.error(error);
@@ -534,6 +549,12 @@ function DiagnosisContent() {
 
           {/* 분석 버튼 */}
           <div className="flex flex-col gap-2">
+            <div className="flex justify-between items-center px-1 mb-1">
+              <span className="text-xs font-bold text-gray-700">남은 분석 티켓</span>
+              <span className="text-sm font-bold text-teal-600">
+                {user ? (user.tickets_basic || 0) + (user.tickets_premium || 0) : 0}장
+              </span>
+            </div>
             <button
               onClick={handleAnalyze}
               disabled={!imageFile || isAnalyzing || !isProfileComplete || !consentAll}
@@ -551,10 +572,13 @@ function DiagnosisContent() {
               ) : (
                 <>
                   <Upload className="w-5 h-5" />
-                  AI 분석 실행
+                  AI 분석 실행 (1장 차감)
                 </>
               )}
             </button>
+            {user && (user.tickets_basic || 0) + (user.tickets_premium || 0) === 0 && (
+              <p className="text-center text-xs text-red-500 font-bold mt-1">티켓이 부족합니다. 마이페이지에서 친구를 초대하고 티켓을 받아보세요!</p>
+            )}
           </div>
         </div>
       )}

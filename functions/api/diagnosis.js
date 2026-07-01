@@ -58,6 +58,25 @@ export async function onRequestPost(context) {
     const currentYear = new Date().getFullYear();
     const age = birthYear !== '정보없음' ? currentYear - parseInt(birthYear, 10) : '정보없음';
 
+    const db = env.DB;
+    if (userId && db) {
+      const userResult = await db.prepare('SELECT tickets_basic, tickets_premium FROM users WHERE id = ?').bind(userId).first();
+      if (!userResult) {
+        return new Response(JSON.stringify({ error: '사용자를 찾을 수 없습니다.' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
+      }
+      
+      let tickets_basic = userResult.tickets_basic !== null ? userResult.tickets_basic : 0;
+      let tickets_premium = userResult.tickets_premium !== null ? userResult.tickets_premium : 0;
+      
+      if (tickets_basic > 0) {
+        await db.prepare('UPDATE users SET tickets_basic = tickets_basic - 1 WHERE id = ?').bind(userId).run();
+      } else if (tickets_premium > 0) {
+        await db.prepare('UPDATE users SET tickets_premium = tickets_premium - 1 WHERE id = ?').bind(userId).run();
+      } else {
+        return new Response(JSON.stringify({ error: '보유한 분석 티켓이 부족합니다. 친구를 초대하여 티켓을 충전해 보세요!' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+      }
+    }
+
     // 2. 환경 변수에서 Gemini API Key 가져오기
     const apiKey = env.GEMINI_API_KEY || "YOUR_DUMMY_API_KEY_HERE";
 
@@ -229,7 +248,6 @@ export async function onRequestPost(context) {
     aiDiagnosisResult.diagnosis.breakdown = finalBreakdown;
 
     // 5. 결과 DB 저장
-    const db = env.DB;
     if (db && userId) {
       const id = crypto.randomUUID();
       const now = new Date().toISOString();

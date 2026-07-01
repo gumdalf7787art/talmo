@@ -14,6 +14,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [nickname, setNickname] = useState("");
+  const [referredByCode, setReferredByCode] = useState("");
   const [agreeAll, setAgreeAll] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [agreePrivacy, setAgreePrivacy] = useState(false);
@@ -130,7 +131,7 @@ export default function SignupPage() {
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, nickname })
+        body: JSON.stringify({ email, password, nickname, referredByCode })
       });
       if (res.ok) {
         alert("회원가입이 완료되었습니다.");
@@ -204,6 +205,16 @@ export default function SignupPage() {
           >
             구글로 시작하기
           </button>
+          
+          <div className="mt-1 text-center bg-teal-50 p-3 rounded-lg border border-teal-100">
+            <p className="text-[13px] text-teal-800 font-medium">
+              🎁 친구 추천으로 가입하시나요?
+            </p>
+            <p className="text-[12px] text-teal-700 mt-0.5">
+              SNS 가입 시: <span className="font-bold">초대 링크를 통해서만 자동 적용</span>됩니다.<br/>
+              이메일 가입 시: 아래 가입 폼에 <span className="font-bold">추천인 코드</span>를 수동으로 입력해주세요.
+            </p>
+          </div>
         </div>
 
         <div className="flex items-center w-full gap-4 mb-8">
@@ -327,6 +338,24 @@ export default function SignupPage() {
                 </span>
               )}
             </div>
+          </div>
+
+          {/* Referral Code */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-semibold text-gray-800 ml-1">추천인 코드 <span className="text-gray-400 font-normal">(선택)</span></label>
+            <div className="relative">
+              <input
+                type="text"
+                value={referredByCode}
+                onChange={(e) => setReferredByCode(e.target.value.toUpperCase())}
+                placeholder="추천인 코드 6자리 입력"
+                maxLength={6}
+                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all uppercase"
+              />
+            </div>
+            {referredByCode.length > 0 && referredByCode.length < 6 && (
+              <span className="text-xs text-gray-500 ml-1 mt-1">코드는 6자리 영문/숫자입니다.</span>
+            )}
           </div>
 
           <hr className="border-gray-100 my-2" />
