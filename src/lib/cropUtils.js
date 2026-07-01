@@ -3,7 +3,10 @@ export const createImage = (url) =>
     const image = new Image()
     image.addEventListener('load', () => resolve(image))
     image.addEventListener('error', (error) => reject(error))
-    image.setAttribute('crossOrigin', 'anonymous')
+    // Only set crossOrigin for HTTP URLs; data: and blob: URLs cause CORS errors on mobile WebView
+    if (url && url.startsWith('http')) {
+      image.setAttribute('crossOrigin', 'anonymous')
+    }
     image.src = url
   })
 
