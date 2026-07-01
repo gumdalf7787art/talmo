@@ -183,6 +183,6 @@ export async function onRequestGet(context) {
 
   } catch (error) {
     console.error('Kakao login error:', error);
-    return new Response('Internal Server Error', { status: 500 });
+    return new Response(`Error: ${error?.message || String(error)}`, { status: 500 });
   }
 }
