@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, Suspense, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, ChevronRight, ChevronLeft, CheckSquare, Square, X, Scissors, Pill, Home, Heart, Download, Activity } from "lucide-react";
+import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, ChevronRight, ChevronLeft, CheckSquare, Square, X, Scissors, Pill, Home, Heart, Download, Activity, Calendar, User, FileText } from "lucide-react";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import PCDiagnosis from "@/components/pc/PCDiagnosis";
 import RadarChart from "@/components/RadarChart";
@@ -100,14 +100,14 @@ function DiagnosisContent() {
   }, [searchParams, isHistory]);
 
   const handleDownloadPDF = async () => {
-    const element = document.getElementById("pdf-report-area");
+    const element = document.getElementById("pdf-report-pc-area");
     if (!element) return;
     
     try {
       // Use toJpeg instead of toPng and lower pixel ratio to prevent Mobile OOM crashes
       const imgData = await toJpeg(element, { 
-        quality: 0.8, 
-        pixelRatio: 1.5, 
+        quality: 0.9, 
+        pixelRatio: 2, 
         backgroundColor: "#ffffff"
       });
       const img = new Image();
@@ -271,6 +271,8 @@ function DiagnosisContent() {
       setIsAnalyzing(false);
     }
   };
+
+  const report = result || {};
 
   return (
     <div className={`flex flex-col relative ${isHistory ? 'gap-4 p-0' : 'gap-6 p-4'}`}>
@@ -708,61 +710,182 @@ function DiagnosisContent() {
             </div>
 
             {/* Legal Disclaimer */}
-            <div className="bg-gray-100/50 p-3.5 rounded-xl border border-gray-200 mt-2">
-              <h5 className="text-[11px] font-bold text-gray-500 mb-1.5">※ 면책 조항 및 주의사항</h5>
-              <p className="text-[11px] text-gray-400 leading-relaxed break-keep">
-                본 AI 리포트는 통계적 분석 결과로, 의학적 진단을 대체하는 진단서가 아닙니다. 정확한 진단 및 치료 계획은 반드시 병원을 방문하여 전문의의 상담을 받으시기 바랍니다. 탈모톡은 본 리포트에 따른 결과에 대해 법적 책임을 지지 않습니다.
-              </p>
+            <div className="text-[11px] text-slate-400 text-center mt-2 pb-4">
+              * 본 AI 리포트는 통계적 데이터 분석 결과이며, 의학적 진단을 대체하는 진단서가 아닙니다.
             </div>
           </div>
 
-          {/* Recommended Clinics */}
-          <div className="mt-1 mb-4">
-            <div className="flex justify-between items-end mb-3 px-1">
-              <div className="flex flex-col gap-0.5">
-                <span className="text-[12px] text-teal-600 font-bold">분석 결과 기반</span>
-                <h4 className="font-bold text-[16px] text-gray-900">상담 가능한 병원</h4>
+          {/* PC Version Hidden Report for PDF Capture */}
+          <div className="absolute top-0 left-[-9999px] z-[-1]">
+            <div id="pdf-report-pc-area" className="w-[1000px] bg-white border border-gray-300 shadow-lg rounded-sm overflow-hidden text-slate-800">
+              {/* 리포트 헤더 */}
+              <div className="border-b-[3px] border-slate-800 p-8 flex justify-between items-end bg-slate-50">
+                <div>
+                  <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">탈모톡 AI 리포트</h1>
+                  <p className="text-sm font-medium text-slate-500">TalmoTalk Precision AI Assessment Report</p>
+                </div>
+                <div className="text-right text-[13px] text-slate-600 space-y-1">
+                  <p className="flex items-center justify-end gap-2"><Calendar className="w-4 h-4" /> 발급일: {new Date().toLocaleDateString()}</p>
+                  <p className="flex items-center justify-end gap-2"><User className="w-4 h-4" /> 환자 정보: {report?.patientInfo?.age}세 / {report?.patientInfo?.gender} / 가족력 {report?.patientInfo?.familyHistory}</p>
+                </div>
               </div>
-              <Link href="/consult" className="text-[12px] text-gray-500 hover:text-teal-600 font-medium flex items-center pb-0.5">
-                더보기 <ChevronRight className="w-3 h-3 ml-0.5" />
-              </Link>
-            </div>
-            
-            <div className="flex flex-col gap-3">
-              {recommendedClinics.map(clinic => (
-                <Link key={clinic.id} href={`/consult/detail?id=${clinic.id}`} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 block transition-transform active:scale-[0.98]">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex flex-col">
-                      <div className="flex items-center gap-1.5 mb-1">
-                        {clinic.isPremium && <span className="px-1.5 py-0.5 bg-yellow-100 text-yellow-700 text-[10px] font-bold rounded">추천</span>}
-                        <h3 className="font-bold text-gray-900 text-[16px]">{clinic.name}</h3>
-                      </div>
-                      <div className="flex items-center gap-1 text-[12px] text-gray-500">
-                        <MapPin className="w-3.5 h-3.5" />
-                        <span>{clinic.location}</span>
-                        <span className="mx-1 text-gray-300">|</span>
-                        <span className="text-teal-600 font-medium">{clinic.category}</span>
-                      </div>
-                    </div>
-                    <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center shrink-0 border border-gray-100">
-                      <img src="/logo.jpg" alt="logo" className="w-6 h-6 opacity-40 grayscale" />
+
+              <div className="p-8">
+                {/* 핵심 요약 대시보드 */}
+                <div className="grid grid-cols-3 gap-4 mb-10">
+                  <div className="bg-slate-50 border border-slate-200 p-5 rounded-lg flex flex-col justify-center items-center text-center">
+                    <span className="text-[13px] font-bold text-slate-500 mb-1">두피 종합 점수</span>
+                    <div className="text-4xl font-black text-slate-900">{report?.summary?.score}<span className="text-lg text-slate-400 font-medium">/100</span></div>
+                  </div>
+                  <div className="bg-slate-50 border border-slate-200 p-5 rounded-lg flex flex-col justify-center items-center text-center">
+                    <span className="text-[13px] font-bold text-slate-500 mb-1">추정 두피 나이</span>
+                    <div className="text-4xl font-black text-teal-600">{report?.summary?.scalpAge}<span className="text-lg text-teal-600/60 font-medium">세</span></div>
+                  </div>
+                  <div className="bg-slate-50 border border-slate-200 p-5 rounded-lg flex flex-col justify-center items-center text-center">
+                    <span className="text-[13px] font-bold text-slate-500 mb-1">진행 단계 (Norwood/Ludwig)</span>
+                    <div className="text-2xl font-black text-red-600 mt-1">{report?.summary?.norwoodStage}</div>
+                    
+                    {/* 진행 심각도 시각화 스텝퍼 */}
+                    <div className="flex items-center gap-1 mt-3 w-full max-w-[200px]">
+                      {['양호', '진행: 초기', '진행: 중기', '진행: 심각'].map((stage, idx) => {
+                        const isActive = report?.summary?.severity === stage;
+                        return (
+                          <div key={idx} className="flex-1 flex flex-col items-center gap-1">
+                            <div className={`h-1.5 w-full rounded-full ${isActive ? 'bg-red-500' : 'bg-slate-200'}`} />
+                            <span className={`text-[10px] whitespace-nowrap ${isActive ? 'font-bold text-red-600' : 'text-slate-400 font-medium'}`}>
+                              {stage.replace('진행: ', '')}
+                            </span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
-                  <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
-                      <div className="flex items-center gap-1">
-                        <span className="text-[12px] text-gray-500">누적 상담</span>
-                        <span className="text-[12px] font-bold text-teal-600">{clinic.consults.toLocaleString()}건</span>
+                </div>
+
+                <div className="grid grid-cols-12 gap-8">
+                  {/* 좌측: 임상 지표 및 레이더 차트 */}
+                  <div className="col-span-5 flex flex-col gap-6">
+                    <div className="border border-slate-200 rounded-lg p-5">
+                      <h3 className="text-[15px] font-bold text-slate-900 mb-4 flex items-center gap-2 border-b border-slate-100 pb-3"><Activity className="w-5 h-5 text-slate-600" /> 임상 지표 분석 (Clinical Metrics)</h3>
+                      <div className="flex justify-center mb-4">
+                        {report?.breakdown && <RadarChart breakdown={report.breakdown} />}
                       </div>
-                      <div className="flex items-center gap-1.5 bg-teal-600 text-white px-3.5 py-1.5 rounded-lg transition-colors shadow-sm">
-                        <MessageCircle className="w-4 h-4" />
-                        <span className="text-[13px] font-bold">상담하기</span>
+                      <div className="space-y-4">
+                        {report?.breakdown?.map((m) => (
+                          <div key={m.label} className="bg-slate-50 rounded p-3 text-[13px]">
+                            <div className="flex justify-between font-bold mb-1">
+                              <span className="text-slate-800">{m.label}</span>
+                              <span className={`text-${m.color || 'slate'}-600`}>{m.score}점</span>
+                            </div>
+                            {m.clinicalNote && <p className="text-slate-500 leading-snug" dangerouslySetInnerHTML={{ __html: m.clinicalNote }} />}
+                          </div>
+                        ))}
                       </div>
+                    </div>
+                    
+                    <div className="relative w-full aspect-[4/3] bg-slate-100 rounded-lg overflow-hidden border border-slate-200">
+                      <img 
+                        src={imagePreview} 
+                        alt="Analyzed" 
+                        crossOrigin={imagePreview && imagePreview.startsWith('http') ? "anonymous" : undefined}
+                        className="w-full h-full object-cover opacity-80 mix-blend-multiply" 
+                      />
+                      <div className="absolute top-2 left-2 bg-black/60 text-white text-[11px] px-2 py-1 rounded font-medium">스캔 원본 이미지</div>
+                    </div>
                   </div>
-                </Link>
-              ))}
+
+                  {/* 우측: 전문의 소견 및 처방 가이드라인 */}
+                  <div className="col-span-7 flex flex-col gap-6">
+                    {/* 탈모톡 소견 */}
+                    <div className="border border-slate-200 rounded-lg overflow-hidden">
+                      <div className="bg-slate-100 p-3 border-b border-slate-200">
+                        <h3 className="text-[15px] font-bold text-slate-900 flex items-center gap-2"><FileText className="w-4 h-4 text-slate-600" /> 탈모톡 소견</h3>
+                      </div>
+                      <div className="p-5 text-[14px] text-slate-700 leading-relaxed space-y-4">
+                        {report?.medicalAnalysis?.finding && (
+                          <div>
+                            <strong className="text-slate-900 block mb-1">특징 분석:</strong>
+                            <p dangerouslySetInnerHTML={{ __html: report.medicalAnalysis.finding }} />
+                          </div>
+                        )}
+                        {report?.medicalAnalysis?.cause && (
+                          <div>
+                            <strong className="text-slate-900 block mb-1">추정 요인:</strong>
+                            <p dangerouslySetInnerHTML={{ __html: report.medicalAnalysis.cause }} />
+                          </div>
+                        )}
+                        
+                        {/* Fallback for old history format */}
+                        {(!report?.medicalAnalysis && report?.analysis) && (
+                          <div>
+                            <strong className="text-slate-900 block mb-1">종합 분석:</strong>
+                            <ul className="list-disc pl-4 space-y-1">
+                              {report.analysis.map((text, idx) => (
+                                <li key={idx} dangerouslySetInnerHTML={{ __html: text }} />
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* 맞춤 솔루션 (가이드라인) */}
+                    <div className="border border-slate-200 rounded-lg overflow-hidden">
+                      <div className="bg-slate-800 p-3 border-b border-slate-900">
+                        <h3 className="text-[15px] font-bold text-white flex items-center gap-2"><AlertCircle className="w-4 h-4 text-slate-300" /> 맞춤 관리 가이드 (Management Plan)</h3>
+                      </div>
+                      <div className="p-5 space-y-5">
+                        
+                        {report?.treatmentPlan?.medical?.length > 0 && (
+                          <div>
+                            <h4 className="flex items-center gap-1.5 text-[14px] font-bold text-teal-700 mb-2"><Pill className="w-4 h-4" /> 권고사항</h4>
+                            <ul className="list-disc pl-5 text-[13.5px] text-slate-700 space-y-1 marker:text-teal-500">
+                              {report.treatmentPlan.medical.map((text, i) => <li key={i} dangerouslySetInnerHTML={{ __html: text }} />)}
+                            </ul>
+                          </div>
+                        )}
+
+                        {report?.treatmentPlan?.homeCare?.length > 0 && (
+                          <div>
+                            <h4 className="flex items-center gap-1.5 text-[14px] font-bold text-blue-700 mb-2"><Home className="w-4 h-4" /> 자가 관리 (Home Care)</h4>
+                            <ul className="list-disc pl-5 text-[13.5px] text-slate-700 space-y-1 marker:text-blue-500">
+                              {report.treatmentPlan.homeCare.map((text, i) => <li key={i} dangerouslySetInnerHTML={{ __html: text }} />)}
+                            </ul>
+                          </div>
+                        )}
+
+                        {report?.treatmentPlan?.lifestyle?.length > 0 && (
+                          <div>
+                            <h4 className="flex items-center gap-1.5 text-[14px] font-bold text-orange-600 mb-2"><Heart className="w-4 h-4" /> 생활 습관 (Lifestyle)</h4>
+                            <ul className="list-disc pl-5 text-[13.5px] text-slate-700 space-y-1 marker:text-orange-400">
+                              {report.treatmentPlan.lifestyle.map((text, i) => <li key={i} dangerouslySetInnerHTML={{ __html: text }} />)}
+                            </ul>
+                          </div>
+                        )}
+                        
+                        {/* Fallback for old history format */}
+                        {(!report?.treatmentPlan && report?.recommendations) && (
+                          <div>
+                            <h4 className="flex items-center gap-1.5 text-[14px] font-bold text-teal-700 mb-2"><Pill className="w-4 h-4" /> 맞춤 솔루션</h4>
+                            <ul className="list-disc pl-5 text-[13.5px] text-slate-700 space-y-1 marker:text-teal-500">
+                              {report.recommendations.map((text, idx) => (
+                                <li key={idx} dangerouslySetInnerHTML={{ __html: text }} />
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="text-[11px] text-slate-400 text-center mt-2">
+                      * 본 AI 리포트는 통계적 데이터 분석 결과이며, 의학적 진단을 대체하는 진단서가 아닙니다.
+                    </div>
+
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-
 
         </div>
       )}
