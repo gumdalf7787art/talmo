@@ -24,7 +24,7 @@ export const metadata = {
     siteName: "탈모톡",
     images: [
       {
-        url: "/og_thumbnail.png?v=1",
+        url: "/og_thumbnail.jpg?v=2",
         width: 1200,
         height: 630,
         alt: "탈모톡 썸네일",
@@ -36,7 +36,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "탈모톡",
     description: "대한민국 리얼 탈모 커뮤니티",
-    images: ["/og_thumbnail.png?v=1"],
+    images: ["/og_thumbnail.jpg?v=2"],
   }
 };
 
