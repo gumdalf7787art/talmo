@@ -186,19 +186,28 @@ export default function PCDiagnosisHistory({ historyList }) {
                   };
 
                   const { status, level } = parseSeverity(item.severity);
-                  const displaySeverity = item.severity ? `상황: ${status} / 상태: ${level}` : "분석 내용이 없습니다.";
-                  const summaryText = details?.analysis?.[0] || displaySeverity;
                   
-                  // Color for severity
+                  // Color styling for status and level
+                  let statusColor = "bg-gray-100 text-gray-700 border border-gray-200";
+                  if (status === "진행중") statusColor = "bg-red-50 text-red-600 border border-red-200";
+                  if (status === "정상") statusColor = "bg-green-50 text-green-600 border border-green-200";
+
+                  let levelColor = "bg-gray-100 text-gray-700 border border-gray-200";
+                  if (level.includes("양호")) levelColor = "bg-green-50 text-green-600 border border-green-200";
+                  if (level.includes("초기")) levelColor = "bg-yellow-50 text-yellow-600 border border-yellow-200";
+                  if (level.includes("중기")) levelColor = "bg-orange-50 text-orange-600 border border-orange-200";
+                  if (level.includes("심각") || level.includes("위험")) levelColor = "bg-red-100 text-red-700 border border-red-300 shadow-sm";
+
+                  // Color for severity (not directly used but kept if needed)
                   let severityColor = "bg-gray-100 text-gray-800";
                   if (item.severity?.includes("양호") || item.severity?.includes("초기")) severityColor = "bg-green-100 text-green-800";
                   if (item.severity?.includes("중기")) severityColor = "bg-yellow-100 text-yellow-800";
                   if (item.severity?.includes("심각") || item.severity?.includes("위험")) severityColor = "bg-red-100 text-red-800";
                   
                   return (
-                    <Link href={`/diagnosis?history=true&id=${item.id}`} key={item.id} className="group border border-gray-200 rounded-xl p-4 hover:border-teal-500 hover:shadow-md transition-all bg-white relative flex gap-4 items-center">
+                    <Link href={`/diagnosis?history=true&id=${item.id}`} key={item.id} className="group border border-gray-200 rounded-xl p-5 hover:border-teal-500 hover:shadow-md transition-all bg-white relative flex gap-4 items-center">
                       {/* Thumbnail */}
-                      <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-gray-100 border border-gray-200">
+                      <div className="w-24 h-24 rounded-lg overflow-hidden shrink-0 bg-gray-100 border border-gray-200">
                         <img src={item.image_url && item.image_url !== 'placeholder_url' ? item.image_url : "https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?w=100&h=100&fit=crop"} alt="분석 사진" className="w-full h-full object-cover" />
                       </div>
                       
@@ -209,20 +218,24 @@ export default function PCDiagnosisHistory({ historyList }) {
                             <span className="text-[12px] font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded">{details?.scanType || '전체/알 수 없음'}</span>
                             <span className="text-[12px] text-gray-500 font-medium flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5"/> {new Date(item.created_at).toLocaleDateString()}</span>
                           </div>
-                          <span className={`px-2.5 py-1 text-[11px] font-bold rounded-md ${severityColor}`}>
-                            상황: {status} | 상태: {level}
-                          </span>
                         </div>
                         
-                        <div className="flex justify-between items-end mt-1">
-                          <div className="flex flex-col">
-                            <p className="text-[14px] font-bold text-gray-900 line-clamp-1 mb-1 pr-4">
-                              {summaryText}
-                            </p>
+                        <div className="flex justify-between items-end mt-2">
+                          <div className="flex flex-col gap-2">
+                            <div className="flex flex-col gap-1">
+                              <div className="flex items-center gap-1.5 text-[13px]">
+                                <span className="text-gray-400 font-bold text-[12px] min-w-[32px]">상황</span>
+                                <span className={`px-2 py-0.5 rounded font-black text-[11px] ${statusColor}`}>{status}</span>
+                              </div>
+                              <div className="flex items-center gap-1.5 text-[13px]">
+                                <span className="text-gray-400 font-bold text-[12px] min-w-[32px]">상태</span>
+                                <span className={`px-2 py-0.5 rounded font-black text-[11px] ${levelColor}`}>{level}</span>
+                              </div>
+                            </div>
                             <span className="text-[12px] text-teal-600 font-bold group-hover:underline">상세 리포트 보기 &rarr;</span>
                           </div>
                           <div className="text-right shrink-0">
-                            <span className="text-2xl font-black text-teal-600">{item.score}<span className="text-sm font-medium text-gray-400">점</span></span>
+                            <span className="text-4xl font-black text-teal-600 tracking-tighter">{item.score}<span className="text-base font-bold text-gray-400 ml-0.5">점</span></span>
                           </div>
                         </div>
                       </div>
