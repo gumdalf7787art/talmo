@@ -28,7 +28,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-100 flex flex-col shadow-sm">
       <div className="flex items-center justify-between px-4 h-14 max-w-md mx-auto w-full">
         <Link href="/" className="flex items-center shrink-0">
-          <img src="/logo-mobile.png" alt="탈모톡 로고" className="h-10 w-auto object-contain" />
+          <img src="/logo-mobile.png?v=2" alt="탈모톡 로고" className="h-9 w-auto object-contain" />
         </Link>
         <div className="flex items-center gap-4">
           {mounted && isLoggedIn ? (

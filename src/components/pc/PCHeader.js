@@ -52,7 +52,7 @@ function PCHeaderContent() {
         {/* Left Side: Logo & Search */}
         <div className="flex items-center gap-8 flex-1">
           <Link href="/" className="flex items-center shrink-0">
-            <img src="/logo-pc.png" alt="탈모톡 로고" className="h-14 w-auto object-contain" />
+            <img src="/logo-pc.png?v=2" alt="탈모톡 로고" className="h-14 w-auto object-contain" />
           </Link>
 
           <Link
