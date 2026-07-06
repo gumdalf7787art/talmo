@@ -72,7 +72,9 @@ export default function LoginPage() {
             onClick={() => {
               const clientId = '43a474ecd76c1a1b758dcdf415c1565a';
               const redirectUri = `${window.location.origin}/api/auth/kakao/callback`;
-              window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
+              const refCode = document.cookie.match(/(?:^|;\s*)referral_code=([^;]*)/)?.[1] || "";
+              const stateParam = refCode ? `&state=${refCode}` : "";
+              window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code${stateParam}`;
             }}
             className="flex items-center justify-center w-full py-3.5 rounded-lg bg-[#FEE500] text-black font-semibold text-[15px] transition-opacity active:opacity-80"
           >

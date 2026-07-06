@@ -19,7 +19,7 @@ export default function LayoutShell({ children }) {
     const params = new URLSearchParams(window.location.search);
     const refCode = params.get('ref');
     if (refCode) {
-      document.cookie = `referral_code=${refCode}; path=/; max-age=86400`;
+      document.cookie = `referral_code=${refCode}; path=/; max-age=86400; SameSite=Lax`;
     }
   }, []);
 

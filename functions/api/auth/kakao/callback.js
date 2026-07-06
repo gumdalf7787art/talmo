@@ -4,6 +4,7 @@ export async function onRequestGet(context) {
   const { request, env } = context;
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
+  const state = url.searchParams.get('state');
 
   if (!code) {
     return new Response('No code provided', { status: 400 });
@@ -72,10 +73,10 @@ export async function onRequestGet(context) {
       return new Response('DB connection missing', { status: 500 });
     }
 
-    // Extract referral code from cookie if present
+    // Extract referral code from state or cookie if present
+    let referredByCode = state || null;
     const cookieHeader = request.headers.get('Cookie');
-    let referredByCode = null;
-    if (cookieHeader) {
+    if (!referredByCode && cookieHeader) {
       const match = cookieHeader.match(/(?:^|;\s*)referral_code=([^;]*)/);
       if (match) referredByCode = match[1];
     }

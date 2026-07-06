@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Mail, Lock, User, CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -12,6 +12,21 @@ export default function PCSignup() {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [nickname, setNickname] = useState("");
   const [referredByCode, setReferredByCode] = useState("");
+  
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const refFromUrl = params.get("ref");
+    if (refFromUrl) {
+      setReferredByCode(refFromUrl.toUpperCase());
+      return;
+    }
+
+    const match = document.cookie.match(/(?:^|;\s*)referral_code=([^;]*)/);
+    if (match && match[1]) {
+      setReferredByCode(match[1].toUpperCase());
+    }
+  }, []);
+
   const [agreeAll, setAgreeAll] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [agreePrivacy, setAgreePrivacy] = useState(false);
@@ -142,7 +157,9 @@ export default function PCSignup() {
             onClick={() => {
               const clientId = '43a474ecd76c1a1b758dcdf415c1565a';
               const redirectUri = `${window.location.origin}/api/auth/kakao/callback`;
-              window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
+              const refCode = referredByCode || (document.cookie.match(/(?:^|;\s*)referral_code=([^;]*)/)?.[1] || "");
+              const stateParam = refCode ? `&state=${refCode}` : "";
+              window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code${stateParam}`;
             }}
             className="flex items-center justify-center w-full py-3.5 rounded-lg bg-[#FEE500] text-black font-semibold text-[15px] hover:opacity-90 transition-opacity"
           >
