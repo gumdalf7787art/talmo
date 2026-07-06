@@ -377,15 +377,15 @@ function PCDiagnosisContent() {
               <div>
                 <h4 className="font-bold text-slate-900 text-sm mb-2 flex items-center gap-1.5"><Camera className="w-4 h-4 text-teal-600"/> 정확도를 높이는 촬영 팁</h4>
                 <div className="grid grid-cols-2 gap-2 mt-2">
-                  <div className="bg-white border border-slate-200 rounded-lg p-3 flex flex-col items-center text-center gap-1.5">
-                    <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center overflow-hidden border border-slate-100">
+                  <div className="bg-white border border-slate-200 rounded-lg p-3 flex flex-col items-center text-center gap-2">
+                    <div className="w-full aspect-[4/3] max-h-[100px] bg-slate-50 rounded-lg flex items-center justify-center overflow-hidden border border-slate-100">
                       <img src="/tip_m_hairline.jpg" alt="M자 헤어라인 가이드" className="w-full h-full object-cover" />
                     </div>
                     <span className="text-[12px] font-bold text-slate-800">M자 / 헤어라인</span>
                     <span className="text-[11px] text-slate-500 leading-tight">정면에서<br/>라인이 잘 보이도록</span>
                   </div>
-                  <div className="bg-white border border-slate-200 rounded-lg p-3 flex flex-col items-center text-center gap-1.5">
-                    <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center overflow-hidden border border-slate-100">
+                  <div className="bg-white border border-slate-200 rounded-lg p-3 flex flex-col items-center text-center gap-2">
+                    <div className="w-full aspect-[4/3] max-h-[100px] bg-slate-50 rounded-lg flex items-center justify-center overflow-hidden border border-slate-100">
                       <img src="/tip_crown_part.jpg" alt="정수리 가이드" className="w-full h-full object-cover" />
                     </div>
                     <span className="text-[12px] font-bold text-slate-800">정수리 / 가르마</span>
