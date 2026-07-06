@@ -4,11 +4,10 @@ import { useState, useEffect, useRef } from "react";
 import { Users, LayoutDashboard, Image as ImageIcon, Check, Edit2, Shield, UploadCloud } from "lucide-react";
 import { compressImage } from "@/lib/imageUtils";
 
-function BannerSlotForm({ slot, initialData, onSave, user }) {
+function BannerSlotForm({ slot, initialData, onSave, onDelete, user }) {
   const [title, setTitle] = useState(initialData?.title || "");
   const [linkUrl, setLinkUrl] = useState(initialData?.link_url || "");
   const [imageUrl, setImageUrl] = useState(initialData?.image_url || "");
-  const [isActive, setIsActive] = useState(initialData?.is_active ?? 1);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -16,7 +15,6 @@ function BannerSlotForm({ slot, initialData, onSave, user }) {
     setTitle(initialData?.title || "");
     setLinkUrl(initialData?.link_url || "");
     setImageUrl(initialData?.image_url || "");
-    setIsActive(initialData?.is_active ?? 1);
   }, [initialData]);
 
   const handleFileChange = async (e) => {
@@ -67,22 +65,24 @@ function BannerSlotForm({ slot, initialData, onSave, user }) {
       alert("이미지를 첨부해주세요.");
       return;
     }
-    onSave({ title, link_url: linkUrl, image_url: imageUrl, is_active: isActive });
+    onSave({ title, link_url: linkUrl, image_url: imageUrl });
   };
 
   return (
-    <div className={`border rounded-lg p-5 flex flex-col gap-4 bg-white shadow-sm transition-colors ${isActive ? 'border-gray-200' : 'border-gray-200 opacity-60 grayscale'}`}>
+    <div className="border border-gray-200 rounded-lg p-5 flex flex-col gap-4 bg-white shadow-sm transition-colors">
       <div className="flex items-center justify-between border-b pb-3">
         <div>
           <h4 className="font-bold text-gray-900">{slot.name}</h4>
           <p className="text-xs text-teal-600 font-medium mt-1">권장 사이즈: {slot.size}</p>
         </div>
-        <button 
-          onClick={() => setIsActive(isActive ? 0 : 1)}
-          className={`text-[11px] px-2 py-1 rounded border font-bold ${isActive ? 'text-red-600 border-red-200 bg-red-50 hover:bg-red-100' : 'text-teal-600 border-teal-200 bg-teal-50 hover:bg-teal-100'}`}
-        >
-          {isActive ? '비활성화 하기' : '활성화 하기'}
-        </button>
+        {initialData && (
+          <button 
+            onClick={onDelete}
+            className="text-[11px] px-2 py-1 rounded border font-bold text-red-600 border-red-200 bg-red-50 hover:bg-red-100"
+          >
+            삭제하기
+          </button>
+        )}
       </div>
 
       <div className="flex flex-col gap-3">
@@ -356,6 +356,21 @@ export default function PCAdminDashboard({ user }) {
                         alert("저장에 실패했습니다.");
                       }
                     }} 
+                    onDelete={async () => {
+                      if (!confirm("정말 이 배너 슬롯을 삭제하시겠습니까?")) return;
+                      const res = await fetch(`/api/admin/banners?id=${slot.id}&userId=${user?.id || ""}`, {
+                        method: "DELETE"
+                      });
+                      if (res.ok) {
+                        alert("삭제되었습니다.");
+                        // refresh banners
+                        fetch("/api/admin/banners").then(r => r.json()).then(data => {
+                          if (data.success) setBanners(data.banners);
+                        });
+                      } else {
+                        alert("삭제에 실패했습니다.");
+                      }
+                    }}
                   />
                 );
               })}
