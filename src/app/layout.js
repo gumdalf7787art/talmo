@@ -15,13 +15,13 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   metadataBase: new URL('https://talmotalk.com'),
-  title: "탈모톡",
+  title: "탈모톡 - 무료 실시간 AI 탈모 분석",
   description: "대한민국 리얼 탈모 커뮤니티",
   openGraph: {
-    title: "탈모톡",
+    title: "탈모톡 - 무료 실시간 AI 탈모 분석",
     description: "대한민국 리얼 탈모 커뮤니티",
     url: "https://talmotalk.com",
-    siteName: "탈모톡",
+    siteName: "탈모톡 - 무료 실시간 AI 탈모 분석",
     images: [
       {
         url: "/og_thumbnail.jpg?v=2",
@@ -34,7 +34,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "탈모톡",
+    title: "탈모톡 - 무료 실시간 AI 탈모 분석",
     description: "대한민국 리얼 탈모 커뮤니티",
     images: ["/og_thumbnail.jpg?v=2"],
   }
