@@ -12,11 +12,19 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [currentDoctorSlide, setCurrentDoctorSlide] = useState(0);
 
-  const [doctors, setDoctors] = useState([]);
+  const [doctors, setDoctors] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem("cache_doctors");
+        return cached ? JSON.parse(cached) : [];
+      } catch { return []; }
+    }
+    return [];
+  });
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentDoctorSlide((prev) => (prev + 1) % (doctors.length / 2));
+      setCurrentDoctorSlide((prev) => (prev + 1) % (doctors.length > 0 ? (doctors.length / 2) : 1));
     }, 4000);
     return () => clearInterval(timer);
   }, [doctors.length]);
@@ -36,33 +44,93 @@ export default function Home() {
     setBannerType("community");
   };
 
-  const [popularPhotos, setPopularPhotos] = useState([]);
-  const [popularTextPosts, setPopularTextPosts] = useState([]);
-  const [reviewPosts, setReviewPosts] = useState([]);
-  const [infoPosts, setInfoPosts] = useState([]);
+  const [popularPhotos, setPopularPhotos] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem("cache_popular_photos");
+        return cached ? JSON.parse(cached) : [];
+      } catch { return []; }
+    }
+    return [];
+  });
+  const [popularTextPosts, setPopularTextPosts] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem("cache_popular_text");
+        return cached ? JSON.parse(cached) : [];
+      } catch { return []; }
+    }
+    return [];
+  });
+  const [reviewPosts, setReviewPosts] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem("cache_reviews");
+        return cached ? JSON.parse(cached) : [];
+      } catch { return []; }
+    }
+    return [];
+  });
+  const [infoPosts, setInfoPosts] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem("cache_info");
+        return cached ? JSON.parse(cached) : [];
+      } catch { return []; }
+    }
+    return [];
+  });
 
   useEffect(() => {
     fetch('/api/posts/list?sort=popular&hasImage=true&limit=6')
       .then(res => res.json())
-      .then(data => setPopularPhotos(data.posts || []));
+      .then(data => {
+        const posts = data.posts || [];
+        setPopularPhotos(posts);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("cache_popular_photos", JSON.stringify(posts));
+        }
+      });
       
     fetch('/api/posts/list?sort=popular&hasImage=false&limit=4')
       .then(res => res.json())
-      .then(data => setPopularTextPosts(data.posts || []));
+      .then(data => {
+        const posts = data.posts || [];
+        setPopularTextPosts(posts);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("cache_popular_text", JSON.stringify(posts));
+        }
+      });
       
     fetch('/api/posts/list?category=리얼후기&limit=6')
       .then(res => res.json())
-      .then(data => setReviewPosts(data.posts || []));
+      .then(data => {
+        const posts = data.posts || [];
+        setReviewPosts(posts);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("cache_reviews", JSON.stringify(posts));
+        }
+      });
       
     fetch('/api/posts/list?category=탈모정보&limit=6')
       .then(res => res.json())
-      .then(data => setInfoPosts(data.posts || []));
+      .then(data => {
+        const posts = data.posts || [];
+        setInfoPosts(posts);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("cache_info", JSON.stringify(posts));
+        }
+      });
       
     fetch('/api/hospital/list')
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          setDoctors(data.clinics || []);
+          const clinics = data.clinics || [];
+          setDoctors(clinics);
+          if (typeof window !== "undefined") {
+            localStorage.setItem("cache_doctors", JSON.stringify(clinics));
+          }
         }
       });
   }, []);
@@ -157,9 +225,8 @@ export default function Home() {
         </div>
         
         {/* Photo Posts (6 items) */}
-        {popularPhotos.length > 0 && (
+        {popularPhotos.length > 0 ? (
           <div className="flex overflow-x-auto pb-2 -mx-4 snap-x hide-scrollbar">
-            {/* Left spacer matches parent px-4 (16px) and acts as snap target to prevent auto-scroll */}
             <div className="w-4 shrink-0 snap-start" aria-hidden="true"></div>
             {popularPhotos.map((photo) => (
               <Link 
@@ -174,13 +241,23 @@ export default function Home() {
                 <h4 className="font-medium text-gray-800 text-xs line-clamp-1 px-0.5">{photo.title}</h4>
               </Link>
             ))}
-            {/* Right spacer to ensure 16px right padding */}
             <div className="w-4 shrink-0 snap-end" aria-hidden="true"></div>
+          </div>
+        ) : (
+          <div className="flex overflow-x-auto pb-2 -mx-4 snap-x hide-scrollbar">
+            <div className="w-4 shrink-0 snap-start"></div>
+            {[1, 2, 3, 4].map((i) => (
+              <div key={`sk-pop-${i}`} className="flex-shrink-0 w-[25%] snap-start flex flex-col gap-1.5 mr-1.5 animate-pulse">
+                <div className="w-full aspect-square rounded-md bg-gray-200 border border-gray-100"></div>
+                <div className="h-3 bg-gray-200 rounded-sm w-3/4 mx-0.5 mt-0.5"></div>
+              </div>
+            ))}
+            <div className="w-4 shrink-0 snap-end"></div>
           </div>
         )}
 
         {/* Traditional Text Posts (4 items) */}
-        {popularTextPosts.length > 0 && (
+        {popularTextPosts.length > 0 ? (
           <div className="flex flex-col">
             {popularTextPosts.map((post) => (
               <Link key={`post-${post.id}`} href={`/community/detail?id=${post.id}`} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0 group">
@@ -193,6 +270,18 @@ export default function Home() {
                   {post.comments}
                 </div>
               </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2 py-1.5">
+            {[1, 2, 3].map((i) => (
+              <div key={`sk-pop-txt-${i}`} className="flex items-center justify-between py-1.5 animate-pulse">
+                <div className="flex items-center gap-2 flex-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gray-200 shrink-0"></span>
+                  <div className="h-3 bg-gray-200 rounded-sm w-2/3"></div>
+                </div>
+                <div className="w-8 h-3 bg-gray-200 rounded-sm"></div>
+              </div>
             ))}
           </div>
         )}
@@ -231,7 +320,16 @@ export default function Home() {
             <div className="w-4 shrink-0 snap-end" aria-hidden="true"></div>
           </div>
         ) : (
-          <div className="py-4 text-center text-sm text-gray-500 bg-gray-50 rounded-lg border border-gray-100">등록된 후기가 없습니다.</div>
+          <div className="flex overflow-x-auto pb-2 -mx-4 snap-x hide-scrollbar">
+            <div className="w-4 shrink-0 snap-start"></div>
+            {[1, 2, 3, 4].map((i) => (
+              <div key={`sk-rev-${i}`} className="flex-shrink-0 w-[26%] snap-start flex flex-col gap-1.5 mr-2 animate-pulse">
+                <div className="w-full aspect-square rounded-md bg-gray-200 border border-gray-100"></div>
+                <div className="h-3 bg-gray-200 rounded-sm w-3/4 mx-0.5 mt-1"></div>
+              </div>
+            ))}
+            <div className="w-4 shrink-0 snap-end"></div>
+          </div>
         )}
       </section>
 
@@ -259,9 +357,9 @@ export default function Home() {
         </div>
         
         {/* Info Photos (6 items) */}
-        {infoPhotos.length > 0 && (
+        {/* Info Photos (6 items) */}
+        {infoPhotos.length > 0 ? (
           <div className="flex overflow-x-auto pb-2 -mx-4 snap-x hide-scrollbar">
-            {/* Left spacer acts as snap target */}
             <div className="w-4 shrink-0 snap-start" aria-hidden="true"></div>
             {infoPhotos.map((photo) => (
               <Link 
@@ -280,13 +378,23 @@ export default function Home() {
                 <h4 className="font-medium text-gray-800 text-xs leading-snug line-clamp-2 px-0.5 break-keep">{photo.title}</h4>
               </Link>
             ))}
-            {/* Right spacer */}
             <div className="w-4 shrink-0 snap-end" aria-hidden="true"></div>
+          </div>
+        ) : (
+          <div className="flex overflow-x-auto pb-2 -mx-4 snap-x hide-scrollbar">
+            <div className="w-4 shrink-0 snap-start"></div>
+            {[1, 2, 3].map((i) => (
+              <div key={`sk-info-${i}`} className="flex-shrink-0 w-[30%] snap-start flex flex-col gap-1.5 mr-2 animate-pulse">
+                <div className="w-full aspect-square rounded-xl bg-gray-200 border border-gray-100"></div>
+                <div className="h-3 bg-gray-200 rounded-sm w-3/4 mx-0.5 mt-1"></div>
+              </div>
+            ))}
+            <div className="w-4 shrink-0 snap-end"></div>
           </div>
         )}
 
         {/* Info Text Posts (4 items) */}
-        {infoTextPosts.length > 0 && (
+        {infoTextPosts.length > 0 ? (
           <div className="flex flex-col">
             {infoTextPosts.map((post) => (
               <Link key={`info-post-${post.id}`} href={`/community/detail?id=${post.id}`} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0 group">
@@ -299,6 +407,18 @@ export default function Home() {
                   {post.comments}
                 </div>
               </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2 py-1.5">
+            {[1, 2].map((i) => (
+              <div key={`sk-info-txt-${i}`} className="flex items-center justify-between py-1.5 animate-pulse">
+                <div className="flex items-center gap-2 flex-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gray-200 shrink-0"></span>
+                  <div className="h-3 bg-gray-200 rounded-sm w-2/3"></div>
+                </div>
+                <div className="w-8 h-3 bg-gray-200 rounded-sm"></div>
+              </div>
             ))}
           </div>
         )}
