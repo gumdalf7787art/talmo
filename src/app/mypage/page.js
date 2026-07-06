@@ -52,11 +52,24 @@ export default function MyPage() {
       setNewNickname(parsed.nickname || "");
       setUser(parsed);
 
-      // Initialize Kakao SDK
-      if (typeof window !== "undefined" && window.Kakao) {
-        if (!window.Kakao.isInitialized()) {
-          window.Kakao.init('f557c50a623379e0c2abb685232ade41');
+      // Initialize Kakao SDK (with fallback retry if script not loaded yet)
+      const initKakao = () => {
+        if (typeof window !== "undefined" && window.Kakao) {
+          if (!window.Kakao.isInitialized()) {
+            window.Kakao.init('f557c50a623379e0c2abb685232ade41');
+          }
+          return true;
         }
+        return false;
+      };
+
+      if (!initKakao()) {
+        const interval = setInterval(() => {
+          if (initKakao()) {
+            clearInterval(interval);
+          }
+        }, 500);
+        setTimeout(() => clearInterval(interval), 10000); // clear after 10s
       }
 
       // Fetch fresh user data including tickets and referral_code
@@ -345,7 +358,10 @@ export default function MyPage() {
                 const inviteUrl = `https://talmotalk.com/signup?ref=${rawCode}`;
                 const safeInviteUrl = encodeURI(inviteUrl);
 
-                if (typeof window !== "undefined" && window.Kakao && window.Kakao.isInitialized()) {
+                if (typeof window !== "undefined" && window.Kakao) {
+                  if (!window.Kakao.isInitialized()) {
+                    window.Kakao.init('f557c50a623379e0c2abb685232ade41');
+                  }
                   window.Kakao.Share.sendDefault({
                     objectType: 'feed',
                     content: {
