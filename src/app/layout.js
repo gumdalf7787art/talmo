@@ -14,11 +14,29 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
+  metadataBase: new URL('https://talmotalk.com'),
   title: "탈모톡",
   description: "대한민국 리얼 탈모 커뮤니티",
   openGraph: {
     title: "탈모톡",
     description: "대한민국 리얼 탈모 커뮤니티",
+    url: "https://talmotalk.com",
+    siteName: "탈모톡",
+    images: [
+      {
+        url: "/og_thumbnail.png?v=1",
+        width: 1200,
+        height: 630,
+        alt: "탈모톡 썸네일",
+      }
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "탈모톡",
+    description: "대한민국 리얼 탈모 커뮤니티",
+    images: ["/og_thumbnail.png?v=1"],
   }
 };
 
