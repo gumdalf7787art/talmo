@@ -251,8 +251,23 @@ function DiagnosisHistoryContent() {
             };
 
             const { status, level } = parseSeverity(item.severity);
-            const displaySeverity = item.severity ? `상황: ${status} / 상태: ${level}` : "분석 내용이 없습니다.";
-            const summaryText = details?.analysis?.[0] || displaySeverity;
+            
+            // Color styling for status and level
+            let statusColor = "bg-gray-100 text-gray-700 border border-gray-200";
+            if (status === "진행중") statusColor = "bg-red-50 text-red-600 border border-red-200";
+            if (status === "정상") statusColor = "bg-green-50 text-green-600 border border-green-200";
+
+            let levelColor = "bg-gray-100 text-gray-700 border border-gray-200";
+            if (level.includes("양호")) levelColor = "bg-green-50 text-green-600 border border-green-200";
+            if (level.includes("초기")) levelColor = "bg-yellow-50 text-yellow-600 border border-yellow-200";
+            if (level.includes("중기")) levelColor = "bg-orange-50 text-orange-600 border border-orange-200";
+            if (level.includes("심각") || level.includes("위험")) levelColor = "bg-red-100 text-red-700 border border-red-300 shadow-sm";
+
+            // Score color based on risk
+            let scoreColorClass = "text-red-600";
+            if (item.score >= 75) scoreColorClass = "text-emerald-600";
+            else if (item.score >= 60) scoreColorClass = "text-amber-600";
+            else if (item.score >= 45) scoreColorClass = "text-orange-600";
             
             // Compare with next item to get trend
             const currentIndex = filteredHistory.findIndex(h => h.id === item.id);
@@ -276,19 +291,24 @@ function DiagnosisHistoryContent() {
                       {itemTrend === 'down' && <TrendingDown className="w-3.5 h-3.5 text-red-500" />}
                       {itemTrend === 'up' && <TrendingUp className="w-3.5 h-3.5 text-teal-500" />}
                       {itemTrend === 'same' && <Minus className="w-3.5 h-3.5 text-gray-400" />}
-                      <span className={`text-[13px] font-black ${itemTrend === 'down' ? 'text-red-500' : itemTrend === 'up' ? 'text-teal-600' : 'text-gray-500'}`}>
+                      <span className={`text-[14px] font-black ${scoreColorClass}`}>
                         {item.score}점
                       </span>
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <span className="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-bold rounded shrink-0">
-                      상황: {status} | 상태: {level}
+                  <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${statusColor}`}>
+                      상황: {status}
                     </span>
-                    <p className="text-[13px] font-bold text-gray-900 truncate">
-                      {summaryText}
-                    </p>
+                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${levelColor}`}>
+                      상태: {level}
+                    </span>
+                    {details?.analysis?.[0] && (
+                      <p className="text-[12px] text-gray-500 truncate flex-1 min-w-[120px] ml-1">
+                        {details.analysis[0]}
+                      </p>
+                    )}
                   </div>
                   
                   <button className="text-[11px] text-teal-600 font-bold text-left hover:text-teal-700 w-max">

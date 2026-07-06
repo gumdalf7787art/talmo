@@ -204,6 +204,12 @@ export default function PCDiagnosisHistory({ historyList }) {
                   if (item.severity?.includes("중기")) severityColor = "bg-yellow-100 text-yellow-800";
                   if (item.severity?.includes("심각") || item.severity?.includes("위험")) severityColor = "bg-red-100 text-red-800";
                   
+                  // Score color based on risk
+                  let scoreColorClass = "text-red-600";
+                  if (item.score >= 75) scoreColorClass = "text-emerald-600";
+                  else if (item.score >= 60) scoreColorClass = "text-amber-600";
+                  else if (item.score >= 45) scoreColorClass = "text-orange-600";
+
                   return (
                     <Link href={`/diagnosis?history=true&id=${item.id}`} key={item.id} className="group border border-gray-200 rounded-xl p-5 hover:border-teal-500 hover:shadow-md transition-all bg-white relative flex gap-4 items-center">
                       {/* Thumbnail */}
@@ -235,7 +241,7 @@ export default function PCDiagnosisHistory({ historyList }) {
                             <span className="text-[12px] text-teal-600 font-bold group-hover:underline">상세 리포트 보기 &rarr;</span>
                           </div>
                           <div className="text-right shrink-0">
-                            <span className="text-4xl font-black text-teal-600 tracking-tighter">{item.score}<span className="text-base font-bold text-gray-400 ml-0.5">점</span></span>
+                            <span className={`text-4xl font-black ${scoreColorClass} tracking-tighter`}>{item.score}<span className="text-base font-bold text-gray-400 ml-0.5">점</span></span>
                           </div>
                         </div>
                       </div>
