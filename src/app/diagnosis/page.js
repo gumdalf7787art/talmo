@@ -695,32 +695,47 @@ function DiagnosisContent() {
 
           <div id="pdf-report-area" className="bg-white border border-gray-100 p-5 rounded-2xl shadow-sm flex flex-col">
             
-            {/* Header & Score */}
-            <div className="flex items-start justify-between border-b border-gray-100 pb-5 mb-5">
+            {/* Header & Patient Info */}
+            <div className="flex items-start justify-between border-b border-gray-100 pb-4 mb-4">
               <div className="flex flex-col gap-1">
                 <h3 className="font-bold text-[18px] text-gray-900">탈모톡 AI 리포트</h3>
                 <span className="text-[12px] text-gray-500">TalmoTalk AI Assessment</span>
               </div>
-              <div className="flex flex-col items-end">
-                <span className="px-2.5 py-1 bg-yellow-100 text-yellow-800 text-[12px] font-bold rounded-md mb-1">
-                  진행 단계: {result.summary?.severity || result.severity || "진단중"}
-                </span>
-                <span className="text-[20px] font-black text-teal-600 tracking-tight">{result.summary?.score || result.score || 0}<span className="text-[14px] text-gray-400 font-medium"> /100점</span></span>
+              <div className="flex flex-col items-end text-right text-[11px] text-gray-400 leading-snug">
+                <span>발급일: {new Date().toLocaleDateString()}</span>
+                <span>{result?.patientInfo?.gender || profile.gender === 'male' ? '남성' : '여성'} / {result?.patientInfo?.age || (profile.birthYear ? new Date().getFullYear() - parseInt(profile.birthYear) + 1 : "-")}세</span>
               </div>
             </div>
 
-            {/* Uploaded Image Preview with Scan Effect */}
-            <div className="relative w-full aspect-[4/3] bg-gray-900 rounded-xl overflow-hidden mb-6 flex items-center justify-center">
-              <img 
-                src={imagePreview} 
-                alt="Analyzed" 
-                crossOrigin={imagePreview && imagePreview.startsWith('http') ? "anonymous" : undefined} 
-                className="w-full h-full object-cover opacity-60" 
-              />
-              <div className="absolute inset-0 border-2 border-teal-500/50 rounded-xl"></div>
-              {/* Scan line animation mockup */}
-              <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-teal-400 shadow-[0_0_8px_2px_rgba(45,212,191,0.5)]"></div>
-              <div className="absolute top-2 left-3 bg-black/50 backdrop-blur-md text-white text-[10px] px-2 py-0.5 rounded border border-white/20">AI 분석 원본</div>
+            {/* 핵심 요약 대시보드 3개 박스 */}
+            <div className="grid grid-cols-3 gap-2 mb-6">
+              <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-xl flex flex-col justify-center items-center text-center">
+                <span className="text-[10px] font-bold text-slate-500 mb-1">탈모 종합 점수</span>
+                <div className="text-[18px] font-black text-slate-900">{result.summary?.score || result.score || 0}<span className="text-[11px] text-slate-400 font-medium">/100</span></div>
+              </div>
+              <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-xl flex flex-col justify-center items-center text-center">
+                <span className="text-[10px] font-bold text-slate-500 mb-1">추정 두피 나이</span>
+                <div className="text-[18px] font-black text-teal-600">{result.summary?.scalpAge || result.scalpAge || "-"}<span className="text-[11px] text-teal-600/60 font-medium">세</span></div>
+              </div>
+              <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-xl flex flex-col justify-center items-center text-center overflow-hidden">
+                <span className="text-[10px] font-bold text-slate-500 mb-1">진행 단계</span>
+                <div className="text-[13px] font-black text-red-600 truncate w-full mb-0.5">{result.summary?.norwoodStage || result.norwoodStage || "-"}</div>
+                
+                <div className="flex items-center gap-0.5 w-full mt-1">
+                  {['양호', '초기', '중기', '심각'].map((stage, idx) => {
+                    const currentSeverity = result.summary?.severity || result.severity || "";
+                    const isActive = currentSeverity.includes(stage) || (stage === '양호' && currentSeverity.includes('양호'));
+                    return (
+                      <div key={idx} className="flex-1 flex flex-col items-center gap-0.5">
+                        <div className={`h-1 w-full rounded-full ${isActive ? 'bg-red-500' : 'bg-slate-200'}`} />
+                        <span className={`text-[8px] whitespace-nowrap scale-[0.8] origin-center ${isActive ? 'font-bold text-red-600' : 'text-slate-400 font-medium'}`}>
+                          {stage}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
             
             {/* Detailed Graphs */}
@@ -828,6 +843,20 @@ function DiagnosisContent() {
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* 스캔 원본 이미지 (제일 아래로 이동) */}
+            <div className="relative w-full aspect-[4/3] bg-gray-900 rounded-xl overflow-hidden mb-4 mt-6 flex items-center justify-center">
+              <img 
+                src={imagePreview} 
+                alt="Analyzed" 
+                crossOrigin={imagePreview && imagePreview.startsWith('http') ? "anonymous" : undefined} 
+                className="w-full h-full object-cover opacity-60" 
+              />
+              <div className="absolute inset-0 border-2 border-teal-500/50 rounded-xl"></div>
+              {/* Scan line animation mockup */}
+              <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-teal-400 shadow-[0_0_8px_2px_rgba(45,212,191,0.5)]"></div>
+              <div className="absolute top-2 left-3 bg-black/50 backdrop-blur-md text-white text-[10px] px-2 py-0.5 rounded border border-white/20">AI 분석 원본</div>
             </div>
 
             {/* Legal Disclaimer */}
