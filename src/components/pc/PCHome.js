@@ -152,7 +152,7 @@ export default function PCHome() {
       {/* Main Content */}
       <div className="flex-1 min-w-0 flex flex-col gap-3">
         {/* Hero Banner (main_a_1) */}
-        {!bannersLoaded && !banners.main_a_1 ? (
+        {!bannersLoaded ? (
           <div className="w-full h-[180px] rounded-lg bg-gray-200 animate-pulse shrink-0 border border-gray-100" />
         ) : banners.main_a_1?.is_active ? (
           <Link href={banners.main_a_1.link_url || "#"} className="relative overflow-hidden rounded-lg shadow-lg flex group w-full h-[180px] shrink-0 border border-gray-100">
@@ -161,7 +161,7 @@ export default function PCHome() {
         ) : (
           <section className="relative overflow-hidden rounded-lg shadow-lg flex bg-slate-950 group w-full h-[180px] shrink-0 border border-gray-100">
             <img 
-              src="/ai_diagnosis_banner.png" 
+              src="/ai_diagnosis_banner.png?v=5" 
               alt="AI 탈모분석 배경" 
               className="absolute inset-0 w-full h-full object-cover object-right group-hover:scale-102 transition-transform duration-700" 
             />
