@@ -7,12 +7,7 @@ import { usePathname } from "next/navigation";
 
 export default function Header() {
   const pathname = usePathname();
-  const hideRoutes = ["/login", "/signup", "/write", "/find-id", "/find-password", "/terms", "/privacy"];
-  const isPostDetail = pathname?.startsWith("/community/") && pathname !== "/community";
-  const isChatRoom = pathname === "/consult/detail";
-  const isChatList = pathname === "/chat-list";
-  const isHistory = pathname === "/diagnosis-history";
-  const isMyPosts = pathname === "/my-posts" || pathname === "/my-bookmarks";
+  const isAdminOrHospital = pathname?.startsWith("/admin") || pathname?.startsWith("/hospital");
   
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -35,7 +30,7 @@ export default function Header() {
     return () => clearInterval(interval);
   }, [pathname, searchTexts.length]);
 
-  if (hideRoutes.includes(pathname) || isChatRoom || isChatList || isHistory || isMyPosts) return null;
+  if (isAdminOrHospital) return null;
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-100 flex flex-col shadow-sm">

@@ -13,14 +13,9 @@ export default function BottomNav() {
     setIsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
   }, [pathname]);
 
-  const hideRoutes = ["/login", "/signup", "/write", "/find-id", "/find-password", "/terms", "/privacy"];
-  const isPostDetail = pathname?.startsWith("/community/") && pathname !== "/community";
-  const isChatRoom = pathname === "/consult/detail";
-  const isChatList = pathname === "/chat-list";
-  const isHistory = pathname === "/diagnosis-history";
-  const isMyPosts = pathname === "/my-posts" || pathname === "/my-bookmarks";
+  const isAdminOrHospital = pathname?.startsWith("/admin") || pathname?.startsWith("/hospital");
   
-  if (hideRoutes.includes(pathname) || isChatRoom || isChatList || isHistory || isMyPosts) return null;
+  if (isAdminOrHospital) return null;
 
   const navItems = [
     { href: "/", label: "홈", icon: Home },
