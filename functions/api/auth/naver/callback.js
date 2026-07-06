@@ -11,8 +11,8 @@ export async function onRequestGet({ request, env }) {
 
   // Determine redirect URI dynamically based on current request URL to support both local and prod
   const redirectUri = `${url.origin}/api/auth/naver/callback`;
-  const clientId = 'OWvIAOQuyH9DRnz0L4HZ';
-  const clientSecret = 'lD03u8IYkL';
+  const clientId = env.NAVER_CLIENT_ID || 'OWvIAOQuyH9DRnz0L4HZ';
+  const clientSecret = env.NAVER_CLIENT_SECRET || 'lD03u8IYkL';
 
   try {
     // 1. Get Access Token

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Users, LayoutDashboard, Image as ImageIcon, Check, Edit2, Shield, UploadCloud } from "lucide-react";
 import { compressImage } from "@/lib/imageUtils";
 
-function BannerSlotForm({ slot, initialData, onSave }) {
+function BannerSlotForm({ slot, initialData, onSave, user }) {
   const [title, setTitle] = useState(initialData?.title || "");
   const [linkUrl, setLinkUrl] = useState(initialData?.link_url || "");
   const [imageUrl, setImageUrl] = useState(initialData?.image_url || "");
@@ -35,6 +35,9 @@ function BannerSlotForm({ slot, initialData, onSave }) {
       // 3. R2 업로드 API 호출
       const formData = new FormData();
       formData.append("image", blob, file.name || "banner.jpg");
+      if (user?.id) {
+        formData.append("userId", user.id);
+      }
       
       const uploadRes = await fetch("/api/admin/upload-banner", {
         method: "POST",
@@ -160,12 +163,13 @@ export default function PCAdminDashboard({ user }) {
   );
 
   useEffect(() => {
+    const adminId = user?.id || "";
     if (activeTab === "stats") {
-      fetch("/api/admin/stats").then(res => res.json()).then(data => {
+      fetch(`/api/admin/stats?userId=${adminId}`).then(res => res.json()).then(data => {
         if(data.success) setStats(data.stats);
       });
     } else if (activeTab === "users") {
-      fetch("/api/admin/users").then(res => res.json()).then(data => {
+      fetch(`/api/admin/users?userId=${adminId}`).then(res => res.json()).then(data => {
         if(data.success) setUsers(data.users);
       });
     } else if (activeTab === "banners") {
@@ -173,14 +177,14 @@ export default function PCAdminDashboard({ user }) {
         if(data.success) setBanners(data.banners);
       });
     }
-  }, [activeTab]);
+  }, [activeTab, user?.id]);
 
   const handleRoleChange = async (userId, newRole) => {
     try {
       const res = await fetch("/api/admin/role", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, role: newRole })
+        body: JSON.stringify({ userId, role: newRole, adminUserId: user?.id || "" })
       });
       if (res.ok) {
         setUsers(users.map(u => u.id === userId ? { ...u, role: newRole } : u));
@@ -334,12 +338,13 @@ export default function PCAdminDashboard({ user }) {
                   <BannerSlotForm 
                     key={slot.id} 
                     slot={slot} 
+                    user={user}
                     initialData={existingBanner} 
                     onSave={async (bannerData) => {
                       const res = await fetch("/api/admin/banners", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ id: slot.id, ...bannerData })
+                        body: JSON.stringify({ id: slot.id, ...bannerData, userId: user?.id || "" })
                       });
                       if (res.ok) {
                         alert("저장되었습니다.");

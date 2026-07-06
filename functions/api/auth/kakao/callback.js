@@ -12,8 +12,8 @@ export async function onRequestGet(context) {
 
   // Determine redirect URI dynamically based on current request URL to support both local and prod
   const redirectUri = `${url.origin}/api/auth/kakao/callback`;
-  const clientId = '43a474ecd76c1a1b758dcdf415c1565a'; // REST API Key
-  const clientSecret = 'D0ImffOQpt4abhpgRep7zwvxZg1huQVI';
+  const clientId = env.KAKAO_CLIENT_ID || '43a474ecd76c1a1b758dcdf415c1565a'; // REST API Key
+  const clientSecret = env.KAKAO_CLIENT_SECRET || 'D0ImffOQpt4abhpgRep7zwvxZg1huQVI';
 
   try {
     // 1. Get Access Token from Kakao

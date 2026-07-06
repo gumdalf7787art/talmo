@@ -2,12 +2,26 @@ export async function onRequestPost({ request, env }) {
   try {
     const formData = await request.formData();
     const file = formData.get('image');
+    const userId = formData.get('userId');
 
     if (!file) {
       return new Response(JSON.stringify({ error: '이미지 파일이 없습니다.' }), { 
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
+    }
+
+    const db = env.DB;
+    if (!db) {
+      return new Response(JSON.stringify({ error: 'DB 연결 설정이 누락되었습니다.' }), { status: 500 });
+    }
+
+    if (!userId) {
+      return new Response(JSON.stringify({ error: '인증이 필요합니다.' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+    }
+    const userRole = await db.prepare('SELECT role FROM users WHERE id = ?').bind(userId).first();
+    if (!userRole || userRole.role !== 'admin') {
+      return new Response(JSON.stringify({ error: '관리자 권한이 필요합니다.' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
     }
 
     if (!env.STORAGE) {
