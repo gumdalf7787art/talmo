@@ -94,10 +94,24 @@ export async function onRequestGet({ request, env }) {
         const randomPassword = crypto.randomUUID(); // Dummy password
         const hashedPassword = await hashPassword(randomPassword);
 
+        // Ensure nickname uniqueness
+        let finalNickname = nickname;
+        let isNickUnique = false;
+        let nickAttempts = 0;
+        while (!isNickUnique && nickAttempts < 10) {
+          const nickCheck = await db.prepare('SELECT id FROM users WHERE nickname = ?').bind(finalNickname).all();
+          if (nickCheck.results && nickCheck.results.length > 0) {
+            finalNickname = `${nickname}_${Math.random().toString(36).substring(2, 6)}`;
+            nickAttempts++;
+          } else {
+            isNickUnique = true;
+          }
+        }
+
         const insertStmt = db.prepare(`
           INSERT INTO users (id, email, password, nickname, profile_image, role, provider, provider_id, created_at, updated_at) 
           VALUES (?, ?, ?, ?, ?, 'user', 'google', ?, ?, ?)
-        `).bind(id, finalEmail, hashedPassword, nickname, profileImage, googleId, now, now);
+        `).bind(id, finalEmail, hashedPassword, finalNickname, profileImage, googleId, now, now);
 
         await insertStmt.run();
 

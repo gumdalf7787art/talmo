@@ -109,6 +109,20 @@ export async function onRequestGet(context) {
         const randomPassword = crypto.randomUUID(); // Dummy password
         const hashedPassword = await hashPassword(randomPassword);
 
+        // Ensure nickname uniqueness
+        let finalNickname = nickname;
+        let isNickUnique = false;
+        let nickAttempts = 0;
+        while (!isNickUnique && nickAttempts < 10) {
+          const nickCheck = await db.prepare('SELECT id FROM users WHERE nickname = ?').bind(finalNickname).all();
+          if (nickCheck.results && nickCheck.results.length > 0) {
+            finalNickname = `${nickname}_${Math.random().toString(36).substring(2, 6)}`;
+            nickAttempts++;
+          } else {
+            isNickUnique = true;
+          }
+        }
+
         // Generate 6-char referral code
         let referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
         let isCodeUnique = false;
@@ -139,7 +153,7 @@ export async function onRequestGet(context) {
         const insertStmt = db.prepare(`
           INSERT INTO users (id, email, password, nickname, profile_image, role, provider, provider_id, referral_code, referred_by, tickets_basic, tickets_premium, last_ticket_reset, created_at, updated_at) 
           VALUES (?, ?, ?, ?, ?, 'user', 'kakao', ?, ?, ?, 2, ?, ?, ?, ?)
-        `).bind(id, finalEmail, hashedPassword, nickname, profileImage, kakaoId, referralCode, referredById, ticketsPremium, now, now, now);
+        `).bind(id, finalEmail, hashedPassword, finalNickname, profileImage, kakaoId, referralCode, referredById, ticketsPremium, now, now, now);
 
         await insertStmt.run();
 
