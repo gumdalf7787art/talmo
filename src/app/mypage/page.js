@@ -396,7 +396,7 @@ export default function MyPage() {
               }}
               className="bg-[#FEE500] text-black text-[12px] font-bold px-4 py-2.5 rounded-lg hover:opacity-90 transition-opacity whitespace-nowrap flex items-center gap-1.5"
             >
-              카카오톡 초대
+              친구 초대하고 분석권 받기
             </button>
           </div>
         </div>
@@ -410,7 +410,7 @@ export default function MyPage() {
         </div>
         <div className="bg-teal-50/50 rounded-xl p-4 border border-teal-100/50">
           <p className="text-[12px] text-teal-800 mb-3 leading-relaxed">
-            AI 두피 분석의 정확도를 높이기 위한 필수 의료 정보입니다. 연령대와 성별에 따라 분석 기준이 달라집니다.
+            AI 탈모 분석의 정확도를 높이기 위한 필수 의료 정보입니다. 연령대와 성별에 따라 분석 기준이 달라집니다.
           </p>
           <div className="flex flex-col gap-3">
             <button 

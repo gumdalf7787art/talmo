@@ -67,6 +67,52 @@ function PCDiagnosisContent() {
     fetchHistoryDetail();
   }, [searchParams, isHistory]);
 
+  const handleInvite = () => {
+    let rawCode = '';
+    try {
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        const u = JSON.parse(savedUser);
+        rawCode = u?.referral_code ? u.referral_code.trim() : '';
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    const inviteUrl = `https://talmotalk.com/signup?ref=${rawCode}`;
+    const safeInviteUrl = encodeURI(inviteUrl);
+
+    if (typeof window !== "undefined" && window.Kakao) {
+      if (!window.Kakao.isInitialized()) {
+        window.Kakao.init('f557c50a623379e0c2abb685232ade41');
+      }
+      window.Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+          title: '🎁 탈모톡에 가입하고 AI 분석 티켓을 받아보세요!',
+          description: `초대장을 클릭하고 간편가입 하시면 AI 탈모분석 티켓 4장(기본2+보너스2)이 즉시 발급됩니다.\n추천인 코드: ${rawCode}`,
+          imageUrl: 'https://talmotalk.com/invite_thumbnail.jpg?v=1',
+          link: {
+            mobileWebUrl: safeInviteUrl,
+            webUrl: safeInviteUrl,
+          },
+        },
+        buttons: [
+          {
+            title: '탈모톡 시작하기',
+            link: {
+              mobileWebUrl: safeInviteUrl,
+              webUrl: safeInviteUrl,
+            },
+          },
+        ],
+      });
+    } else {
+      const text = `🎁 탈모톡에 가입하고 AI 분석 티켓 4장을 무료로 받아보세요!\n\n가입 링크: ${safeInviteUrl}\n추천인 코드: ${rawCode}`;
+      navigator.clipboard.writeText(text);
+      alert("초대 링크와 코드가 복사되었습니다!");
+    }
+  };
+
   const handleDownloadPDF = async () => {
     const element = document.getElementById("pdf-report-area");
     if (!element) return;
@@ -311,7 +357,7 @@ function PCDiagnosisContent() {
             <div className="flex justify-between items-center p-4 border-b border-gray-100">
               <h3 className="font-bold text-gray-900 flex items-center gap-2">
                 <RefreshCcw className="w-5 h-5 text-teal-600 animate-spin" /> 
-                AI 두피 분석 중
+                AI 탈모 분석 중
               </h3>
               <button onClick={() => alert("분석 중에는 창을 닫을 수 없습니다. 조금만 기다려주세요!")} className="p-1 text-gray-400 hover:text-gray-700 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -351,7 +397,7 @@ function PCDiagnosisContent() {
           {/* Left: Info + Upload */}
           <div className="flex flex-col gap-5">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">AI 정밀 두피 분석</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">AI 정밀 탈모 분석</h2>
               <p className="text-sm text-red-500 font-bold mb-1 bg-red-50 p-2 rounded border border-red-100 flex items-center gap-1.5"><AlertCircle className="w-4 h-4"/> ※ 개인정보 보호를 위해 얼굴이 나오지 않도록, 이마와 두피 부위만 보이게 지정해 주세요.</p>
               <p className="text-sm text-gray-500 mb-4">분석할 부위를 선택한 후, 선명하게 잘 보이는 사진을 1장 선택해 주세요.</p>
               
@@ -506,6 +552,14 @@ function PCDiagnosisContent() {
               >
                 {isAnalyzing ? (<><RefreshCcw className="w-5 h-5 animate-spin" /> 임상 리포트 생성 중...</>) : (<><FileText className="w-5 h-5" /> AI 분석 실행 (1장 차감)</>)}
               </button>
+              
+              <button 
+                onClick={handleInvite}
+                className="w-full bg-[#FEE500] text-black font-bold py-3.5 rounded-md text-[14px] shadow-sm hover:opacity-90 transition-all flex items-center justify-center gap-2 mt-1"
+              >
+                🎁 친구 초대하고 분석권 받기
+              </button>
+
               {user && (user.tickets_basic || 0) + (user.tickets_premium || 0) === 0 && (
                 <p className="text-center text-sm text-red-500 font-bold mt-1">티켓이 부족합니다. 마이페이지에서 친구를 초대하고 티켓을 받아보세요!</p>
               )}
@@ -521,7 +575,13 @@ function PCDiagnosisContent() {
             </div>
           )}
           
-          <div className="w-full flex justify-end mb-3">
+          <div className="w-full flex justify-end gap-2.5 mb-3">
+            <button 
+              onClick={handleInvite}
+              className="flex items-center gap-2 bg-[#FEE500] text-black px-5 py-2.5 rounded-lg font-bold text-[14px] shadow-sm hover:opacity-90 transition-all hover:scale-[1.02]"
+            >
+              🎁 친구 초대하고 분석권 받기
+            </button>
             <button 
               onClick={handleDownloadPDF}
               className="flex items-center gap-2 bg-slate-800 text-white px-5 py-2.5 rounded-lg font-bold text-[14px] shadow-sm hover:bg-slate-900 transition-all hover:scale-[1.02]"

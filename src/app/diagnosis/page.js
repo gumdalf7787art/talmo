@@ -99,6 +99,56 @@ function DiagnosisContent() {
     fetchHistoryDetail();
   }, [searchParams, isHistory]);
 
+  const handleInvite = () => {
+    let rawCode = '';
+    try {
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        const u = JSON.parse(savedUser);
+        rawCode = u?.referral_code ? u.referral_code.trim() : '';
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    const inviteUrl = `https://talmotalk.com/signup?ref=${rawCode}`;
+    const safeInviteUrl = encodeURI(inviteUrl);
+
+    if (typeof window !== "undefined" && window.Kakao) {
+      if (!window.Kakao.isInitialized()) {
+        window.Kakao.init('f557c50a623379e0c2abb685232ade41');
+      }
+      window.Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+          title: '🎁 탈모톡에 가입하고 AI 분석 티켓을 받아보세요!',
+          description: `초대장을 클릭하고 간편가입 하시면 AI 탈모분석 티켓 4장(기본2+보너스2)이 즉시 발급됩니다.\n추천인 코드: ${rawCode}`,
+          imageUrl: 'https://talmotalk.com/invite_thumbnail.jpg?v=1',
+          link: {
+            mobileWebUrl: safeInviteUrl,
+            webUrl: safeInviteUrl,
+          },
+        },
+        buttons: [
+          {
+            title: '탈모톡 시작하기',
+            link: {
+              mobileWebUrl: safeInviteUrl,
+              webUrl: safeInviteUrl,
+            },
+          },
+        ],
+      });
+    } else {
+      const text = `🎁 탈모톡에 가입하고 AI 분석 티켓 4장을 무료로 받아보세요!\n\n가입 링크: ${safeInviteUrl}\n추천인 코드: ${rawCode}`;
+      if (navigator.share) {
+        navigator.share({ title: '탈모톡 초대', text: text });
+      } else {
+        navigator.clipboard.writeText(text);
+        alert("초대 링크와 코드가 복사되었습니다!");
+      }
+    }
+  };
+
   const handleDownloadPDF = async () => {
     const element = document.getElementById("pdf-report-pc-area");
     if (!element) return;
@@ -372,7 +422,7 @@ function DiagnosisContent() {
             <div className="flex justify-between items-center p-4 border-b border-gray-100">
               <h3 className="font-bold text-gray-900 flex items-center gap-2 text-[15px]">
                 <RefreshCcw className="w-5 h-5 text-teal-600 animate-spin" /> 
-                AI 두피 분석 중
+                AI 탈모 분석 중
               </h3>
               <button onClick={() => alert("분석 중에는 창을 닫을 수 없습니다. 조금만 기다려주세요!")} className="p-1 text-gray-400 hover:text-gray-700 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -419,7 +469,7 @@ function DiagnosisContent() {
       {/* Default Title for Tool Mode */}
       {!isHistory && (
         <div className="flex flex-col gap-1">
-          <h2 className="text-xl font-bold text-gray-900">AI 정밀 두피 분석</h2>
+          <h2 className="text-xl font-bold text-gray-900">AI 정밀 탈모 분석</h2>
           <p className="text-[12px] text-red-500 font-bold mb-1 bg-red-50 p-2 rounded-lg border border-red-100 flex items-center gap-1.5"><AlertCircle className="w-4 h-4 shrink-0"/> ※ 개인정보 보호를 위해 얼굴이 나오지 않도록, 이마와 두피 부위만 보이게 지정해 주세요.</p>
           <p className="text-[13px] text-gray-500">
             이마 라인이나 정수리가 잘 보이도록 사진을 1장 선택해 주세요.
@@ -611,6 +661,12 @@ function DiagnosisContent() {
                 </>
               )}
             </button>
+            <button 
+              onClick={handleInvite}
+              className="w-full bg-[#FEE500] text-black font-bold py-3.5 rounded-xl text-[14px] shadow-sm hover:opacity-90 transition-all flex items-center justify-center gap-2 mt-1"
+            >
+              🎁 친구 초대하고 분석권 받기
+            </button>
             {user && (user.tickets_basic || 0) + (user.tickets_premium || 0) === 0 && (
               <p className="text-center text-xs text-red-500 font-bold mt-1">티켓이 부족합니다. 마이페이지에서 친구를 초대하고 티켓을 받아보세요!</p>
             )}
@@ -622,10 +678,16 @@ function DiagnosisContent() {
       {result && (
         <div className={`flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500 ${isHistory ? 'px-4' : ''}`}>
           
-          <div className="w-full flex justify-end">
+          <div className="w-full flex justify-end gap-2">
+            <button 
+              onClick={handleInvite}
+              className="flex items-center gap-1.5 bg-[#FEE500] text-black px-3 py-2 rounded-lg font-bold text-[12px] shadow-sm hover:opacity-90 transition-all active:scale-[0.98]"
+            >
+              🎁 친구 초대하고 분석권 받기
+            </button>
             <button 
               onClick={handleDownloadPDF}
-              className="flex items-center gap-1.5 bg-slate-800 text-white px-4 py-2 rounded-lg font-bold text-[13px] shadow-sm hover:bg-slate-900 transition-all active:scale-[0.98]"
+              className="flex items-center gap-1.5 bg-slate-800 text-white px-3 py-2 rounded-lg font-bold text-[12px] shadow-sm hover:bg-slate-900 transition-all active:scale-[0.98]"
             >
               <Download className="w-3.5 h-3.5" /> 리포트 PDF 저장/공유
             </button>

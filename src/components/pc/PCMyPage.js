@@ -364,7 +364,7 @@ export default function PCMyPage() {
                   }}
                   className="bg-[#FEE500] text-black text-[11px] font-bold px-3 py-2 rounded-lg hover:opacity-90 transition-opacity whitespace-nowrap"
                 >
-                  카카오톡 공유
+                  친구 초대하고 분석권 받기
                 </button>
               </div>
             </div>
@@ -383,7 +383,7 @@ export default function PCMyPage() {
             </button>
           </div>
           <div className="bg-teal-50/50 rounded-md p-4 border border-teal-100/50">
-            <p className="text-[12px] text-teal-800 mb-4">AI 두피 분석의 정확도를 높이기 위한 필수 의료 정보입니다.</p>
+            <p className="text-[12px] text-teal-800 mb-4">AI 탈모 분석의 정확도를 높이기 위한 필수 의료 정보입니다.</p>
             <div className="flex flex-col gap-3">
               {[{ label: "성별", value: profile.gender }, { label: "출생 연도", value: `${profile.birthYear}년생` }, { label: "유전적 가족력", value: profile.familyHistory }].map((item) => (
                 <div key={item.label} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
