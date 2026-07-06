@@ -113,6 +113,9 @@ function DiagnosisContent() {
           if (res.ok) {
             const data = await res.json();
             const details = JSON.parse(data.details);
+            if (details) {
+              details.created_at = data.created_at;
+            }
             setResult(details);
             setImagePreview(data.image_url && data.image_url !== 'placeholder_url' ? data.image_url : "https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?w=500&h=500&fit=crop");
           }
@@ -342,7 +345,11 @@ function DiagnosisContent() {
 
       if (response.ok) {
         const data = await response.json();
-        setResult(data.diagnosis);
+        const details = data.diagnosis;
+        if (details) {
+          details.created_at = data.created_at || new Date().toISOString();
+        }
+        setResult(details);
         
         // update user's tickets in local storage silently by fetching me again
         if (user) {
@@ -734,7 +741,7 @@ function DiagnosisContent() {
                 <span className="text-[12px] text-gray-500">TalmoTalk AI Assessment</span>
               </div>
               <div className="flex flex-col items-end text-right text-[11px] text-gray-400 leading-snug">
-                <span>발급일: {new Date().toLocaleDateString()}</span>
+                <span>분석일: {result?.created_at ? new Date(result.created_at).toLocaleDateString() : new Date().toLocaleDateString()}</span>
                 <span>{result?.patientInfo?.gender || profile.gender === 'male' ? '남성' : '여성'} / {result?.patientInfo?.age || (profile.birthYear ? new Date().getFullYear() - parseInt(profile.birthYear) + 1 : "-")}세</span>
               </div>
             </div>
@@ -913,7 +920,7 @@ function DiagnosisContent() {
                   <p className="text-sm font-medium text-slate-500">TalmoTalk Precision AI Assessment Report</p>
                 </div>
                 <div className="text-right text-[13px] text-slate-600 space-y-1">
-                  <p className="flex items-center justify-end gap-2"><Calendar className="w-4 h-4" /> 발급일: {new Date().toLocaleDateString()}</p>
+                  <p className="flex items-center justify-end gap-2"><Calendar className="w-4 h-4" /> 분석일: {report?.created_at ? new Date(report.created_at).toLocaleDateString() : new Date().toLocaleDateString()}</p>
                   <p className="flex items-center justify-end gap-2"><User className="w-4 h-4" /> 환자 정보: {report?.patientInfo?.age}세 / {report?.patientInfo?.gender} / 가족력 {report?.patientInfo?.familyHistory}</p>
                 </div>
               </div>
