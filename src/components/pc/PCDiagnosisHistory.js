@@ -166,7 +166,7 @@ export default function PCDiagnosisHistory({ historyList }) {
              {/* List View */}
             <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm overflow-hidden">
               <h4 className="font-bold text-gray-800 text-[15px] mb-4">분석 내역 상세</h4>
-              <div className="flex flex-col gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 {filteredHistory.map((item, idx) => {
                   let details = {};
                   try {
@@ -175,7 +175,19 @@ export default function PCDiagnosisHistory({ historyList }) {
                     console.error("Failed to parse history details");
                   }
                   
-                  const summaryText = details?.analysis?.[0] || item.severity || "분석 내용이 없습니다.";
+                  // Helper to parse severity
+                  const parseSeverity = (sev) => {
+                    if (!sev) return { status: "-", level: "-" };
+                    if (sev.includes("양호")) {
+                      return { status: "정상", level: "양호" };
+                    }
+                    const level = sev.replace("진행:", "").replace("진행", "").replace(":", "").trim();
+                    return { status: "진행중", level };
+                  };
+
+                  const { status, level } = parseSeverity(item.severity);
+                  const displaySeverity = item.severity ? `상황: ${status} / 상태: ${level}` : "분석 내용이 없습니다.";
+                  const summaryText = details?.analysis?.[0] || displaySeverity;
                   
                   // Color for severity
                   let severityColor = "bg-gray-100 text-gray-800";
@@ -197,7 +209,9 @@ export default function PCDiagnosisHistory({ historyList }) {
                             <span className="text-[12px] font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded">{details?.scanType || '전체/알 수 없음'}</span>
                             <span className="text-[12px] text-gray-500 font-medium flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5"/> {new Date(item.created_at).toLocaleDateString()}</span>
                           </div>
-                          <span className={`px-2.5 py-1 text-[11px] font-bold rounded-md ${severityColor}`}>진행 단계: {item.severity}</span>
+                          <span className={`px-2.5 py-1 text-[11px] font-bold rounded-md ${severityColor}`}>
+                            상황: {status} | 상태: {level}
+                          </span>
                         </div>
                         
                         <div className="flex justify-between items-end mt-1">

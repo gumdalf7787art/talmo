@@ -239,7 +239,21 @@ function DiagnosisHistoryContent() {
         <div className="flex flex-col gap-3">
           {filteredHistory.map((item) => {
             const details = item.details ? (typeof item.details === 'string' ? JSON.parse(item.details) : item.details) : null;
-            const summaryText = details?.analysis?.[0] || item.severity || "분석 내용이 없습니다.";
+            
+            // Helper to parse severity
+            const parseSeverity = (sev) => {
+              if (!sev) return { status: "-", level: "-" };
+              if (sev.includes("양호")) {
+                return { status: "정상", level: "양호" };
+              }
+              const level = sev.replace("진행:", "").replace("진행", "").replace(":", "").trim();
+              return { status: "진행중", level };
+            };
+
+            const { status, level } = parseSeverity(item.severity);
+            const displaySeverity = item.severity ? `상황: ${status} / 상태: ${level}` : "분석 내용이 없습니다.";
+            const summaryText = details?.analysis?.[0] || displaySeverity;
+            
             // Compare with next item to get trend
             const currentIndex = filteredHistory.findIndex(h => h.id === item.id);
             const prevItem = filteredHistory[currentIndex + 1];
@@ -270,7 +284,7 @@ function DiagnosisHistoryContent() {
                   
                   <div className="flex items-center gap-2 mb-1.5">
                     <span className="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-bold rounded shrink-0">
-                      {item.severity}
+                      상황: {status} | 상태: {level}
                     </span>
                     <p className="text-[13px] font-bold text-gray-900 truncate">
                       {summaryText}
