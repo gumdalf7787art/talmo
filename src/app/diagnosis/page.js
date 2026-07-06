@@ -707,29 +707,37 @@ function DiagnosisContent() {
               </div>
             </div>
 
-            {/* 핵심 요약 대시보드 3개 박스 */}
-            <div className="grid grid-cols-3 gap-2 mb-6">
-              <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-xl flex flex-col justify-center items-center text-center">
-                <span className="text-[10px] font-bold text-slate-500 mb-1">탈모 종합 점수</span>
-                <div className="text-[18px] font-black text-slate-900">{result.summary?.score || result.score || 0}<span className="text-[11px] text-slate-400 font-medium">/100</span></div>
+            {/* 핵심 요약 대시보드 박스 */}
+            <div className="flex flex-col gap-2 mb-6">
+              {/* 상단 2개 박스 */}
+              <div className="grid grid-cols-2 gap-2">
+                <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl flex flex-col justify-center items-center text-center">
+                  <span className="text-[11px] font-bold text-slate-500 mb-1">탈모 종합 점수</span>
+                  <div className="text-[20px] font-black text-slate-900">{result.summary?.score || result.score || 0}<span className="text-[12px] text-slate-400 font-medium">/100</span></div>
+                </div>
+                <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl flex flex-col justify-center items-center text-center">
+                  <span className="text-[11px] font-bold text-slate-500 mb-1">추정 두피 나이</span>
+                  <div className="text-[20px] font-black text-teal-600">{result.summary?.scalpAge || result.scalpAge || "-"}<span className="text-[12px] text-teal-600/60 font-medium">세</span></div>
+                </div>
               </div>
-              <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-xl flex flex-col justify-center items-center text-center">
-                <span className="text-[10px] font-bold text-slate-500 mb-1">추정 두피 나이</span>
-                <div className="text-[18px] font-black text-teal-600">{result.summary?.scalpAge || result.scalpAge || "-"}<span className="text-[11px] text-teal-600/60 font-medium">세</span></div>
-              </div>
-              <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-xl flex flex-col justify-center items-center text-center overflow-hidden">
-                <span className="text-[10px] font-bold text-slate-500 mb-1">진행 단계</span>
-                <div className="text-[13px] font-black text-red-600 truncate w-full mb-0.5">{result.summary?.norwoodStage || result.norwoodStage || "-"}</div>
+
+              {/* 하단 1개 박스: 진행 단계 */}
+              <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl flex flex-col justify-center items-center text-center">
+                <div className="flex justify-between items-center w-full mb-2 px-1">
+                  <span className="text-[11px] font-bold text-slate-500">진행 단계 (Norwood/Ludwig)</span>
+                  <span className="text-[15px] font-black text-red-600">{result.summary?.norwoodStage || result.norwoodStage || "-"}</span>
+                </div>
                 
-                <div className="flex items-center gap-0.5 w-full mt-1">
-                  {['양호', '초기', '중기', '심각'].map((stage, idx) => {
+                {/* 진행 심각도 시각화 스텝퍼 */}
+                <div className="flex items-center gap-2 w-full mt-1 px-1">
+                  {['양호', '진행: 초기', '진행: 중기', '진행: 심각'].map((stage, idx) => {
                     const currentSeverity = result.summary?.severity || result.severity || "";
                     const isActive = currentSeverity.includes(stage) || (stage === '양호' && currentSeverity.includes('양호'));
                     return (
-                      <div key={idx} className="flex-1 flex flex-col items-center gap-0.5">
-                        <div className={`h-1 w-full rounded-full ${isActive ? 'bg-red-500' : 'bg-slate-200'}`} />
-                        <span className={`text-[8px] whitespace-nowrap scale-[0.8] origin-center ${isActive ? 'font-bold text-red-600' : 'text-slate-400 font-medium'}`}>
-                          {stage}
+                      <div key={idx} className="flex-1 flex flex-col items-center gap-1">
+                        <div className={`h-1.5 w-full rounded-full ${isActive ? 'bg-red-500' : 'bg-slate-200'}`} />
+                        <span className={`text-[10px] whitespace-nowrap ${isActive ? 'font-bold text-red-600' : 'text-slate-400 font-medium'}`}>
+                          {stage.replace('진행: ', '')}
                         </span>
                       </div>
                     );
