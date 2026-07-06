@@ -132,7 +132,7 @@ export async function onRequestGet(context) {
           if (referrerResult) {
             referredById = referrerResult.id;
             ticketsPremium = 2;
-            await db.prepare('UPDATE users SET tickets_premium = tickets_premium + 4 WHERE id = ?').bind(referredById).run();
+            await db.prepare('UPDATE users SET tickets_premium = tickets_premium + 2 WHERE id = ?').bind(referredById).run();
           }
         }
 

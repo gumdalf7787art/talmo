@@ -306,7 +306,7 @@ export default function PCMyPage() {
             <div className="pt-3 border-t border-teal-100 flex flex-col gap-2">
               <div className="flex flex-col gap-1">
                 <span className="text-[12px] font-bold text-teal-800">🎁 친구 초대하고 티켓 받기!</span>
-                <span className="text-[11px] text-teal-600">친구 가입 시 나도 4장, 친구도 4장!</span>
+                <span className="text-[11px] text-teal-600">친구 가입 시 나도 2장, 친구도 2장 추가 지급!</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex-1 bg-white border border-teal-200 rounded-lg px-2 py-1.5 flex items-center justify-between">

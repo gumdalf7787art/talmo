@@ -331,7 +331,7 @@ export default function MyPage() {
           <div className="flex justify-between items-start">
             <div className="flex flex-col gap-1">
               <span className="text-[13px] font-bold text-gray-800">🎁 친구 초대하고 티켓 받기!</span>
-              <span className="text-[11px] text-gray-500">친구 가입 시 나도 4장, 친구도 4장!</span>
+              <span className="text-[11px] text-gray-500">친구 가입 시 나도 2장, 친구도 2장 추가 지급!</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
