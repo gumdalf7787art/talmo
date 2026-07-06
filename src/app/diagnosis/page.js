@@ -486,6 +486,41 @@ function DiagnosisContent() {
             </div>
           </div>
 
+          {/* 정확도를 높이는 촬영 팁 (모바일) */}
+          <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 flex flex-col gap-3.5">
+            <div>
+              <h4 className="font-bold text-slate-900 text-[13px] mb-2 flex items-center gap-1.5">
+                <Camera className="w-3.5 h-3.5 text-teal-600"/> 정확도를 높이는 촬영 팁
+              </h4>
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                <div className="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col items-center text-center gap-1">
+                  <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center overflow-hidden border border-slate-100">
+                    <img src="/tip_m_hairline.jpg" alt="M자 헤어라인 가이드" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-[11px] font-bold text-slate-800">M자 / 헤어라인</span>
+                  <span className="text-[10px] text-slate-500 leading-tight">정면에서<br/>라인이 잘 보이도록</span>
+                </div>
+                <div className="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col items-center text-center gap-1">
+                  <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center overflow-hidden border border-slate-100">
+                    <img src="/tip_crown_part.jpg" alt="정수리 가이드" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-[11px] font-bold text-slate-800">정수리 / 가르마</span>
+                  <span className="text-[10px] text-slate-500 leading-tight">고개를 숙이고<br/>전체가 잘 보이도록</span>
+                </div>
+              </div>
+              <div className="text-[11px] text-slate-600 mt-2.5 bg-white p-2.5 rounded-lg border border-slate-200 flex flex-col gap-1.5">
+                <div className="flex items-start gap-1">
+                  <AlertCircle className="w-3.5 h-3.5 text-orange-500 shrink-0 mt-0.5" />
+                  <span>밝은 조명 아래에서 흔들림 없이 찍어야 <strong>모발 밀도와 두피 상태(홍반 등)</strong>를 AI가 가장 정확히 판독합니다.</span>
+                </div>
+                <div className="flex flex-col gap-1 pl-4.5 text-[10.5px] text-slate-500">
+                  <span>• Ai 판독은 각도와 조명 그리고 촬영 이미지에 따라 다르게 나올 수 있습니다.</span>
+                  <span>• 확대경으로 찍은 사진이 아니므로 참고용으로만 사용해주시기 바랍니다.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* 업로드 영역 */}
           <div className="flex gap-2 w-full">
              <button onClick={() => setScanType('이마/헤어라인')} className={`flex-1 py-3 text-[13px] font-bold rounded-xl border-2 transition-all ${scanType === '이마/헤어라인' ? 'border-teal-500 bg-teal-50 text-teal-700 shadow-sm' : 'border-gray-200 bg-white text-gray-500 hover:bg-gray-50'}`}>이마/헤어라인</button>

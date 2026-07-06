@@ -379,17 +379,17 @@ function PCDiagnosisContent() {
                 <div className="grid grid-cols-2 gap-2 mt-2">
                   <div className="bg-white border border-slate-200 rounded-lg p-3 flex flex-col items-center text-center gap-1.5">
                     <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center overflow-hidden border border-slate-100">
-                      <img src="/hairline_guide.png" alt="M자 헤어라인 가이드" className="w-full h-full object-cover scale-110" />
+                      <img src="/tip_m_hairline.jpg" alt="M자 헤어라인 가이드" className="w-full h-full object-cover" />
                     </div>
                     <span className="text-[12px] font-bold text-slate-800">M자 / 헤어라인</span>
-                    <span className="text-[11px] text-slate-500 leading-tight">정면 45도에서<br/>이마 라인이 보이게</span>
+                    <span className="text-[11px] text-slate-500 leading-tight">정면에서<br/>라인이 잘 보이도록</span>
                   </div>
                   <div className="bg-white border border-slate-200 rounded-lg p-3 flex flex-col items-center text-center gap-1.5">
                     <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center overflow-hidden border border-slate-100">
-                      <img src="/crown_guide.png" alt="정수리 가이드" className="w-full h-full object-cover scale-110" />
+                      <img src="/tip_crown_part.jpg" alt="정수리 가이드" className="w-full h-full object-cover" />
                     </div>
                     <span className="text-[12px] font-bold text-slate-800">정수리 / 가르마</span>
-                    <span className="text-[11px] text-slate-500 leading-tight">고개를 숙여<br/>위에서 아래로</span>
+                    <span className="text-[11px] text-slate-500 leading-tight">고개를 숙이고<br/>전체가 잘 보이도록</span>
                   </div>
                 </div>
                 <div className="text-[12px] text-slate-600 mt-3 bg-white p-3 rounded border border-slate-200 flex flex-col gap-2">
@@ -397,8 +397,9 @@ function PCDiagnosisContent() {
                     <AlertCircle className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" />
                     <span>밝은 조명 아래에서 흔들림 없이 찍어야 <strong>모발 밀도와 두피 상태(홍반 등)</strong>를 AI가 가장 정확히 판독합니다.</span>
                   </div>
-                  <div className="flex items-start gap-1.5 ml-5 text-slate-500">
+                  <div className="flex flex-col gap-1 ml-5 text-slate-500">
                     <span>• Ai 판독은 각도와 조명 그리고 촬영 이미지에 따라 다르게 나올 수 있습니다.</span>
+                    <span>• 확대경으로 찍은 사진이 아니므로 참고용으로만 사용해주시기 바랍니다.</span>
                   </div>
                 </div>
               </div>
