@@ -11,6 +11,38 @@ import { getCroppedImg } from "@/lib/cropUtils";
 import { toJpeg } from "html-to-image";
 import jsPDF from "jspdf";
 
+const renderStageText = (stageText) => {
+  if (!stageText) return "-";
+  let type = "";
+  let stage = "";
+  let basp = "";
+  
+  if (stageText.includes("남성형 탈모")) {
+    type = "남성형 탈모";
+  } else if (stageText.includes("여성형 탈모")) {
+    type = "여성형 탈모";
+  } else {
+    return <div className="text-2xl font-black text-red-600 mt-1">{stageText}</div>;
+  }
+  
+  const remaining = stageText.replace(type, "").trim();
+  const baspIndex = remaining.indexOf("(");
+  if (baspIndex !== -1) {
+    stage = remaining.substring(0, baspIndex).trim();
+    basp = remaining.substring(baspIndex).trim();
+  } else {
+    stage = remaining;
+  }
+  
+  return (
+    <div className="flex flex-col items-center leading-snug mt-1">
+      <span className="text-[13px] font-bold text-slate-500">{type}</span>
+      <span className="text-2xl font-black text-red-600 my-0.5">{stage}</span>
+      {basp && <span className="text-[12px] font-bold text-slate-400">{basp}</span>}
+    </div>
+  );
+};
+
 function PCDiagnosisContent() {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -616,7 +648,7 @@ function PCDiagnosisContent() {
                 </div>
                 <div className="bg-slate-50 border border-slate-200 p-5 rounded-lg flex flex-col justify-center items-center text-center">
                   <span className="text-[13px] font-bold text-slate-500 mb-1">진행 단계 (Norwood/Ludwig)</span>
-                  <div className="text-2xl font-black text-red-600 mt-1">{report?.summary?.norwoodStage}</div>
+                  {renderStageText(report?.summary?.norwoodStage)}
                   
                   {/* 진행 심각도 시각화 스텝퍼 */}
                   <div className="flex items-center gap-1 mt-3 w-full max-w-[200px]">
