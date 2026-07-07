@@ -35,6 +35,7 @@ export async function onRequestGet(context) {
         p.views,
         p.comments_count,
         p.user_id as post_author_id,
+        p.status,
         u.nickname as author,
         u.profile_image as authorImage
       FROM posts p
@@ -49,6 +50,24 @@ export async function onRequestGet(context) {
         status: 404,
         headers: { 'Content-Type': 'application/json' }
       });
+    }
+
+    if (post.status === 'pending') {
+      const requesterId = url.searchParams.get('userId');
+      let isAdmin = false;
+      if (requesterId) {
+        const userStmt = db.prepare(`SELECT role FROM users WHERE id = ?`).bind(requesterId);
+        const requester = await userStmt.first();
+        if (requester && requester.role === 'admin') {
+          isAdmin = true;
+        }
+      }
+      if (!isAdmin) {
+        return new Response(JSON.stringify({ error: '승인 대기 중인 게시글입니다.' }), { 
+          status: 403,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
     }
 
     // Fetch comments

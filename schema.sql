@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS posts (
   images TEXT,
   views INTEGER DEFAULT 0,
   comments_count INTEGER DEFAULT 0,
+  status TEXT DEFAULT 'published',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -48,4 +49,13 @@ CREATE TABLE IF NOT EXISTS bookmarks (
   PRIMARY KEY (user_id, post_id),
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (post_id) REFERENCES posts(id)
+);
+
+CREATE TABLE IF NOT EXISTS bot_personas (
+  user_id TEXT PRIMARY KEY,
+  concept TEXT,
+  prompt_instruction TEXT,
+  is_active INTEGER DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

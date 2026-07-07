@@ -39,7 +39,7 @@ export async function onRequestGet(context) {
       FROM posts p
       LEFT JOIN users u ON p.user_id = u.id
       ${bookmarkedBy ? 'INNER JOIN bookmarks b ON p.id = b.post_id INNER JOIN users bu ON b.user_id = bu.id' : ''}
-      WHERE 1=1
+      WHERE 1=1 AND (p.status IS NULL OR p.status = 'published')
     `;
 
     const params = [];

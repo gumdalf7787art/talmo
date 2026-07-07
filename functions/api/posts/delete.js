@@ -30,7 +30,16 @@ export async function onRequestPost(context) {
       });
     }
 
-    if (post.user_id !== userId) {
+    // Check if requester is admin
+    let isAdmin = false;
+    if (userId) {
+      const userCheck = await db.prepare('SELECT role FROM users WHERE id = ?').bind(userId).first();
+      if (userCheck && userCheck.role === 'admin') {
+        isAdmin = true;
+      }
+    }
+
+    if (post.user_id !== userId && !isAdmin) {
       return new Response(JSON.stringify({ error: '권한이 없습니다.' }), { 
         status: 403,
         headers: { 'Content-Type': 'application/json' }
