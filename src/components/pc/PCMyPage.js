@@ -405,7 +405,7 @@ export default function PCMyPage() {
             { href: "/diagnosis-history", icon: FileText, label: "AI 분석 기록", color: "bg-teal-50 text-teal-600" },
             { href: "/my-posts", icon: FileText, label: "내가 작성한 글", color: "bg-orange-50 text-orange-500" },
             { href: "/my-bookmarks", icon: Bookmark, label: "스크랩한 글", color: "bg-purple-50 text-purple-500" },
-          ].map((item) => (
+          ].filter(item => item.href !== "/chat-list").map((item) => (
             <Link key={item.href} href={item.href} className="flex flex-col items-center gap-3 p-5 rounded-md border border-gray-100 hover:border-teal-200 hover:shadow-md transition-all group relative">
               {item.badge > 0 && <span className="absolute top-3 right-3 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">{item.badge > 99 ? '99+' : item.badge}</span>}
               <div className={`w-12 h-12 rounded-full ${item.color} flex items-center justify-center`}>

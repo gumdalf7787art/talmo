@@ -5,6 +5,7 @@ import useMediaQuery from "@/hooks/useMediaQuery";
 import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
 import PCHeader from "@/components/pc/PCHeader";
+import PWAPrompt from "@/components/PWAPrompt";
 
 export default function LayoutShell({ children }) {
   const isPC = useMediaQuery("(min-width: 1024px)");
@@ -41,6 +42,7 @@ export default function LayoutShell({ children }) {
         <Header />
         <main className="min-h-[calc(100vh-120px)]">{children}</main>
         <BottomNav />
+        <PWAPrompt />
       </div>
     </div>
   );

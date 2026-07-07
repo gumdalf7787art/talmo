@@ -19,7 +19,7 @@ function PCHeaderContent() {
 
   const highlightItems = [
     { href: "/diagnosis", label: "Ai 탈모 분석" },
-    { href: "/consult", label: "1:1상담" },
+    // { href: "/consult", label: "1:1상담" },
   ];
 
   const searchTexts = [

@@ -153,6 +153,7 @@ function SearchContent() {
             </section>
 
             {/* 병원 결과 */}
+            {false && (
             <section className="flex flex-col gap-3">
                <div className="flex items-center justify-between">
                 <h3 className="font-bold text-gray-900">
@@ -190,6 +191,7 @@ function SearchContent() {
                 ))}
               </div>
             </section>
+            )}
           </div>
         )}
       </div>

@@ -455,6 +455,7 @@ export default function MyPage() {
       <div className="bg-white mb-2 border-y border-gray-100 py-3">
         <h3 className="font-bold text-gray-900 text-[16px] px-5 mb-2 pt-2">나의 활동</h3>
         <div className="flex flex-col">
+          {false && (
           <Link href="/chat-list" className="flex items-center justify-between px-5 py-3.5 hover:bg-gray-50 transition-colors active:bg-gray-100">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
@@ -469,6 +470,7 @@ export default function MyPage() {
               <ChevronRight className="w-4 h-4 text-gray-400" />
             </div>
           </Link>
+          )}
 
           <Link href="/diagnosis-history" className="flex items-center justify-between px-5 py-3.5 hover:bg-gray-50 transition-colors active:bg-gray-100">
             <div className="flex items-center gap-3">

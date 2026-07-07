@@ -17,6 +17,12 @@ export const metadata = {
   metadataBase: new URL('https://talmotalk.com'),
   title: "탈모톡 - 무료 실시간 AI 탈모 분석",
   description: "대한민국 리얼 탈모 커뮤니티",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "탈모톡",
+  },
   openGraph: {
     title: "탈모톡 - 무료 실시간 AI 탈모 분석",
     description: "대한민국 리얼 탈모 커뮤니티",

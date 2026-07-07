@@ -498,6 +498,7 @@ export default function Home() {
         </div>
       </section>
       {/* 1:1 Consultation */}
+      {false && (
       <section className="flex flex-col gap-3 mt-4 mb-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
@@ -554,6 +555,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      )}
     </div>
   );
 }

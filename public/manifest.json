@@ -1,0 +1,24 @@
+{
+  "name": "탈모톡 - 실시간 AI 탈모 분석 및 커뮤니티",
+  "short_name": "탈모톡",
+  "description": "무료 실시간 AI 두피 진단 및 탈모 관리 커뮤니티",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/logo-mobile.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo-mobile.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

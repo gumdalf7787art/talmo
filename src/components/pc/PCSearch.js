@@ -113,6 +113,7 @@ export default function PCSearch({ initialQuery, communityResults, hospitalResul
             </div>
 
             {/* Hospital Results */}
+            {false && (
             <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex flex-col">
               <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
                 <h3 className="font-bold text-gray-900 text-base">
@@ -152,6 +153,7 @@ export default function PCSearch({ initialQuery, communityResults, hospitalResul
                 ))}
               </div>
             </div>
+            )}
           </>
         )}
       </div>

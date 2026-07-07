@@ -353,6 +353,7 @@ export default function PCHome() {
         </section>
 
         {/* 1:1 상담 의사 목록 */}
+        {false && (
         <section className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
@@ -397,6 +398,7 @@ export default function PCHome() {
             </div>
           )}
         </section>
+        )}
       </div>
 
       {/* Right Sidebar */}
