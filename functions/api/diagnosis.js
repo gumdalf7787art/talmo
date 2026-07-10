@@ -85,8 +85,8 @@ export async function onRequestPost(context) {
     if (apiKey === "YOUR_DUMMY_API_KEY_HERE") {
       aiDiagnosisResult = generateMockData(gender, age, familyHistory);
     } else {
-      // 3. 실제 Gemini API 호출 (최신 모델 폴백 지원: 3.5-flash -> 2.5-flash -> 2.0-flash)
-      const modelsToTry = ['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-2.0-flash'];
+      // 3. 실제 Gemini API 호출 (최신 모델 폴백 지원: 2.0-flash -> 1.5-pro -> 1.5-flash)
+      const modelsToTry = ['gemini-2.0-flash', 'gemini-1.5-pro', 'gemini-1.5-flash'];
       let geminiResponse;
       let rawText = null;
 
@@ -200,8 +200,8 @@ export async function onRequestPost(context) {
             throw new Error(`사용자가 너무 많습니다. 1분 뒤에 다시 시도해주세요.`);
           }
 
-          // 404(Not Found) 거나 503(Overloaded) 등 일시적/모델 권한 에러인 경우 다음 모델로 넘어감
-          if (errCode === 404 || errCode === 503 || errMsg.includes('not found') || errMsg.includes('high demand') || errMsg.includes('overloaded')) {
+          // 404(Not Found) 거나 503(Overloaded), 또는 특정 모델의 지역 제한(location is not supported) 에러인 경우 다음 모델로 넘어감
+          if (errCode === 404 || errCode === 503 || errMsg.includes('not found') || errMsg.includes('high demand') || errMsg.includes('overloaded') || errMsg.includes('location is not supported')) {
             console.log(`[Gemini API] Model ${model} failed (${errCode}), trying next model...`);
             continue;
           } else {
