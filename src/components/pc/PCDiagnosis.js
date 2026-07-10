@@ -492,7 +492,7 @@ function PCDiagnosisContent() {
               <div className="border-t border-slate-200 pt-4">
                 <h4 className="font-bold text-slate-900 text-sm mb-2 flex items-center gap-1.5"><FileText className="w-4 h-4 text-slate-600"/> 임상 스캔 안내</h4>
                 <ul className="text-[12px] text-slate-700 space-y-1.5 list-disc pl-4">
-                  <li>입력된 환자 정보(나이/성별/가족력)를 바탕으로 초개인화 분석을 진행합니다.</li>
+                  <li>입력된 유저 정보(나이/성별/가족력)를 바탕으로 초개인화 분석을 진행합니다.</li>
                 </ul>
               </div>
             </div>
@@ -502,7 +502,7 @@ function PCDiagnosisContent() {
           <div className="flex flex-col gap-5">
             <div className="bg-white border border-gray-200 p-6 rounded-lg shadow-sm flex flex-col gap-4">
               <div className="flex items-center gap-2">
-                <h3 className="font-bold text-[16px] text-gray-900">환자 정보</h3>
+                <h3 className="font-bold text-[16px] text-gray-900">유저 정보</h3>
                 {!isProfileComplete && <span className="text-[12px] text-red-500 font-medium ml-auto">필수 입력 항목입니다</span>}
               </div>
               <div className="flex flex-col gap-3">
@@ -638,7 +638,7 @@ function PCDiagnosisContent() {
               </div>
               <div className="text-right text-[13px] text-slate-600 space-y-1">
                 <p className="flex items-center justify-end gap-2"><Calendar className="w-4 h-4" /> 분석일: {report?.created_at ? new Date(report.created_at).toLocaleDateString() : new Date().toLocaleDateString()}</p>
-                <p className="flex items-center justify-end gap-2"><User className="w-4 h-4" /> 환자 정보: {report?.patientInfo?.age}세 / {report?.patientInfo?.gender} / 가족력 {report?.patientInfo?.familyHistory}</p>
+                <p className="flex items-center justify-end gap-2"><User className="w-4 h-4" /> 유저 정보: {report?.patientInfo?.age}세 / {report?.patientInfo?.gender} / 가족력 {report?.patientInfo?.familyHistory}</p>
               </div>
             </div>
 

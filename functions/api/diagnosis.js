@@ -89,9 +89,9 @@ export async function onRequestPost(context) {
       for (const model of modelsToTry) {
         const promptText = `
 당신은 20년 경력의 세계적인 피부과 전문의이자 모발 이식 권위자입니다.
-환자의 기본 정보: [성별: ${gender}, 나이: ${age}세, 탈모 가족력: ${familyHistory}, 촬영 부위: ${scanType}]
+유저의 기본 정보: [성별: ${gender}, 나이: ${age}세, 탈모 가족력: ${familyHistory}, 촬영 부위: ${scanType}]
 
-아래의 최신 의학적 지식(탈모 유형 및 진단 기준)과 첨부된 두피/모발 사진, 환자의 컨텍스트를 종합하여, 실제 의사가 발급하는 **'임상 정밀 진단 리포트'**를 작성해 주세요.
+아래의 최신 의학적 지식(탈모 유형 및 진단 기준)과 첨부된 두피/모발 사진, 유저의 컨텍스트를 종합하여, 실제 의사가 발급하는 **'임상 정밀 진단 리포트'**를 작성해 주세요.
 
 [최신 의학적 참고 지식 및 진단 기준]
 1. 남성형 탈모 (AGA): 유전 및 DHT 기전. M자/정수리 탈모. Norwood 분류 및 BASP 분류(M/C/U 기본형, F/V 특정형) 적용.
@@ -122,7 +122,7 @@ export async function onRequestPost(context) {
     "summary": {
       "score": [위 평가 기준에 따른 종합 점수 0~100 정수],
       "severity": "[양호, 진행: 초기, 진행: 중기, 진행: 심각 중 하나]",
-      "norwoodStage": "[환자 성별과 사진에 맞는 정확한 진단명 및 단계 표기. 예: '남성형 탈모 Norwood Stage III', '여성형 탈모 Ludwig Scale I', '원형 탈모 의심' 등. 해당 없으면 '진단 특이사항 없음']",
+      "norwoodStage": "[유저 성별과 사진에 맞는 정확한 진단명 및 단계 표기. 예: '남성형 탈모 Norwood Stage III', '여성형 탈모 Ludwig Scale I', '원형 탈모 의심' 등. 해당 없으면 '진단 특이사항 없음']",
       "scalpAge": [실제 나이보다 몇 살 더 들어보이거나 젊어보이는지 추정한 두피 나이 정수값]
     },
     "breakdown": [
@@ -133,7 +133,7 @@ export async function onRequestPost(context) {
     ],
     "medicalAnalysis": {
       "finding": "[의학적 지식을 바탕으로 사진 상에 나타난 주요 특징을 분석한 내용. 중요한 키워드는 반드시 HTML <b> 태그로 굵게 강조할 것. (절대 단정적인 '진단' 톤을 피하고, '분석', '추정' 등의 표현 사용)]",
-      "cause": "[현재 상태를 유발했을 것으로 추정되는 통계적 요인 분석. 환자의 나이, 성별, 가족력을 연관 지어 설명. <b>태그 사용]"
+      "cause": "[현재 상태를 유발했을 것으로 추정되는 통계적 요인 분석. 유저의 나이, 성별, 가족력을 연관 지어 설명. <b>태그 사용]"
     },
     "treatmentPlan": {
       "medical": [
@@ -342,7 +342,7 @@ function generateMockData(gender, age, familyHistory) {
       ],
       medicalAnalysis: {
         finding: `제출된 이미지를 분석한 결과, 전반적으로 <b>모낭의 소형화</b>가 관찰되며, 특히 정수리 부근의 밀도가 저하되어 있습니다. 두피 표면에는 <b>미세한 홍반과 유분</b>이 확인됩니다.`,
-        cause: `환자분의 컨텍스트(${age}세 ${gender}, 가족력 ${familyHistory})를 고려할 때, 이는 <b>유전적 안드로겐성 탈모(AGA)</b>의 전형적인 초기 양상으로 강하게 추정됩니다.`
+        cause: `유저분의 컨텍스트(${age}세 ${gender}, 가족력 ${familyHistory})를 고려할 때, 이는 <b>유전적 안드로겐성 탈모(AGA)</b>의 전형적인 초기 양상으로 강하게 추정됩니다.`
       },
       treatmentPlan: {
         medical: [

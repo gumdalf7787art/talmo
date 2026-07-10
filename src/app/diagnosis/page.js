@@ -921,7 +921,7 @@ function DiagnosisContent() {
                 </div>
                 <div className="text-right text-[13px] text-slate-600 space-y-1">
                   <p className="flex items-center justify-end gap-2"><Calendar className="w-4 h-4" /> 분석일: {report?.created_at ? new Date(report.created_at).toLocaleDateString() : new Date().toLocaleDateString()}</p>
-                  <p className="flex items-center justify-end gap-2"><User className="w-4 h-4" /> 환자 정보: {report?.patientInfo?.age}세 / {report?.patientInfo?.gender} / 가족력 {report?.patientInfo?.familyHistory}</p>
+                  <p className="flex items-center justify-end gap-2"><User className="w-4 h-4" /> 유저 정보: {report?.patientInfo?.age}세 / {report?.patientInfo?.gender} / 가족력 {report?.patientInfo?.familyHistory}</p>
                 </div>
               </div>
 
