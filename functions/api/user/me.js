@@ -56,6 +56,11 @@ export async function onRequestGet(context) {
       userResult.tickets_basic = ticketsBasic;
     }
 
+    // Unlimited tickets for specific user
+    if (userResult.email === 'goodduck2@naver.com') {
+      userResult.tickets_basic = 999999;
+    }
+
     // Handle legacy users who might not have a referral code yet
     if (!userResult.referral_code) {
       let newReferralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
