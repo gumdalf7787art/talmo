@@ -62,6 +62,7 @@ function App() {
   const searchTexts = ["탈모 상태 분석하기", "이식/치료 리얼후기", "전문가 칼럼"];
   const [userId, setUserId] = useState(null);
   const [showAsiModal, setShowAsiModal] = useState(false);
+  const [showMypageModal, setShowMypageModal] = useState(false);
   useEffect(() => {
     // 임시 토스 사용자 로그인 프로세스 시뮬레이션
     const loginTossUser = async () => {
@@ -520,7 +521,7 @@ function App() {
         borderBottom: '1px solid #f3f4f6', display: 'flex', flexDirection: 'column'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', padding: '0 12px', height: '60px', gap: '10px' }}>
-          <div className="logo" style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
+          <div className="logo" style={{ flexShrink: 0, display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => handleNavigate('home')}>
             <img src="https://talmotalk.pages.dev/logo-mobile.png?v=2" alt="탈모톡 로고" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
           </div>
           <div className="search-bar" style={{
@@ -545,7 +546,7 @@ function App() {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
             <Bell size={22} color="#4b5563" />
-            <div onClick={() => window.open('https://talmotalk.com/login', '_blank')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+            <div onClick={() => setShowMypageModal(true)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
               <User size={22} color="#4b5563" />
             </div>
           </div>
@@ -711,6 +712,36 @@ function App() {
       </div>
       
       <BottomNav currentView="analysis" onNavigate={handleNavigate} />
+
+      {/* 마이페이지 이동 확인 모달 */}
+      {showMypageModal && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '16px', width: '100%', maxWidth: '320px', overflow: 'hidden', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', padding: '24px 20px', textAlign: 'center' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1f2937', marginBottom: '8px' }}>탈모톡 본 페이지로 이동</h3>
+            <p style={{ fontSize: '14px', color: '#6b7280', lineHeight: '1.5', marginBottom: '24px' }}>
+              마이페이지 기능은 <strong style={{ color: 'var(--talmo-green)' }}>탈모톡</strong>에서 가능합니다.<br/>
+              탈모톡으로 옮겨집니다.
+            </p>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button 
+                onClick={() => setShowMypageModal(false)}
+                style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', backgroundColor: '#f3f4f6', color: '#4b5563', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}
+              >
+                그냥 있기
+              </button>
+              <button 
+                onClick={() => {
+                  setShowMypageModal(false);
+                  window.open('https://talmotalk.com/my-page', '_blank');
+                }}
+                style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', backgroundColor: 'var(--talmo-green)', color: 'white', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}
+              >
+                탈모톡 가기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
