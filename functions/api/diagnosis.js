@@ -88,7 +88,7 @@ export async function onRequestPost(context) {
       const modelsToTry = ['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-2.0-flash'];
       let geminiResponse;
       let rawText = null;
-      let lastErrorMsg = "";
+      let allErrors = [];
 
       for (const model of modelsToTry) {
         const promptText = `
@@ -194,7 +194,7 @@ export async function onRequestPost(context) {
           const errorData = await geminiResponse.json().catch(() => ({}));
           const errCode = errorData.error?.code;
           const errMsg = errorData.error?.message || '';
-          lastErrorMsg = errMsg;
+          allErrors.push(`[${model}] ${errCode || 'N/A'}: ${errMsg || '알 수 없는 오류'}`);
           
           // 사용량 제한(Rate Limit, 429) 에러인 경우 사용자에게 친절한 한글 메시지 반환
           if (errCode === 429 || errMsg.toLowerCase().includes('quota') || errMsg.toLowerCase().includes('rate limit')) {
@@ -213,7 +213,7 @@ export async function onRequestPost(context) {
       }
 
       if (!rawText) {
-        throw new Error(`모든 Gemini 모델 호출에 실패했습니다. (마지막 에러: ${lastErrorMsg || '알 수 없음'}) API 키 권한 또는 지역 제한을 확인해주세요.`);
+        throw new Error(`모든 Gemini 모델 호출에 실패했습니다.\n${allErrors.join('\n')}\nAPI 키 권한 또는 지역 제한을 확인해주세요.`);
       }
       try {
         aiDiagnosisResult = JSON.parse(rawText);
