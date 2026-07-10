@@ -963,7 +963,7 @@ function DiagnosisContent() {
                                     {asi.desc}
                                   </p>
                                   <div className="text-[11px] text-slate-500 bg-slate-50 p-3 rounded border border-slate-100">
-                                    * AI Scalp Index(ASI)는 수많은 탈모 데이터를 기반으로 학습된 탈모톡만의 독자적인 인공지능 두피 분석 지표입니다.
+                                    * AI Scalp Index(ASI)는 탈모 데이터를 기반으로 학습된 탈모톡만의 독자적인 인공지능 두피 분석 지표입니다.
                                   </div>
                                 </div>
                               </div>

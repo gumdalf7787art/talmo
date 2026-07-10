@@ -310,7 +310,7 @@ function App() {
                               {asi.desc}
                             </p>
                             <div style={{ fontSize: '11px', color: '#64748b', backgroundColor: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #f1f5f9', textAlign: 'left', lineHeight: '1.4' }}>
-                              * AI Scalp Index(ASI)는 수많은 탈모 데이터를 기반으로 학습된 탈모톡만의 독자적인 인공지능 두피 분석 지표입니다.
+                              * AI Scalp Index(ASI)는 탈모 데이터를 기반으로 학습된 탈모톡만의 독자적인 인공지능 두피 분석 지표입니다.
                             </div>
                           </div>
                         </div>
