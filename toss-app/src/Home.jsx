@@ -54,7 +54,7 @@ export default function Home({ onNavigate }) {
             )}
           </h2>
           <div 
-            onClick={() => window.open('https://talmotalk.com', '_blank')}
+            onClick={() => onNavigate('board_list', title === '전문가 칼럼' ? '전문가칼럼' : title)}
             style={{ fontSize: '11px', color: 'var(--talmo-green)', fontWeight: '600', cursor: 'pointer' }}
           >
             더보기 &gt;
