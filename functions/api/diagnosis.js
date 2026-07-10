@@ -123,6 +123,7 @@ export async function onRequestPost(context) {
       "score": [위 평가 기준에 따른 종합 점수 0~100 정수],
       "severity": "[양호, 진행: 초기, 진행: 중기, 진행: 심각 중 하나]",
       "norwoodStage": "[유저 성별과 사진에 맞는 정확한 진단명 및 단계 표기. 예: '남성형 탈모 Norwood Stage III', '여성형 탈모 Ludwig Scale I', '원형 탈모 의심' 등. 해당 없으면 '진단 특이사항 없음']",
+      "asiStage": "[위 진단명에 해당하는 탈모톡 전용 AI Scalp Index 코드. 남성형일 경우 심각도에 따라 ASI-M1부터 ASI-M7 중 하나를 출력. 해당 없거나 판단 불가일 경우 'ASI-M1' (안심 상태) 출력. (반드시 영문 코드만 출력, 예: ASI-M4)]",
       "scalpAge": [실제 나이보다 몇 살 더 들어보이거나 젊어보이는지 추정한 두피 나이 정수값]
     },
     "breakdown": [
@@ -332,6 +333,7 @@ function generateMockData(gender, age, familyHistory) {
         score: overallScore,
         severity: severity,
         norwoodStage: gender === '여성' ? 'Ludwig Scale I' : 'Norwood Stage III',
+        asiStage: "ASI-M2",
         scalpAge: Math.round(estimatedAge)
       },
       breakdown: [

@@ -3,45 +3,16 @@
 import { useState, useRef, useEffect, Suspense, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, ChevronRight, FileText, Calendar, User, Activity, Pill, Heart, Home, CheckSquare, Square, X, Scissors, Download } from "lucide-react";
+import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, ChevronRight, FileText, Calendar, User, Activity, Pill, Heart, Home, CheckSquare, Square, X, Scissors, Download, HelpCircle } from "lucide-react";
 import RadarChart from "../RadarChart";
 import { compressImage, dataURLtoFile } from "@/lib/imageUtils";
+import { getAsiInfo } from "@/lib/asiUtils";
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from "@/lib/cropUtils";
 import { toJpeg } from "html-to-image";
 import jsPDF from "jspdf";
 
-const renderStageText = (stageText) => {
-  if (!stageText) return "-";
-  let type = "";
-  let stage = "";
-  let basp = "";
-  
-  if (stageText.includes("남성형 탈모")) {
-    type = "남성형 탈모";
-  } else if (stageText.includes("여성형 탈모")) {
-    type = "여성형 탈모";
-  } else {
-    return <div className="text-2xl font-black text-red-600 mt-1">{stageText}</div>;
-  }
-  
-  const remaining = stageText.replace(type, "").trim();
-  const baspIndex = remaining.indexOf("(");
-  if (baspIndex !== -1) {
-    stage = remaining.substring(0, baspIndex).trim();
-    basp = remaining.substring(baspIndex).trim();
-  } else {
-    stage = remaining;
-  }
-  
-  return (
-    <div className="flex flex-col items-center leading-snug mt-1">
-      <span className="text-[13px] font-bold text-slate-500">{type}</span>
-      <span className="text-2xl font-black text-red-600 my-0.5">{stage}</span>
-      {basp && <span className="text-[12px] font-bold text-slate-400">{basp}</span>}
-    </div>
-  );
-};
+// renderStageText is no longer needed, using getAsiInfo directly.
 
 function PCDiagnosisContent() {
   const [imageFile, setImageFile] = useState(null);
@@ -57,6 +28,7 @@ function PCDiagnosisContent() {
   const [consent2, setConsent2] = useState(false);
   const consentAll = consent1 && consent2;
   const [result, setResult] = useState(null);
+  const [showAsiModal, setShowAsiModal] = useState(false);
   const fileInputRef = useRef(null);
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState({ gender: "", birthYear: "", familyHistory: "" });
@@ -653,24 +625,69 @@ function PCDiagnosisContent() {
                   <span className="text-[13px] font-bold text-slate-500 mb-1">추정 두피 나이</span>
                   <div className="text-4xl font-black text-teal-600">{report?.summary?.scalpAge}<span className="text-lg text-teal-600/60 font-medium">세</span></div>
                 </div>
-                <div className="bg-slate-50 border border-slate-200 p-5 rounded-lg flex flex-col justify-center items-center text-center">
-                  <span className="text-[13px] font-bold text-slate-500 mb-1">진행 단계 (Norwood/Ludwig)</span>
-                  {renderStageText(report?.summary?.norwoodStage)}
-                  
-                  {/* 진행 심각도 시각화 스텝퍼 */}
-                  <div className="flex items-center gap-1 mt-3 w-full max-w-[200px]">
-                    {['양호', '진행: 초기', '진행: 중기', '진행: 심각'].map((stage, idx) => {
-                      const isActive = report?.summary?.severity === stage;
-                      return (
-                        <div key={idx} className="flex-1 flex flex-col items-center gap-1">
-                          <div className={`h-1.5 w-full rounded-full ${isActive ? 'bg-red-500' : 'bg-slate-200'}`} />
-                          <span className={`text-[10px] whitespace-nowrap ${isActive ? 'font-bold text-red-600' : 'text-slate-400 font-medium'}`}>
-                            {stage.replace('진행: ', '')}
-                          </span>
-                        </div>
-                      );
-                    })}
+                <div className="bg-slate-50 border border-slate-200 p-5 rounded-lg flex flex-col justify-center items-center text-center relative">
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className="text-[13px] font-bold text-slate-500">진행 단계 (AI Scalp Index)</span>
+                    <button onClick={() => setShowAsiModal(true)} className="text-slate-400 hover:text-slate-600 transition-colors">
+                      <HelpCircle className="w-3.5 h-3.5" />
+                    </button>
                   </div>
+                  
+                  {(() => {
+                    const asi = getAsiInfo(report);
+                    return (
+                      <>
+                        <div className="flex flex-col items-center leading-snug mt-1">
+                          <span className="text-[13px] font-bold text-slate-500">{asi.sub}</span>
+                          <span className="text-2xl font-black text-red-600 my-0.5">{asi.code}</span>
+                          <span className="text-[12px] font-bold text-slate-400">{asi.title}</span>
+                        </div>
+                        
+                        {/* 7단계 진행 심각도 시각화 스텝퍼 */}
+                        <div className="flex items-center gap-0.5 mt-3 w-full max-w-[240px]">
+                          {[1, 2, 3, 4, 5, 6, 7].map((step) => {
+                            const isActive = asi.level === step;
+                            return (
+                              <div key={step} className="flex-1 flex flex-col items-center gap-1">
+                                <div className={`h-1.5 w-full rounded-full ${isActive ? 'bg-red-500' : 'bg-slate-200'}`} />
+                                <span className={`text-[9px] whitespace-nowrap ${isActive ? 'font-bold text-red-600' : 'text-slate-400'}`}>
+                                  {step}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                        
+                        {/* ASI 모달 */}
+                        {showAsiModal && (
+                          <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4">
+                            <div className="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden text-left animate-in fade-in zoom-in-95 duration-200">
+                              <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-slate-50">
+                                <h4 className="font-bold text-slate-900 flex items-center gap-2">
+                                  <Activity className="w-4 h-4 text-slate-600" /> 
+                                  AI Scalp Index 안내
+                                </h4>
+                                <button onClick={() => setShowAsiModal(false)} className="text-gray-400 hover:text-gray-700 bg-white rounded-full p-1 shadow-sm">
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </div>
+                              <div className="p-5">
+                                <div className="bg-red-50 text-red-700 px-3 py-1.5 rounded text-sm font-bold w-fit mb-3">
+                                  {asi.code} : {asi.title}
+                                </div>
+                                <p className="text-[14px] text-slate-700 leading-relaxed mb-4">
+                                  {asi.desc}
+                                </p>
+                                <div className="text-[11px] text-slate-500 bg-slate-50 p-3 rounded border border-slate-100">
+                                  * AI Scalp Index(ASI)는 수만 건의 탈모 임상 데이터를 기반으로 학습된 탈모톡만의 독자적인 인공지능 두피 분석 지표입니다.
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
 
