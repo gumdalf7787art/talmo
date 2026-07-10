@@ -73,12 +73,17 @@ export async function onRequestGet(context) {
       return new Response('DB connection missing', { status: 500 });
     }
 
-    // Extract referral code from state or cookie if present
+    // Extract referral code and link_toss_id from state or cookie if present
     let referredByCode = state || null;
+    let linkTossId = null;
     const cookieHeader = request.headers.get('Cookie');
-    if (!referredByCode && cookieHeader) {
-      const match = cookieHeader.match(/(?:^|;\s*)referral_code=([^;]*)/);
-      if (match) referredByCode = match[1];
+    if (cookieHeader) {
+      if (!referredByCode) {
+        const match = cookieHeader.match(/(?:^|;\s*)referral_code=([^;]*)/);
+        if (match) referredByCode = match[1];
+      }
+      const tossMatch = cookieHeader.match(/(?:^|;\s*)link_toss_id=([^;]*)/);
+      if (tossMatch) linkTossId = tossMatch[1];
     }
 
     // 3. Check if user exists by Kakao ID
@@ -164,6 +169,15 @@ export async function onRequestGet(context) {
 
     // Remove password from user object
     const { password: _, ...safeUser } = user;
+
+    // 4. Migrate Toss data if linkTossId is present
+    if (linkTossId) {
+      await db.prepare(`
+        UPDATE diagnosis_history 
+        SET user_id = ? 
+        WHERE user_id = (SELECT id FROM users WHERE provider_id = ? AND provider = 'toss' LIMIT 1)
+      `).bind(safeUser.id, linkTossId).run();
+    }
 
     // 5. Return HTML to set localStorage and redirect to Home
     const htmlResponse = `

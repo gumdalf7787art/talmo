@@ -107,6 +107,20 @@ export async function onRequestPost(context) {
 
     await insertStmt.run();
 
+    // Migrate Toss data if link_toss_id is present in cookies
+    const cookieHeader = request.headers.get('Cookie');
+    if (cookieHeader) {
+      const tossMatch = cookieHeader.match(/(?:^|;\s*)link_toss_id=([^;]*)/);
+      if (tossMatch && tossMatch[1]) {
+        const linkTossId = tossMatch[1];
+        await db.prepare(`
+          UPDATE diagnosis_history 
+          SET user_id = ? 
+          WHERE user_id = (SELECT id FROM users WHERE provider_id = ? AND provider = 'toss' LIMIT 1)
+        `).bind(id, linkTossId).run();
+      }
+    }
+
     return new Response(JSON.stringify({ success: true, message: 'User created successfully' }), { 
       status: 201,
       headers: { 'Content-Type': 'application/json' }

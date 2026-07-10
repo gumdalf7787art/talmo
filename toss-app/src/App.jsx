@@ -197,7 +197,8 @@ function App() {
   };
 
   const handleLinkToWeb = () => {
-    window.open("https://talmotalk.com", "_blank");
+    const tossId = localStorage.getItem('toss_id') || '';
+    window.open(`https://talmotalk.com/signup?link_toss_id=${tossId}`, "_blank");
   };
 
   const handleNavigate = (view, data = null) => {
@@ -231,7 +232,45 @@ function App() {
 
     return (
       <div className="app-container" style={{ padding: 0, paddingBottom: '80px', backgroundColor: 'var(--card-bg)' }}>
-        <header className="app-header" style={{ position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid #f3f4f6', backgroundColor: 'white', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {/* 글로벌 헤더 */}
+        <header className="home-header" style={{
+          position: 'sticky', top: 0, zIndex: 110, backgroundColor: 'white', 
+          borderBottom: '1px solid #f3f4f6', display: 'flex', flexDirection: 'column'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', padding: '0 12px', height: '60px', gap: '10px' }}>
+            <div className="logo" style={{ flexShrink: 0, display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => handleNavigate('home')}>
+              <img src="https://talmotalk.pages.dev/logo-mobile.png?v=2" alt="탈모톡 로고" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
+            </div>
+            <div className="search-bar" style={{
+              flex: 1, display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'white', 
+              border: '2px solid var(--talmo-green)', borderRadius: '25px', padding: '0 12px',
+              overflow: 'hidden', height: '34px'
+            }}>
+              <Search size={16} color="var(--talmo-green)" />
+              <div style={{ height: '18px', overflow: 'hidden', flex: 1, position: 'relative' }}>
+                <div style={{
+                  display: 'flex', flexDirection: 'column', transition: 'transform 0.5s ease-in-out',
+                  position: 'absolute', width: '100%', top: 0, left: 0,
+                  transform: `translateY(-${searchIndex * 18}px)`
+                }}>
+                  {searchTexts.map((text, idx) => (
+                    <span key={idx} style={{ height: '18px', display: 'flex', alignItems: 'center', fontSize: '12px', fontWeight: 'bold', color: '#9ca3af' }}>
+                      {text}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+              <Bell size={22} color="#4b5563" />
+              <div onClick={() => setShowMypageModal(true)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                <User size={22} color="#4b5563" />
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <header className="app-header" style={{ borderBottom: '1px solid #f3f4f6', backgroundColor: 'white', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
           <button 
             onClick={() => { setResult(null); handleNavigate('home'); }} 
             style={{ position: 'absolute', left: '16px', background: 'none', border: 'none', cursor: 'pointer' }}
@@ -433,7 +472,7 @@ function App() {
 
             <div className="bottom-actions" style={{ padding: '0 0 24px 0', marginTop: '16px' }}>
               <button className="primary-btn green-btn" onClick={handleLinkToWeb} style={{ padding: '14px', borderRadius: '12px', fontSize: '15px' }}>
-                탈모톡 가입하고 무료티켓 더 받기
+                탈모톡 가입하고 리포트 저장, 무료티켓 더 받기
               </button>
             </div>
           </div>
@@ -467,6 +506,17 @@ function App() {
   return (
     <div className="app-container" style={{ padding: 0, paddingBottom: '65px', position: 'relative', backgroundColor: 'var(--card-bg)' }}>
       
+      {/* 검사 중 모달 */}
+      {isAnalyzing && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '16px', padding: '32px 20px', textAlign: 'center', width: '100%', maxWidth: '280px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
+            <div style={{ width: '40px', height: '40px', border: '4px solid #f3f4f6', borderTop: '4px solid var(--talmo-green)', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }} />
+            <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1f2937', margin: '0 0 8px' }}>검사중입니다</h3>
+            <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>창을 닫지 말아주세요.</p>
+          </div>
+        </div>
+      )}
+
       {/* Crop Modal */}
       {isCropping && (
         <div style={{

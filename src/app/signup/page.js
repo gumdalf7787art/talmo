@@ -21,12 +21,16 @@ export default function SignupPage() {
     const refFromUrl = params.get("ref");
     if (refFromUrl) {
       setReferredByCode(refFromUrl.toUpperCase());
-      return;
+    } else {
+      const match = document.cookie.match(/(?:^|;\s*)referral_code=([^;]*)/);
+      if (match && match[1]) {
+        setReferredByCode(match[1].toUpperCase());
+      }
     }
 
-    const match = document.cookie.match(/(?:^|;\s*)referral_code=([^;]*)/);
-    if (match && match[1]) {
-      setReferredByCode(match[1].toUpperCase());
+    const linkTossId = params.get("link_toss_id");
+    if (linkTossId) {
+      document.cookie = `link_toss_id=${linkTossId}; path=/; max-age=3600`;
     }
   }, []);
 
