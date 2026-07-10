@@ -83,7 +83,7 @@ export default function BoardList({ initialTab, onNavigate }) {
             <ArrowLeft size={24} color="var(--text-main)" />
           </button>
           
-          <div className="logo" style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
+          <div className="logo" style={{ flexShrink: 0, display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => onNavigate('home')}>
             <img src="https://talmotalk.pages.dev/logo-mobile.png?v=2" alt="탈모톡 로고" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
           </div>
           

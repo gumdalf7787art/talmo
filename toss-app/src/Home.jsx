@@ -129,7 +129,7 @@ export default function Home({ onNavigate }) {
         borderBottom: '1px solid #f3f4f6', display: 'flex', flexDirection: 'column'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', padding: '0 12px', height: '60px', gap: '10px' }}>
-          <div className="logo" style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
+          <div className="logo" style={{ flexShrink: 0, display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <img src="https://talmotalk.pages.dev/logo-mobile.png?v=2" alt="탈모톡 로고" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
           </div>
           <div className="search-bar" style={{
