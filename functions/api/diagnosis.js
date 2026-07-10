@@ -157,7 +157,7 @@ export async function onRequestPost(context) {
 }
         `;
 
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        const geminiUrl = `https://gateway.ai.cloudflare.com/v1/84acacaba7e53fa7077a09518e21ecfb/talmo-ai/google-ai-studio/v1beta/models/${model}:generateContent?key=${apiKey}`;
         geminiResponse = await fetch(geminiUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
