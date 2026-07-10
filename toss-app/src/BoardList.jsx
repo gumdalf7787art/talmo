@@ -9,6 +9,7 @@ export default function BoardList({ initialTab, onNavigate }) {
   const [notices, setNotices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [noticesExpanded, setNoticesExpanded] = useState(false);
+  const [showMypageModal, setShowMypageModal] = useState(false);
 
   // Parse relative time
   const timeAgo = (dateString) => {
@@ -92,7 +93,7 @@ export default function BoardList({ initialTab, onNavigate }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
             <Search size={22} color="#4b5563" />
             <Bell size={22} color="#4b5563" />
-            <div onClick={() => onNavigate('history')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+            <div onClick={() => setShowMypageModal(true)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
               <User size={22} color="#4b5563" />
             </div>
           </div>
@@ -271,6 +272,36 @@ export default function BoardList({ initialTab, onNavigate }) {
       </button>
 
       <BottomNav currentView="board_list" onNavigate={onNavigate} />
+
+      {/* 마이페이지 이동 확인 모달 */}
+      {showMypageModal && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '16px', width: '100%', maxWidth: '320px', overflow: 'hidden', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', padding: '24px 20px', textAlign: 'center' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1f2937', marginBottom: '8px' }}>탈모톡 본 페이지로 이동</h3>
+            <p style={{ fontSize: '14px', color: '#6b7280', lineHeight: '1.5', marginBottom: '24px' }}>
+              마이페이지 기능은 <strong style={{ color: 'var(--talmo-green)' }}>탈모톡</strong>에서 가능합니다.<br/>
+              탈모톡으로 옮겨집니다.
+            </p>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button 
+                onClick={() => setShowMypageModal(false)}
+                style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', backgroundColor: '#f3f4f6', color: '#4b5563', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}
+              >
+                그냥 있기
+              </button>
+              <button 
+                onClick={() => {
+                  setShowMypageModal(false);
+                  window.open('https://talmotalk.com/my-page', '_blank');
+                }}
+                style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', backgroundColor: 'var(--talmo-green)', color: 'white', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}
+              >
+                탈모톡 가기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
