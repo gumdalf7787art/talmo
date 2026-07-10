@@ -5,11 +5,53 @@ import History from "./History";
 import PostDetail from "./PostDetail";
 import BoardList from "./BoardList";
 import BottomNav from "./BottomNav";
-import { ArrowLeft, Search, User, Bell, Scissors, X, Activity, AlertCircle, Pill, Home as HomeIcon, Heart, ChevronLeft, ChevronRight, RefreshCcw } from "lucide-react";
+import { ArrowLeft, Search, User, Bell, Scissors, X, Activity, AlertCircle, Pill, Home as HomeIcon, Heart, ChevronLeft, ChevronRight, RefreshCcw, HelpCircle } from "lucide-react";
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from './cropUtils';
 import { compressImage, dataURLtoFile } from './imageUtils';
 import RadarChart from './RadarChart';
+
+const ASI_MAPPING = {
+  "ASI-M1": { code: 'ASI-M1', level: 1, title: '솔리드 존 (Solid Zone)', sub: 'Base Profile', desc: '헤어라인과 정수리가 밀도 높고 단단하게 유지되는 안심 상태입니다.' },
+  "ASI-M2": { code: 'ASI-M2', level: 2, title: '사인 패턴 (Sign Pattern)', sub: 'Initial Recede', desc: '양측 이마 끝(M자)이나 앞이마 라인 전체에 미세한 형태 변화의 신호가 감지되는 모니터링 단계입니다.' },
+  "ASI-M3": { code: 'ASI-M3', level: 3, title: '앵글 브레이크 (Angle Break)', sub: 'Focal Thinning', desc: 'M자 굴곡이 각지게 깊어지거나 정수리 가마 부위 중 한 곳에 집중적인 공백이 인지되는 진입 단계입니다.' },
+  "ASI-M4": { code: 'ASI-M4', level: 4, title: '커넥트 리스크 (Connect Risk)', sub: 'Active Shrink', desc: '헤어라인 후퇴와 정수리 약화가 동시에 진행되어 두 영역이 서로 연결될 리스크가 있는 활성 단계입니다.' },
+  "ASI-M5": { code: 'ASI-M5', level: 5, title: '유니온 브릿지 (Union Bridge)', sub: 'Advanced Blend', desc: '앞머리와 정수리 사이의 모발 경계선(Bridge)이 좁아지며 두 영역이 결합되는 심화 단계입니다.' },
+  "ASI-M6": { code: 'ASI-M6', level: 6, title: '와이드 코어 (Wide Core)', sub: 'Extensive Void', desc: '중심부 모발 영역이 광범위하게 축소되어 머리 윗부분 전체의 볼륨 복원에 집중해야 하는 단계입니다.' },
+  "ASI-M7": { code: 'ASI-M7', level: 7, title: '인텐시브 솔루션 (Intensive)', sub: 'Clinical Matching', desc: '전반적인 모발 영역의 축소 양상으로, 정밀 스캔과 함께 집중적인 밸런스 케어 및 전문가 상담을 권장합니다.' },
+  
+  "ASI-F1": { code: 'ASI-F1', level: 1, title: '클리어 라인 (Clear Line)', sub: 'Stable Density', desc: '가르마선이 촘촘하고 정수리 모발 밀도가 정상 범위를 유지하고 있는 건강한 상태입니다.' },
+  "ASI-F2": { code: 'ASI-F2', level: 2, title: '딤 라인 (Dim Line)', sub: 'Soft Diffusion', desc: '가르마 경계가 미세하게 흐려지며 주변 모발이 부드럽게 가늘어지기 시작하는 모니터링 단계입니다.' },
+  "ASI-F3": { code: 'ASI-F3', level: 3, title: '스프레드 패턴 (Spread Pattern)', sub: 'Linear Extension', desc: '가르마 중심의 빈 곳이 크리스마스트리 형태로 외곽까지 확장되며 두피가 조금씩 들여다보이는 주의 단계입니다.' },
+  "ASI-F4": { code: 'ASI-F4', level: 4, title: '포커스 케어 (Focus Care)', sub: 'Active Thinning', desc: '정수리 전반의 밀도 감소가 뚜렷하고 볼륨감이 크게 낮아져 본격적인 집중 케어가 필요한 활성 단계입니다.' },
+  "ASI-F5": { code: 'ASI-F5', level: 5, title: '인텐시브 솔루션 (Intensive)', sub: 'Clinical Matching', desc: '정수리 광범위 구역의 밀도가 크게 낮아진 상태로, 정밀 스캔과 함께 집중적인 밸런스 케어 및 전문가 상담을 권장합니다.' }
+};
+
+const getAsiInfo = (summary) => {
+  if (summary?.asiStage && ASI_MAPPING[summary.asiStage]) {
+    return ASI_MAPPING[summary.asiStage];
+  }
+  const stageText = summary?.norwoodStage || "";
+  
+  if (stageText.includes("Ludwig") || stageText.includes("여성형")) {
+    if (stageText.includes("Stage III") || stageText.includes("Scale III")) return ASI_MAPPING["ASI-F5"];
+    if (stageText.includes("Stage II-2") || stageText.includes("Scale II-2")) return ASI_MAPPING["ASI-F4"];
+    if (stageText.includes("Stage II-1") || stageText.includes("Scale II-1") || stageText.includes("Stage II") || stageText.includes("Scale II")) return ASI_MAPPING["ASI-F3"];
+    if (stageText.includes("Stage I-3") || stageText.includes("Stage I-2") || stageText.includes("Scale I-3") || stageText.includes("Scale I-2")) return ASI_MAPPING["ASI-F2"];
+    if (stageText.includes("Stage I-1") || stageText.includes("Scale I-1") || stageText.includes("Stage I") || stageText.includes("Scale I")) return ASI_MAPPING["ASI-F1"];
+    return ASI_MAPPING["ASI-F1"];
+  }
+
+  if (stageText.includes("Stage 7") || stageText.includes("Scale VII")) return ASI_MAPPING["ASI-M7"];
+  if (stageText.includes("Stage 6") || stageText.includes("Scale VI")) return ASI_MAPPING["ASI-M6"];
+  if (stageText.includes("Stage 5") || stageText.includes("Scale V")) return ASI_MAPPING["ASI-M5"];
+  if (stageText.includes("Stage 4") || stageText.includes("Scale IV")) return ASI_MAPPING["ASI-M4"];
+  if (stageText.includes("Stage 3") || stageText.includes("Scale III")) return ASI_MAPPING["ASI-M3"];
+  if (stageText.includes("Stage 2") || stageText.includes("Scale II")) return ASI_MAPPING["ASI-M2"];
+  if (stageText.includes("Stage 1") || stageText.includes("Scale I")) return ASI_MAPPING["ASI-M1"];
+  
+  return ASI_MAPPING["ASI-M1"];
+};
 
 function App() {
   const [currentView, setCurrentView] = useState('home');
@@ -19,7 +61,7 @@ function App() {
   const [searchIndex, setSearchIndex] = useState(0);
   const searchTexts = ["탈모 상태 분석하기", "이식/치료 리얼후기", "전문가 칼럼"];
   const [userId, setUserId] = useState(null);
-
+  const [showAsiModal, setShowAsiModal] = useState(false);
   useEffect(() => {
     // 임시 토스 사용자 로그인 프로세스 시뮬레이션
     const loginTossUser = async () => {
@@ -29,7 +71,7 @@ function App() {
         localStorage.setItem('toss_id', tossId);
       }
       try {
-        const res = await fetch('/api/auth/toss/login', {
+        const res = await fetch('https://talmotalk.com/api/auth/toss/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ tossId })
@@ -125,7 +167,7 @@ function App() {
         payload.image = await base64Promise;
       }
 
-      const res = await fetch("/api/diagnosis", {
+      const res = await fetch("https://talmotalk.com/api/diagnosis", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -187,8 +229,8 @@ function App() {
     };
 
     return (
-      <div className="app-container" style={{ padding: 0, paddingBottom: '24px', backgroundColor: 'var(--card-bg)' }}>
-        <header className="app-header" style={{ position: 'relative', borderBottom: '1px solid #f3f4f6', backgroundColor: 'white', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="app-container" style={{ padding: 0, paddingBottom: '80px', backgroundColor: 'var(--card-bg)' }}>
+        <header className="app-header" style={{ position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid #f3f4f6', backgroundColor: 'white', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <button 
             onClick={() => { setResult(null); handleNavigate('home'); }} 
             style={{ position: 'absolute', left: '16px', background: 'none', border: 'none', cursor: 'pointer' }}
@@ -216,24 +258,67 @@ function App() {
               </div>
             </div>
 
-            <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', padding: '14px', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#64748b', marginBottom: '8px' }}>진행 단계 (Norwood/Ludwig)</span>
-              {renderStageText(summary.norwoodStage)}
-              
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', marginTop: '8px', padding: '0 4px' }}>
-                {['양호', '진행: 초기', '진행: 중기', '진행: 심각'].map((stage, idx) => {
-                  const currentSeverity = summary.severity || "";
-                  const isActive = currentSeverity.includes(stage) || (stage === '양호' && currentSeverity.includes('양호'));
-                  return (
-                    <div key={idx} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-                      <div style={{ height: '6px', width: '100%', borderRadius: '999px', backgroundColor: isActive ? '#ef4444' : '#e2e8f0' }} />
-                      <span style={{ fontSize: '10px', whiteSpace: 'nowrap', fontWeight: isActive ? 'bold' : '500', color: isActive ? '#dc2626' : '#94a3b8' }}>
-                        {stage.replace('진행: ', '')}
-                      </span>
-                    </div>
-                  );
-                })}
+            <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', padding: '14px', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '8px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#64748b' }}>진행 단계 (AI Scalp Index)</span>
+                <button onClick={() => setShowAsiModal(true)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex' }}>
+                  <HelpCircle size={14} color="#94a3b8" />
+                </button>
               </div>
+              
+              {(() => {
+                const asi = getAsiInfo(summary);
+                return (
+                  <>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: '1.2' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#64748b' }}>{asi.sub}</span>
+                      <span style={{ fontSize: '20px', fontWeight: '900', color: '#dc2626', margin: '2px 0' }}>{asi.code}</span>
+                      <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#94a3b8' }}>{asi.title}</span>
+                    </div>
+                    
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px', width: '100%', marginTop: '12px', padding: '0 4px' }}>
+                      {(asi.code.includes('F') ? [1, 2, 3, 4, 5] : [1, 2, 3, 4, 5, 6, 7]).map((step) => {
+                        const isActive = asi.level === step;
+                        return (
+                          <div key={step} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                            <div style={{ height: '6px', width: '100%', borderRadius: '999px', backgroundColor: isActive ? '#ef4444' : '#e2e8f0' }} />
+                            <span style={{ fontSize: '9px', whiteSpace: 'nowrap', fontWeight: isActive ? 'bold' : '500', color: isActive ? '#dc2626' : '#94a3b8' }}>
+                              {step}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {showAsiModal && (
+                      <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+                        <div style={{ backgroundColor: 'white', borderRadius: '16px', width: '100%', maxWidth: '320px', overflow: 'hidden', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}>
+                          <div style={{ padding: '16px', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#f8fafc' }}>
+                            <h4 style={{ fontWeight: 'bold', fontSize: '14px', color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <Activity size={16} color="#475569" /> 
+                              AI Scalp Index 안내
+                            </h4>
+                            <button onClick={() => setShowAsiModal(false)} style={{ background: 'white', border: 'none', padding: '4px', borderRadius: '999px', display: 'flex', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                              <X size={16} color="#94a3b8" />
+                            </button>
+                          </div>
+                          <div style={{ padding: '20px' }}>
+                            <div style={{ backgroundColor: '#fef2f2', color: '#b91c1c', padding: '6px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', display: 'inline-block', marginBottom: '12px' }}>
+                              {asi.code} : {asi.title}
+                            </div>
+                            <p style={{ fontSize: '14px', color: '#334155', lineHeight: '1.6', margin: '0 0 16px 0', textAlign: 'left' }}>
+                              {asi.desc}
+                            </p>
+                            <div style={{ fontSize: '11px', color: '#64748b', backgroundColor: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #f1f5f9', textAlign: 'left', lineHeight: '1.4' }}>
+                              * AI Scalp Index(ASI)는 수만 건의 탈모 임상 데이터를 기반으로 학습된 탈모톡만의 독자적인 인공지능 두피 분석 지표입니다.
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
             </div>
           </div>
 
@@ -352,6 +437,7 @@ function App() {
             </div>
           </div>
         </div>
+        <BottomNav currentView="analysis" onNavigate={handleNavigate} />
       </div>
     );
   }

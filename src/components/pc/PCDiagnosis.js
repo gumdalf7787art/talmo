@@ -643,9 +643,9 @@ function PCDiagnosisContent() {
                           <span className="text-[12px] font-bold text-slate-400">{asi.title}</span>
                         </div>
                         
-                        {/* 7단계 진행 심각도 시각화 스텝퍼 */}
+                        {/* ASI 진행 심각도 시각화 스텝퍼 */}
                         <div className="flex items-center gap-0.5 mt-3 w-full max-w-[240px]">
-                          {[1, 2, 3, 4, 5, 6, 7].map((step) => {
+                          {(asi.code.includes('F') ? [1, 2, 3, 4, 5] : [1, 2, 3, 4, 5, 6, 7]).map((step) => {
                             const isActive = asi.level === step;
                             return (
                               <div key={step} className="flex-1 flex flex-col items-center gap-1">
