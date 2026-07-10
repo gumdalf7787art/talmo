@@ -68,11 +68,7 @@ export async function onRequestPost(context) {
       let tickets_basic = userResult.tickets_basic !== null ? userResult.tickets_basic : 0;
       let tickets_premium = userResult.tickets_premium !== null ? userResult.tickets_premium : 0;
       
-      if (tickets_basic > 0) {
-        await db.prepare('UPDATE users SET tickets_basic = tickets_basic - 1 WHERE id = ?').bind(userId).run();
-      } else if (tickets_premium > 0) {
-        await db.prepare('UPDATE users SET tickets_premium = tickets_premium - 1 WHERE id = ?').bind(userId).run();
-      } else {
+      if (tickets_basic <= 0 && tickets_premium <= 0) {
         return new Response(JSON.stringify({ error: '보유한 분석 티켓이 부족합니다. 친구를 초대하여 티켓을 충전해 보세요!' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
       }
     }
@@ -279,6 +275,16 @@ export async function onRequestPost(context) {
         VALUES (?, ?, ?, ?, ?, ?, ?)
       `).bind(id, userId, dbScore, dbSeverity, imageUrl, dbDetails, now);
       await insertStmt.run();
+
+      // 티켓 차감 (분석 성공 시에만)
+      const userCheck = await db.prepare('SELECT tickets_basic, tickets_premium FROM users WHERE id = ?').bind(userId).first();
+      if (userCheck) {
+        if (userCheck.tickets_basic > 0) {
+          await db.prepare('UPDATE users SET tickets_basic = tickets_basic - 1 WHERE id = ?').bind(userId).run();
+        } else if (userCheck.tickets_premium > 0) {
+          await db.prepare('UPDATE users SET tickets_premium = tickets_premium - 1 WHERE id = ?').bind(userId).run();
+        }
+      }
     }
 
     return new Response(JSON.stringify(aiDiagnosisResult), {
