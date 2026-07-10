@@ -20,7 +20,7 @@ export default function BottomNav() {
   const navItems = [
     { href: "/", label: "홈", icon: Home },
     { href: "/community", label: "커뮤니티", icon: Users },
-    { href: "/diagnosis", label: "AI진단", icon: Camera },
+    { href: "/diagnosis", label: "AI분석", icon: Camera },
     // { href: "/consult", label: "1:1상담", icon: MessageCircle },
     { 
       href: isLoggedIn ? "/mypage" : "/login", 

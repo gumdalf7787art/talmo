@@ -335,7 +335,7 @@ export default function PCHome() {
         <section className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
-              <h3 className="font-bold text-lg text-gray-900">원장님 리얼 칼럼</h3>
+              <h3 className="font-bold text-lg text-gray-900">전문가 칼럼</h3>
               <span className="bg-gray-100 text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded">공식</span>
             </div>
             <Link href="/transplant" className="text-sm font-medium text-teal-600 flex items-center">더보기 <ChevronRight className="w-4 h-4" /></Link>

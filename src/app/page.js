@@ -442,7 +442,7 @@ export default function Home() {
       <section className="flex flex-col gap-1 mt-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <h3 className="font-bold text-base text-gray-900">원장님 리얼 칼럼</h3>
+            <h3 className="font-bold text-base text-gray-900">전문가 칼럼</h3>
             <span className="bg-gray-100 text-gray-500 text-[9px] font-bold px-1.5 py-0.5 rounded-sm">공식</span>
           </div>
           <Link href="/transplant" className="text-xs font-medium text-teal-600 flex items-center">
