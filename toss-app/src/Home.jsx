@@ -8,6 +8,7 @@ export default function Home({ onNavigate }) {
   const [talks, setTalks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchIndex, setSearchIndex] = useState(0);
+  const [showRedirectModal, setShowRedirectModal] = useState(false);
   const searchTexts = ["탈모 상태 분석하기", "이식/치료 리얼후기", "전문가 칼럼"];
 
   const columnPhotos = [
@@ -54,7 +55,7 @@ export default function Home({ onNavigate }) {
             )}
           </h2>
           <div 
-            onClick={() => onNavigate('board_list', title === '전문가 칼럼' ? '전문가칼럼' : title)}
+            onClick={() => setShowRedirectModal(true)}
             style={{ fontSize: '11px', color: 'var(--talmo-green)', fontWeight: '600', cursor: 'pointer' }}
           >
             더보기 &gt;
@@ -210,6 +211,36 @@ export default function Home({ onNavigate }) {
 
       </div>
       <BottomNav currentView="home" onNavigate={onNavigate} />
+
+      {/* 외부 링크 이동 확인 모달 */}
+      {showRedirectModal && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '16px', width: '100%', maxWidth: '320px', overflow: 'hidden', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', padding: '24px 20px', textAlign: 'center' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1f2937', marginBottom: '8px' }}>탈모톡 본 페이지로 이동</h3>
+            <p style={{ fontSize: '14px', color: '#6b7280', lineHeight: '1.5', marginBottom: '24px' }}>
+              더 많은 전체 게시글과 전체 기능을 이용하시려면<br/>
+              <strong style={{ color: 'var(--talmo-green)' }}>탈모톡 공식 홈페이지</strong>로 이동합니다.
+            </p>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button 
+                onClick={() => setShowRedirectModal(false)}
+                style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', backgroundColor: '#f3f4f6', color: '#4b5563', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}
+              >
+                그냥 있기
+              </button>
+              <button 
+                onClick={() => {
+                  setShowRedirectModal(false);
+                  window.open('https://talmotalk.com', '_blank');
+                }}
+                style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', backgroundColor: 'var(--talmo-green)', color: 'white', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}
+              >
+                탈모톡 가기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
