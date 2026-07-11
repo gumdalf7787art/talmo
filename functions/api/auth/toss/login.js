@@ -66,13 +66,17 @@ export async function onRequestPost(context) {
 
       const insertStmt = db.prepare(`
         INSERT INTO users (id, email, password, nickname, role, provider, provider_id, referral_code, tickets_basic, tickets_premium, created_at, updated_at) 
-        VALUES (?, ?, ?, ?, 'user', 'toss', ?, ?, 2, 0, ?, ?)
+        VALUES (?, ?, ?, ?, 'user', 'toss', ?, ?, 999, 0, ?, ?)
       `).bind(id, email, hashedPassword, finalNickname, tossId, referralCode, now, now);
 
       await insertStmt.run();
 
       // Fetch the newly created user
       user = await db.prepare('SELECT * FROM users WHERE id = ?').bind(id).first();
+    } else {
+      // For testing phase: refill tickets to 999 on login
+      await db.prepare('UPDATE users SET tickets_basic = 999 WHERE id = ?').bind(user.id).run();
+      user.tickets_basic = 999;
     }
 
     // Remove password from user object
