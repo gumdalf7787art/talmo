@@ -212,8 +212,12 @@ export default function Home({ onNavigate }) {
         
         {/* Footer */}
         <div style={{ textAlign: 'center', padding: '20px 0', fontSize: '11px', color: '#9ca3af', borderTop: '1px solid #f3f4f6', marginTop: '12px' }}>
-          <a href="https://talmotalk.com/privacy" target="_blank" rel="noopener noreferrer" style={{ color: '#9ca3af', textDecoration: 'underline' }}>개인정보처리방침</a>
-          <div style={{ marginTop: '8px' }}>© TalmoTalk. All rights reserved.</div>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '12px' }}>
+            <a href="https://talmotalk.com/terms" target="_blank" rel="noopener noreferrer" style={{ color: '#9ca3af', textDecoration: 'underline' }}>이용약관</a>
+            <span style={{ color: '#d1d5db' }}>|</span>
+            <a href="https://talmotalk.com/privacy" target="_blank" rel="noopener noreferrer" style={{ color: '#9ca3af', textDecoration: 'underline' }}>개인정보처리방침</a>
+          </div>
+          <div style={{ marginTop: '12px' }}>© TalmoTalk. All rights reserved.</div>
         </div>
       </div>
       <BottomNav currentView="home" onNavigate={onNavigate} />
