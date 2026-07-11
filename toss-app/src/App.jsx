@@ -189,8 +189,13 @@ function App() {
       const aiResult = await res.json();
       setResult(aiResult);
     } catch (err) {
-      console.error(err);
-      alert(err.message || "분석 중 오류가 발생했습니다.");
+      console.error("Fetch Error:", err);
+      const errMsg = err.message || "";
+      if (errMsg === "Failed to fetch" || errMsg.includes("NetworkError")) {
+        alert("네트워크 연결이 불안정하거나 분석 시간이 초과되었습니다. 조금만 더 작은 크기의 사진으로 다시 시도해 주세요.");
+      } else {
+        alert(`분석 중 오류가 발생했습니다: ${errMsg}`);
+      }
     } finally {
       setIsAnalyzing(false);
     }

@@ -29,12 +29,10 @@ export async function onRequestPost(context) {
         base64Image = b64Data;
       }
       
-      // Convert base64 to buffer for R2 storage
+      // Convert base64 to buffer for R2 storage efficiently using atob and Uint8Array
       const binaryString = atob(base64Image);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
+      // Use Uint8Array.from with a mapping function to avoid slow manual loops which can exceed Cloudflare's CPU limits
+      const bytes = Uint8Array.from(binaryString, c => c.charCodeAt(0));
       rawFileForStorage = bytes.buffer;
     } else {
       const formData = await request.formData();
