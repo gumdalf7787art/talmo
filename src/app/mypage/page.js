@@ -528,9 +528,9 @@ export default function MyPage() {
       {/* Footer info */}
       <div className="px-5 py-6 flex flex-col items-center gap-2">
         <div className="flex items-center gap-4 text-[12px] text-gray-400 font-medium">
-          <button className="hover:text-gray-600">이용약관</button>
+          <Link href="/terms" className="hover:text-gray-600">이용약관</Link>
           <span>|</span>
-          <button className="hover:text-gray-600">개인정보 처리방침</button>
+          <Link href="/privacy" className="hover:text-gray-600">개인정보 처리방침</Link>
         </div>
         <span className="text-[11px] text-gray-400">앱 버전 1.0.0</span>
       </div>

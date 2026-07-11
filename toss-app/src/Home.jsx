@@ -209,7 +209,12 @@ export default function Home({ onNavigate }) {
         {renderFeedSection('탈모수다', talks)}
 
         {renderFeedSection('전문가 칼럼', columnPhotos)}
-
+        
+        {/* Footer */}
+        <div style={{ textAlign: 'center', padding: '20px 0', fontSize: '11px', color: '#9ca3af', borderTop: '1px solid #f3f4f6', marginTop: '12px' }}>
+          <a href="https://talmotalk.com/privacy" target="_blank" rel="noopener noreferrer" style={{ color: '#9ca3af', textDecoration: 'underline' }}>개인정보처리방침</a>
+          <div style={{ marginTop: '8px' }}>© TalmoTalk. All rights reserved.</div>
+        </div>
       </div>
       <BottomNav currentView="home" onNavigate={onNavigate} />
 
