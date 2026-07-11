@@ -275,10 +275,10 @@ function App() {
           </div>
         </header>
 
-        <header className="app-header" style={{ borderBottom: '1px solid #f3f4f6', backgroundColor: 'white', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+        <header style={{ borderBottom: '1px solid #f3f4f6', backgroundColor: 'white', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', margin: 0 }}>
           <button 
             onClick={() => { setResult(null); handleNavigate('home'); }} 
-            style={{ position: 'absolute', left: '16px', background: 'none', border: 'none', cursor: 'pointer' }}
+            style={{ position: 'absolute', left: '16px', background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex' }}
           >
             <ArrowLeft size={24} color="var(--text-main)" />
           </button>
