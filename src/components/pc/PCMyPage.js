@@ -319,7 +319,7 @@ export default function PCMyPage() {
             <div className="pt-3 border-t border-teal-100 flex flex-col gap-2">
               <div className="flex flex-col gap-1">
                 <span className="text-[12px] font-bold text-teal-800">🎁 친구 초대하고 티켓 받기!</span>
-                <span className="text-[11px] text-teal-600">친구 가입 시 나도 2장, 친구도 2장 추가 지급!</span>
+                <span className="text-[11px] text-teal-600">친구 가입 시 나도 3장, 친구도 3장 추가 지급!</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex-1 bg-white border border-teal-200 rounded-lg px-2 py-1.5 flex items-center justify-between">
@@ -339,7 +339,7 @@ export default function PCMyPage() {
                         objectType: 'feed',
                         content: {
                           title: '🎁 탈모톡에 가입하고 AI 분석 티켓을 받아보세요!',
-                          description: `초대장을 클릭하고 간편가입 하시면 AI 탈모분석 티켓 4장(기본2+보너스2)이 즉시 발급됩니다.\n추천인 코드: ${rawCode}`,
+                          description: `초대장을 클릭하고 간편가입 하시면 AI 탈모분석 티켓 5장(기본2+보너스3)이 즉시 발급됩니다.\n추천인 코드: ${rawCode}`,
                           imageUrl: 'https://talmotalk.com/invite_thumbnail.jpg?v=1',
                           link: {
                             mobileWebUrl: safeInviteUrl,
@@ -357,7 +357,7 @@ export default function PCMyPage() {
                         ],
                       });
                     } else {
-                      const text = `🎁 탈모톡에 가입하고 AI 분석 티켓 4장을 무료로 받아보세요!\n\n가입 링크: ${safeInviteUrl}\n추천인 코드: ${rawCode}`;
+                      const text = `🎁 탈모톡에 가입하고 AI 분석 티켓 5장을 무료로 받아보세요!\n\n가입 링크: ${safeInviteUrl}\n추천인 코드: ${rawCode}`;
                       navigator.clipboard.writeText(text);
                       alert("초대 링크와 코드가 복사되었습니다!");
                     }

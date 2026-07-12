@@ -31,23 +31,32 @@ export async function onRequestGet(context) {
       });
     }
 
-    // Check if we need to reset basic tickets (monthly)
+    // Check if we need to reset basic tickets (weekly, Monday 00:00)
     const now = new Date();
     let needReset = false;
     let ticketsBasic = userResult.tickets_basic !== null ? userResult.tickets_basic : 2;
+
+    const getMonday = (date) => {
+      const d = new Date(date);
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+      d.setDate(diff);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    };
 
     if (!userResult.last_ticket_reset) {
       needReset = true;
     } else {
       const lastReset = new Date(userResult.last_ticket_reset);
-      // If current month/year is different from last reset month/year
-      if (now.getFullYear() > lastReset.getFullYear() || now.getMonth() > lastReset.getMonth()) {
+      const thisMonday = getMonday(now);
+      if (lastReset < thisMonday) {
         needReset = true;
       }
     }
 
     if (needReset) {
-      ticketsBasic = 2; // Reset to 2
+      ticketsBasic = 1; // Weekly reset to 1
       const nowIso = now.toISOString();
       await db.prepare('UPDATE users SET tickets_basic = ?, last_ticket_reset = ? WHERE id = ?')
               .bind(ticketsBasic, nowIso, userId)

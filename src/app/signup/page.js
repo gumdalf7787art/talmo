@@ -377,7 +377,7 @@ export default function SignupPage() {
             {referredByCode.length > 0 && referredByCode.length < 6 && (
               <span className="text-xs text-gray-500 ml-1 mt-1">코드는 6자리 영문/숫자입니다.</span>
             )}
-            <span className="text-xs text-teal-600 ml-1 mt-1 font-medium">✨ 코드 입력 시 가입 즉시 분석 티켓 4장(기본2+보너스2)이 발급됩니다!</span>
+            <span className="text-xs text-teal-600 ml-1 mt-1 font-medium">✨ 코드 입력 시 가입 즉시 분석 티켓 5장(기본2+보너스3)이 발급됩니다!</span>
           </div>
 
           <hr className="border-gray-100 my-2" />

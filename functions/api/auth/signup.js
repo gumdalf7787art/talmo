@@ -92,10 +92,10 @@ export async function onRequestPost(context) {
       
       if (referrerResult) {
         referredById = referrerResult.id;
-        ticketsPremium = 2; // Bonus for joining via referral
+        ticketsPremium = 3; // Bonus for joining via referral
         
-        // Reward referrer (+2 tickets)
-        await db.prepare('UPDATE users SET tickets_premium = tickets_premium + 2 WHERE id = ?').bind(referredById).run();
+        // Reward referrer (+3 tickets)
+        await db.prepare('UPDATE users SET tickets_premium = tickets_premium + 3 WHERE id = ?').bind(referredById).run();
       }
     }
 

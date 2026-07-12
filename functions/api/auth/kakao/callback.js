@@ -150,8 +150,8 @@ export async function onRequestGet(context) {
           const referrerResult = await db.prepare('SELECT id, tickets_premium FROM users WHERE referral_code = ?').bind(upperReferredCode).first();
           if (referrerResult) {
             referredById = referrerResult.id;
-            ticketsPremium = 2;
-            await db.prepare('UPDATE users SET tickets_premium = tickets_premium + 2 WHERE id = ?').bind(referredById).run();
+            ticketsPremium = 3;
+            await db.prepare('UPDATE users SET tickets_premium = tickets_premium + 3 WHERE id = ?').bind(referredById).run();
           }
         }
 

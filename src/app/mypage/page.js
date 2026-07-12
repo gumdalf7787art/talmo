@@ -344,7 +344,7 @@ export default function MyPage() {
           <div className="flex justify-between items-start">
             <div className="flex flex-col gap-1">
               <span className="text-[13px] font-bold text-gray-800">🎁 친구 초대하고 티켓 받기!</span>
-              <span className="text-[11px] text-gray-500">친구 가입 시 나도 2장, 친구도 2장 추가 지급!</span>
+              <span className="text-[11px] text-gray-500">친구 가입 시 나도 3장, 친구도 3장 추가 지급!</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -366,7 +366,7 @@ export default function MyPage() {
                     objectType: 'feed',
                     content: {
                       title: '🎁 탈모톡에 가입하고 AI 분석 티켓을 받아보세요!',
-                      description: `초대장을 클릭하고 간편가입 하시면 AI 탈모분석 티켓 4장(기본2+보너스2)이 즉시 발급됩니다.\n추천인 코드: ${rawCode}`,
+                      description: `초대장을 클릭하고 간편가입 하시면 AI 탈모분석 티켓 5장(기본2+보너스3)이 즉시 발급됩니다.\n추천인 코드: ${rawCode}`,
                       imageUrl: 'https://talmotalk.com/invite_thumbnail.jpg?v=1',
                       link: {
                         mobileWebUrl: safeInviteUrl,
@@ -385,7 +385,7 @@ export default function MyPage() {
                   });
                 } else {
                   // Fallback
-                  const text = `🎁 탈모톡에 가입하고 AI 분석 티켓 4장을 무료로 받아보세요!\n\n가입 링크: ${safeInviteUrl}\n추천인 코드: ${rawCode}`;
+                  const text = `🎁 탈모톡에 가입하고 AI 분석 티켓 5장을 무료로 받아보세요!\n\n가입 링크: ${safeInviteUrl}\n추천인 코드: ${rawCode}`;
                   if (navigator.share) {
                     navigator.share({ title: '탈모톡 초대', text: text });
                   } else {
