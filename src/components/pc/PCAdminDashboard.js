@@ -21,6 +21,7 @@ import { compressImage } from "@/lib/imageUtils";
 import AdminViewsChartTab from "./AdminViewsChartTab";
 import AdminInflowTab from "./AdminInflowTab";
 import AdminPostsTab from "./AdminPostsTab";
+import AdminAnalysisTab from "./AdminAnalysisTab";
 
 function BannerSlotForm({ slot, initialData, onSave, onDelete, user }) {
   const [title, setTitle] = useState(initialData?.title || "");
@@ -484,11 +485,7 @@ export default function PCAdminDashboard({ user }) {
         )}
 
         {activeTab === "analysis_data" && (
-          <div className="flex flex-col items-center justify-center h-full text-gray-400">
-            <LayoutDashboard className="w-12 h-12 mb-4 opacity-20" />
-            <p className="text-lg font-bold">준비 중입니다.</p>
-            <p className="text-sm mt-2">해당 기능은 곧 업데이트 될 예정입니다.</p>
-          </div>
+          <AdminAnalysisTab adminId={adminId} />
         )}
 
         {activeTab === "users" && (
