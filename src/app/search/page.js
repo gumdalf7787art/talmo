@@ -69,26 +69,7 @@ function SearchContent() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 pb-20">
-      {/* Search Header */}
-      <div className="bg-white px-4 py-3 border-b border-gray-100 flex items-center gap-3 sticky top-0 z-50">
-        <Link href="/" className="text-gray-500 hover:text-gray-900">
-          <ArrowLeft className="w-6 h-6" />
-        </Link>
-        <form onSubmit={handleSearch} className="flex-1 relative">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-teal-600" />
-          <input
-            type="text"
-            autoFocus
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              if (!e.target.value) setIsSearched(false);
-            }}
-            placeholder="모발이식, 부작용, 병원 이름 검색"
-            className="w-full bg-gray-100 rounded-xl py-2 pl-9 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-teal-100 transition-all"
-          />
-        </form>
-      </div>
+
 
       {/* Search Results */}
       <div className="flex flex-col p-4 gap-6">

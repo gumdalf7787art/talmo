@@ -39,20 +39,6 @@ export default function PCSearch({ initialQuery, communityResults, hospitalResul
     <div className="flex gap-6">
       {/* Main Content */}
       <div className="flex-1 min-w-0 flex flex-col gap-6">
-        {/* Search Bar */}
-        <div className="bg-white rounded-lg border border-gray-200 p-5 shadow-sm">
-          <div className="relative">
-            <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input 
-              type="text" 
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={handleSearch}
-              placeholder="모발이식, 부작용, 병원 이름 검색" 
-              className="w-full bg-gray-100 rounded-md py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-teal-100 transition-shadow" 
-            />
-          </div>
-        </div>
 
         {!isSearched ? (
           <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
