@@ -120,7 +120,11 @@ export default function WritePage() {
 
       const data = await res.json();
       if (res.ok) {
-        alert(editId ? "게시글이 성공적으로 수정되었습니다." : "게시글이 성공적으로 등록되었습니다.");
+        if (data.rewarded) {
+          alert("🎉 게시글 작성 보상으로 분석 티켓 1개가 지급되었습니다!\n\n(글 작성 보상은 1일 최대 1개, 주 최대 3개까지만 지급됩니다.)");
+        } else {
+          alert(editId ? "게시글이 성공적으로 수정되었습니다." : "게시글이 성공적으로 등록되었습니다.");
+        }
         if (editId) {
           router.push(`/community/detail?id=${editId}`);
         } else {

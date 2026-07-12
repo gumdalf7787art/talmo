@@ -68,3 +68,12 @@ CREATE TABLE IF NOT EXISTS site_visits (
   inflow_source TEXT DEFAULT '직접 유입 및 기타',
   visited_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS reward_logs (
+  id TEXT PRIMARY KEY,
+  user_id TEXT,
+  reward_type TEXT,
+  amount INTEGER,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
