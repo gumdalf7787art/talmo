@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search, MessageCircle, Star, MapPin } from "lucide-react";
@@ -10,6 +10,13 @@ export default function PCSearch({ initialQuery, communityResults, hospitalResul
   const router = useRouter();
   const [query, setQuery] = useState(initialQuery || "");
   const [isSearched, setIsSearched] = useState(!!initialQuery);
+
+  useEffect(() => {
+    if (initialQuery !== undefined) {
+      setQuery(initialQuery || "");
+      setIsSearched(!!initialQuery);
+    }
+  }, [initialQuery]);
 
   const handleSearch = (e) => {
     if (e.key === 'Enter' && query.trim()) {

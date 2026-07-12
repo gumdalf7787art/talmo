@@ -19,6 +19,13 @@ function SearchContent() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    if (initialQuery !== undefined) {
+      setQuery(initialQuery);
+      setIsSearched(!!initialQuery);
+    }
+  }, [initialQuery]);
+
+  useEffect(() => {
     if (isSearched && query) {
       setIsLoading(true);
       fetch(`/api/posts/list?q=${encodeURIComponent(query)}`)
