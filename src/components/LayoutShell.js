@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
 import PCHeader from "@/components/pc/PCHeader";
 import PWAPrompt from "@/components/PWAPrompt";
+import Footer from "@/components/Footer";
 
 export default function LayoutShell({ children }) {
   const isPC = useMediaQuery("(min-width: 1024px)");
@@ -26,11 +27,12 @@ export default function LayoutShell({ children }) {
 
   if (isPC) {
     return (
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-gray-100 flex flex-col">
         <PCHeader />
-        <main className="max-w-[1080px] mx-auto py-6 px-4">
+        <main className="max-w-[1080px] w-full mx-auto py-6 px-4 flex-1">
           {children}
         </main>
+        <Footer />
       </div>
     );
   }
@@ -38,9 +40,10 @@ export default function LayoutShell({ children }) {
   // 모바일: 기존 레이아웃 그대로
   return (
     <div className="bg-gray-50">
-      <div className="max-w-md mx-auto min-h-screen bg-white relative pb-16 shadow-2xl">
+      <div className="max-w-md mx-auto min-h-screen bg-white relative pb-16 shadow-2xl flex flex-col">
         <Header />
-        <main className="min-h-[calc(100vh-120px)]">{children}</main>
+        <main className="min-h-[calc(100vh-120px)] flex-1">{children}</main>
+        <Footer />
         <BottomNav />
         <PWAPrompt />
       </div>
