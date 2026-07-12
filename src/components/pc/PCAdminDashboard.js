@@ -20,6 +20,7 @@ import {
 import { compressImage } from "@/lib/imageUtils";
 import AdminViewsChartTab from "./AdminViewsChartTab";
 import AdminInflowTab from "./AdminInflowTab";
+import AdminPostsTab from "./AdminPostsTab";
 
 function BannerSlotForm({ slot, initialData, onSave, onDelete, user }) {
   const [title, setTitle] = useState(initialData?.title || "");
@@ -478,7 +479,11 @@ export default function PCAdminDashboard({ user }) {
           <AdminInflowTab adminId={adminId} />
         )}
 
-        {(activeTab === "posts_stats" || activeTab === "analysis_data") && (
+        {activeTab === "posts_stats" && (
+          <AdminPostsTab adminId={adminId} />
+        )}
+
+        {activeTab === "analysis_data" && (
           <div className="flex flex-col items-center justify-center h-full text-gray-400">
             <LayoutDashboard className="w-12 h-12 mb-4 opacity-20" />
             <p className="text-lg font-bold">준비 중입니다.</p>
