@@ -13,7 +13,14 @@ export default function LayoutShell({ children }) {
 
   useEffect(() => {
     if (!sessionStorage.getItem('tracked')) {
-      fetch('/api/track', { method: 'POST' }).catch(() => {});
+      const savedUser = localStorage.getItem('user');
+      const userType = savedUser ? 'member' : 'non_member';
+      
+      fetch('/api/track', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_type: userType })
+      }).catch(() => {});
       sessionStorage.setItem('tracked', 'true');
     }
 

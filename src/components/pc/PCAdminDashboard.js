@@ -18,6 +18,7 @@ import {
   RefreshCw
 } from "lucide-react";
 import { compressImage } from "@/lib/imageUtils";
+import AdminViewsChartTab from "./AdminViewsChartTab";
 
 function BannerSlotForm({ slot, initialData, onSave, onDelete, user }) {
   const [title, setTitle] = useState(initialData?.title || "");
@@ -166,7 +167,7 @@ function BannerSlotForm({ slot, initialData, onSave, onDelete, user }) {
 }
 
 export default function PCAdminDashboard({ user }) {
-  const [activeTab, setActiveTab] = useState("stats");
+  const [activeTab, setActiveTab] = useState("views");
   const [stats, setStats] = useState(null);
   const [users, setUsers] = useState([]);
   const [banners, setBanners] = useState([]);
@@ -401,12 +402,37 @@ export default function PCAdminDashboard({ user }) {
       <div className="w-[240px] bg-gray-50 border-r border-gray-200 flex flex-col shrink-0 py-6">
         <h2 className="px-6 font-bold text-gray-900 mb-6">관리자 메뉴</h2>
         <nav className="flex flex-col gap-1 px-3">
-          <button 
-            onClick={() => setActiveTab("stats")}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeTab === 'stats' ? 'bg-teal-50 text-teal-700' : 'text-gray-600 hover:bg-gray-100'}`}
-          >
-            <LayoutDashboard className="w-4 h-4" /> 접속 데이터
-          </button>
+          <div className="mb-4 mt-2">
+            <div className="flex items-center gap-3 px-3 py-2 text-sm font-bold text-gray-900">
+              <LayoutDashboard className="w-4 h-4" /> 데이터 분석
+            </div>
+            <div className="flex flex-col ml-6 mt-1 gap-1 border-l-2 border-gray-100 pl-2">
+              <button 
+                onClick={() => setActiveTab("views")}
+                className={`text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'views' ? 'bg-teal-50 text-teal-700' : 'text-gray-600 hover:bg-gray-100'}`}
+              >
+                조회수
+              </button>
+              <button 
+                onClick={() => setActiveTab("subscribers")}
+                className={`text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'subscribers' ? 'bg-teal-50 text-teal-700' : 'text-gray-600 hover:bg-gray-100'}`}
+              >
+                가입자
+              </button>
+              <button 
+                onClick={() => setActiveTab("posts_stats")}
+                className={`text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'posts_stats' ? 'bg-teal-50 text-teal-700' : 'text-gray-600 hover:bg-gray-100'}`}
+              >
+                게시글
+              </button>
+              <button 
+                onClick={() => setActiveTab("analysis_data")}
+                className={`text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'analysis_data' ? 'bg-teal-50 text-teal-700' : 'text-gray-600 hover:bg-gray-100'}`}
+              >
+                분석데이터
+              </button>
+            </div>
+          </div>
           <button 
             onClick={() => setActiveTab("users")}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeTab === 'users' ? 'bg-teal-50 text-teal-700' : 'text-gray-600 hover:bg-gray-100'}`}
@@ -443,43 +469,15 @@ export default function PCAdminDashboard({ user }) {
 
       {/* Main Content Area */}
       <div className="flex-1 bg-white p-8 overflow-y-auto">
-        {activeTab === "stats" && (
-          <div className="flex flex-col gap-6">
-            <h3 className="text-xl font-bold text-gray-900">접속 데이터 & 전체 통계</h3>
-            
-            {stats ? (
-              <div className="grid grid-cols-3 gap-4">
-                {/* Traffic Stats */}
-                <div className="bg-teal-50 p-6 rounded-md border border-teal-100">
-                  <p className="text-teal-700 font-medium text-sm mb-1">오늘 누적 방문자수 (DAU)</p>
-                  <p className="text-3xl font-bold text-teal-900">{stats.dau}명</p>
-                </div>
-                <div className="bg-teal-50 p-6 rounded-md border border-teal-100">
-                  <p className="text-teal-700 font-medium text-sm mb-1">일주일 접속자수 (WAU)</p>
-                  <p className="text-3xl font-bold text-teal-900">{stats.wau}명</p>
-                </div>
-                <div className="bg-teal-50 p-6 rounded-md border border-teal-100">
-                  <p className="text-teal-700 font-medium text-sm mb-1">1달 접속자수 (MAU)</p>
-                  <p className="text-3xl font-bold text-teal-900">{stats.mau}명</p>
-                </div>
+        {activeTab === "views" && (
+          <AdminViewsChartTab adminId={adminId} />
+        )}
 
-                {/* Overall Platform Stats */}
-                <div className="bg-gray-50 p-6 rounded-md border border-gray-200 mt-4">
-                  <p className="text-gray-600 font-medium text-sm mb-1">전체 가입자</p>
-                  <p className="text-3xl font-bold text-gray-900">{stats.totalUsers}명</p>
-                </div>
-                <div className="bg-gray-50 p-6 rounded-md border border-gray-200 mt-4">
-                  <p className="text-gray-600 font-medium text-sm mb-1">전체 게시글</p>
-                  <p className="text-3xl font-bold text-gray-900">{stats.totalPosts}개</p>
-                </div>
-                <div className="bg-gray-50 p-6 rounded-md border border-gray-200 mt-4">
-                  <p className="text-gray-600 font-medium text-sm mb-1">생성된 채팅방</p>
-                  <p className="text-3xl font-bold text-gray-900">{stats.totalChats}개</p>
-                </div>
-              </div>
-            ) : (
-              <p className="text-gray-500">데이터를 불러오는 중입니다...</p>
-            )}
+        {(activeTab === "subscribers" || activeTab === "posts_stats" || activeTab === "analysis_data") && (
+          <div className="flex flex-col items-center justify-center h-full text-gray-400">
+            <LayoutDashboard className="w-12 h-12 mb-4 opacity-20" />
+            <p className="text-lg font-bold">준비 중입니다.</p>
+            <p className="text-sm mt-2">해당 기능은 곧 업데이트 될 예정입니다.</p>
           </div>
         )}
 

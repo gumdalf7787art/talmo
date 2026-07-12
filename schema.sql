@@ -59,3 +59,11 @@ CREATE TABLE IF NOT EXISTS bot_personas (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS site_visits (
+  id TEXT PRIMARY KEY,
+  ip_address TEXT,
+  user_agent TEXT,
+  user_type TEXT DEFAULT 'non_member',
+  visited_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
