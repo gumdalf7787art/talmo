@@ -12,12 +12,14 @@ export async function onRequestPost(context) {
                request.headers.get('x-forwarded-for') || 
                'unknown';
     
-    // Parse user_type from body if available
+    // Parse user_type and inflow_source from body if available
     let userType = 'non_member';
+    let inflowSource = '직접 유입 및 기타';
     try {
       if (request.method === 'POST' && request.headers.get('Content-Type')?.includes('application/json')) {
         const body = await request.clone().json();
         if (body.user_type) userType = body.user_type;
+        if (body.inflow_source) inflowSource = body.inflow_source;
       }
     } catch (e) {
       // ignore
@@ -38,9 +40,9 @@ export async function onRequestPost(context) {
       const userAgent = request.headers.get('user-agent') || '';
       
       const insertStmt = db.prepare(`
-        INSERT INTO site_visits (id, ip_address, user_agent, user_type) 
-        VALUES (?, ?, ?, ?)
-      `).bind(id, ip, userAgent, userType);
+        INSERT INTO site_visits (id, ip_address, user_agent, user_type, inflow_source) 
+        VALUES (?, ?, ?, ?, ?)
+      `).bind(id, ip, userAgent, userType, inflowSource);
       
       await insertStmt.run();
     }

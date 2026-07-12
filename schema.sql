@@ -65,5 +65,6 @@ CREATE TABLE IF NOT EXISTS site_visits (
   ip_address TEXT,
   user_agent TEXT,
   user_type TEXT DEFAULT 'non_member',
+  inflow_source TEXT DEFAULT '직접 유입 및 기타',
   visited_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );

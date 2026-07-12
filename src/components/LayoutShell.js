@@ -15,11 +15,44 @@ export default function LayoutShell({ children }) {
     if (!sessionStorage.getItem('tracked')) {
       const savedUser = localStorage.getItem('user');
       const userType = savedUser ? 'member' : 'non_member';
+
+      let inflowSource = '직접 유입 및 기타';
+      try {
+        const referrer = document.referrer || '';
+        const params = new URLSearchParams(window.location.search);
+        
+        if (params.get('ref')) {
+          inflowSource = '친구추천';
+        } else if (referrer.includes('blog.naver.com')) {
+          const match = referrer.match(/blog\.naver\.com\/([^/]+)\/(\d+)/);
+          inflowSource = match ? `네이버 블로그 (${match[1]}/${match[2]})` : '네이버 블로그';
+        } else if (referrer.includes('cafe.naver.com')) {
+          const match = referrer.match(/cafe\.naver\.com\/([^/]+)\/(\d+)/);
+          inflowSource = match ? `네이버 카페 (${match[1]}/${match[2]})` : '네이버 카페';
+        } else if (referrer.includes('naver.com')) {
+          inflowSource = '네이버 (일반/검색)';
+        } else if (referrer.includes('instagram.com')) {
+          inflowSource = '인스타그램';
+        } else if (referrer.includes('facebook.com')) {
+          inflowSource = '페이스북';
+        } else if (referrer.includes('google.com')) {
+          inflowSource = '구글 검색';
+        } else if (referrer.includes('daum.net')) {
+          inflowSource = '다음 검색';
+        } else if (referrer) {
+          try {
+            const url = new URL(referrer);
+            inflowSource = `기타 (${url.hostname})`;
+          } catch(e) {
+            inflowSource = '기타 웹사이트';
+          }
+        }
+      } catch (e) {}
       
       fetch('/api/track', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_type: userType })
+        body: JSON.stringify({ user_type: userType, inflow_source: inflowSource })
       }).catch(() => {});
       sessionStorage.setItem('tracked', 'true');
     }
