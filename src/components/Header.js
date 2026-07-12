@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { User, Bell, Search } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function Header() {
   const pathname = usePathname();
@@ -19,6 +19,15 @@ export default function Header() {
     // "1:1 무료 상담"
   ];
   const [searchIndex, setSearchIndex] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -41,24 +50,34 @@ export default function Header() {
         </Link>
 
         {/* 가운데: 검색바 */}
-        <Link
-          href="/search"
-          className="flex-1 flex items-center gap-1.5 bg-white border-2 border-teal-500 rounded-full px-3 py-1.5 text-gray-500 transition-colors shadow-sm overflow-hidden h-9 min-w-0"
+        <form
+          onSubmit={handleSearch}
+          className="flex-1 flex items-center gap-1.5 bg-white border-2 border-teal-500 focus-within:bg-white rounded-full px-3 py-1.5 transition-colors shadow-sm overflow-hidden h-9 min-w-0"
         >
           <Search className="w-4 h-4 text-teal-600 shrink-0" />
-          <div className="h-[18px] overflow-hidden flex-1 relative min-w-0">
-            <div 
-              className="flex flex-col transition-transform duration-500 ease-in-out absolute w-full top-0 left-0"
-              style={{ transform: `translateY(-${searchIndex * 18}px)` }}
-            >
-              {searchTexts.map((text, idx) => (
-                <span key={idx} className="h-[18px] flex items-center text-[12px] font-bold text-gray-400 truncate">
-                  {text}
-                </span>
-              ))}
-            </div>
+          <div className="h-[18px] flex-1 relative min-w-0">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="absolute inset-0 w-full h-full bg-transparent outline-none text-[12px] font-bold text-gray-700 z-10"
+            />
+            {!searchQuery && (
+              <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div 
+                  className="flex flex-col transition-transform duration-500 ease-in-out absolute w-full top-0 left-0"
+                  style={{ transform: `translateY(-${searchIndex * 18}px)` }}
+                >
+                  {searchTexts.map((text, idx) => (
+                    <span key={idx} className="h-[18px] flex items-center text-[12px] font-bold text-gray-400 truncate">
+                      {text}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        </Link>
+        </form>
 
         {/* 오른쪽: 알람 및 로그인/마이페이지 */}
         <div className="flex items-center gap-1.5 shrink-0">

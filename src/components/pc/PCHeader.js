@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Search, User, Bell } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 function PCHeaderContent() {
   const pathname = usePathname();
@@ -30,9 +31,18 @@ function PCHeaderContent() {
     "원장님들이 작성하는 리얼칼럼",
   ];
   const [searchIndex, setSearchIndex] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -55,24 +65,34 @@ function PCHeaderContent() {
             <img src="/logo-pc.png?v=2" alt="탈모톡 로고" className="h-14 w-auto object-contain" />
           </Link>
 
-          <Link
-            href="/search"
-            className="flex items-center gap-3 bg-white border-2 border-teal-500 hover:bg-teal-50 rounded-full px-5 py-2.5 text-gray-500 transition-colors w-full max-w-[320px] shadow-sm overflow-hidden"
+          <form
+            onSubmit={handleSearch}
+            className="flex items-center gap-3 bg-white border-2 border-teal-500 hover:bg-teal-50 focus-within:bg-white rounded-full px-5 py-2.5 transition-colors w-full max-w-[320px] shadow-sm overflow-hidden"
           >
             <Search className="w-5 h-5 text-teal-600 shrink-0" />
-            <div className="h-[22px] overflow-hidden flex-1 relative">
-              <div 
-                className="flex flex-col transition-transform duration-500 ease-in-out absolute w-full top-0 left-0"
-                style={{ transform: `translateY(-${searchIndex * 22}px)` }}
-              >
-                {searchTexts.map((text, idx) => (
-                  <span key={idx} className="h-[22px] flex items-center text-[15px] font-bold text-gray-400 truncate">
-                    {text}
-                  </span>
-                ))}
-              </div>
+            <div className="h-[22px] flex-1 relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="absolute inset-0 w-full h-full bg-transparent outline-none text-[15px] font-bold text-gray-700 z-10"
+              />
+              {!searchQuery && (
+                <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                  <div 
+                    className="flex flex-col transition-transform duration-500 ease-in-out absolute w-full top-0 left-0"
+                    style={{ transform: `translateY(-${searchIndex * 22}px)` }}
+                  >
+                    {searchTexts.map((text, idx) => (
+                      <span key={idx} className="h-[22px] flex items-center text-[15px] font-bold text-gray-400 truncate">
+                        {text}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-          </Link>
+          </form>
         </div>
 
         {/* Right Side: User Menu */}
