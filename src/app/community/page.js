@@ -53,22 +53,8 @@ function CommunityContent() {
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
-      {/* 검색 및 탭 */}
-      <div className="bg-white sticky top-[56px] z-40 border-b border-gray-100 pb-2">
-        <div className="px-4 py-3">
-          <div className="relative">
-            <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input 
-              type="text" 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleSearch}
-              placeholder="관심있는 탈모 키워드를 검색해보세요" 
-              className="w-full bg-gray-100 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-teal-100 transition-shadow"
-            />
-          </div>
-        </div>
-        
+      {/* 탭 */}
+      <div className="bg-white sticky top-[56px] z-40 border-b border-gray-100 py-2">
         <div className="flex justify-between items-center px-3 w-full">
           {tabs.map((tab) => (
             <button

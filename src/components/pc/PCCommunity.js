@@ -57,19 +57,8 @@ export default function PCCommunity({ initialTab }) {
     <div className="flex gap-6">
       {/* Main Content */}
       <div className="flex-1 min-w-0 flex flex-col gap-4">
-        {/* Search + Tabs */}
+        {/* Tabs */}
         <div className="bg-white rounded-lg border border-gray-200 p-5 shadow-sm">
-          <div className="relative mb-4">
-            <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input 
-              type="text" 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleSearch}
-              placeholder="관심있는 탈모 키워드를 검색해보세요" 
-              className="w-full bg-gray-100 rounded-md py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-teal-100 transition-shadow" 
-            />
-          </div>
           <div className="flex gap-2">
             {tabs.map((tab) => (
               <button key={tab} onClick={() => setActiveTab(tab)} className={`px-5 py-2 rounded-lg text-sm font-bold transition-colors ${activeTab === tab ? "bg-gray-900 text-white" : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"}`}>

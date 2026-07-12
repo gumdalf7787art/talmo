@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { User, Bell, Search } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function Header() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const isAdminOrHospital = pathname?.startsWith("/admin") || pathname?.startsWith("/hospital");
   
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -21,6 +22,10 @@ export default function Header() {
   const [searchIndex, setSearchIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    setSearchQuery(searchParams?.get('q') || "");
+  }, [searchParams]);
 
   const handleSearch = (e) => {
     e.preventDefault();

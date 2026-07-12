@@ -34,6 +34,10 @@ function PCHeaderContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
 
+  useEffect(() => {
+    setSearchQuery(searchParams?.get('q') || "");
+  }, [searchParams]);
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mounted, setMounted] = useState(false);
 
