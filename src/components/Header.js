@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import Link from "next/link";
 import { User, Bell, Search } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-export default function Header() {
+function HeaderContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const isAdminOrHospital = pathname?.startsWith("/admin") || pathname?.startsWith("/hospital");
@@ -106,5 +106,13 @@ export default function Header() {
         </div>
       </div>
     </header>
+  );
+}
+
+export default function Header() {
+  return (
+    <Suspense fallback={<header className="sticky top-0 z-50 w-full bg-white border-b border-gray-100 flex flex-col shadow-sm h-[56px]"></header>}>
+      <HeaderContent />
+    </Suspense>
   );
 }
