@@ -11,6 +11,14 @@ export async function onRequestOptions(context) {
   });
 }
 
+export async function onRequestGet(context) {
+  // Handle any GET pings gracefully for testing
+  return new Response(JSON.stringify({ success: true, message: 'Test GET successful' }), {
+    status: 200,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+  });
+}
+
 export async function onRequestPost(context) {
   const { request, env } = context;
 
