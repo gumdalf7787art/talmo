@@ -524,10 +524,21 @@ function App() {
       {/* 검사 중 모달 */}
       {isAnalyzing && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '16px', padding: '32px 20px', textAlign: 'center', width: '100%', maxWidth: '280px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '16px', padding: '32px 20px', textAlign: 'center', width: '100%', maxWidth: '300px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
             <div style={{ width: '40px', height: '40px', border: '4px solid #f3f4f6', borderTop: '4px solid var(--talmo-green)', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }} />
-            <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1f2937', margin: '0 0 8px' }}>검사중입니다</h3>
-            <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>창을 닫지 말아주세요.</p>
+            <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1f2937', margin: '0 0 8px' }}>AI가 두피를 분석 중이에요 🔍</h3>
+            <p style={{ fontSize: '13px', color: '#6b7280', margin: '0 0 24px' }}>정확한 판독을 위해 창을 닫지 말아주세요.</p>
+            
+            <div style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '16px', textAlign: 'left' }}>
+              <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#166534', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ fontSize: '14px' }}>💡</span> 탈모톡 공식 웹사이트에서는?
+              </div>
+              <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '12px', color: '#166534', lineHeight: '1.6' }}>
+                <li>주기적인 <strong>진단 데이터 영구 저장 및 관리</strong></li>
+                <li><strong>무료 AI 진단 티켓</strong> 추가 제공</li>
+                <li>생생한 치료 <strong>리얼 후기 커뮤니티</strong></li>
+              </ul>
+            </div>
           </div>
         </div>
       )}
