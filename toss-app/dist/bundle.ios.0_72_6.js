@@ -4,12 +4,12 @@ var global = typeof globalThis !== 'undefined' ? globalThis : typeof global !== 
 (function (global) {
   global.__granite = global.__granite || {};
   global.__granite.app = {
-    name: "toss-app",
+    name: "talmotalk",
     scheme: 'intoss',
     host: ''
   };
   global.__appsInToss = {
-    deploymentId: "019f4ffb-f51f-7313-b6f4-a41c54e1e81a",
+    deploymentId: "019f5ad2-0896-70b2-ace2-c23b28cfba42",
     brandDisplayName: "\uC571 \uC774\uB984",
     brandPrimaryColor: "#F06292",
     brandIcon: "",
@@ -127,12 +127,12 @@ if (global.__MICRO_FRONTEND__ == null) {
 (function (global) {
   global.__granite = global.__granite || {};
   global.__granite.app = {
-    name: "toss-app",
+    name: "talmotalk",
     scheme: 'intoss',
     host: ''
   };
   global.__appsInToss = {
-    deploymentId: "019f4ffb-f51f-7313-b6f4-a41c54e1e81a",
+    deploymentId: "019f5ad2-0896-70b2-ace2-c23b28cfba42",
     brandDisplayName: "\uC571 \uC774\uB984",
     brandPrimaryColor: "#F06292",
     brandIcon: "",
