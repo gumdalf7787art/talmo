@@ -63,6 +63,7 @@ function App() {
   const [userId, setUserId] = useState(null);
   const [showAsiModal, setShowAsiModal] = useState(false);
   const [showMypageModal, setShowMypageModal] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
   useEffect(() => {
     // 임시 토스 사용자 로그인 프로세스 시뮬레이션
     const loginTossUser = async () => {
@@ -207,6 +208,15 @@ function App() {
   };
 
   const handleNavigate = (view, data = null) => {
+    if (view === 'show_history_modal') {
+      setShowHistoryModal(true);
+      return;
+    }
+
+    if (view !== 'analysis') {
+      setResult(null);
+    }
+
     setCurrentView(view);
     if (view === 'post_detail') {
       setSelectedPostId(data);
@@ -788,6 +798,36 @@ function App() {
                 onClick={() => {
                   setShowMypageModal(false);
                   window.open('https://talmotalk.com/my-page', '_blank');
+                }}
+                style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', backgroundColor: 'var(--talmo-green)', color: 'white', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}
+              >
+                탈모톡 가기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 외부 링크 이동 확인 모달 (분석결과 보기) */}
+      {showHistoryModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '16px', width: '100%', maxWidth: '320px', overflow: 'hidden', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', padding: '24px 20px', textAlign: 'center' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1f2937', marginBottom: '8px' }}>탈모톡 본 페이지로 이동</h3>
+            <p style={{ fontSize: '14px', color: '#6b7280', lineHeight: '1.5', marginBottom: '24px' }}>
+              분석 결과를 모아서 보기 기능은 <strong style={{ color: 'var(--talmo-green)' }}>탈모톡</strong>에서 가능합니다.<br/>
+              탈모톡으로 옮겨집니다.
+            </p>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button 
+                onClick={() => setShowHistoryModal(false)}
+                style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', backgroundColor: '#f3f4f6', color: '#4b5563', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}
+              >
+                그냥 있기
+              </button>
+              <button 
+                onClick={() => {
+                  setShowHistoryModal(false);
+                  window.open('https://talmotalk.com/diagnosis-history', '_blank');
                 }}
                 style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', backgroundColor: 'var(--talmo-green)', color: 'white', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}
               >
