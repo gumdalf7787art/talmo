@@ -26,14 +26,22 @@ export async function onRequestPost(context) {
       });
     }
 
-    const body = await request.json();
+    let body = {};
+    try {
+      body = await request.json();
+    } catch (e) {
+      // Body might be empty or invalid JSON during testing
+      console.log('Toss disconnect: No JSON body or invalid JSON');
+    }
     
     // 토스 측에서 보내주는 유저 식별자 (Toss API 문서에 따라 필드명은 다를 수 있음, 보통 userToken 혹은 id)
-    const tossId = body.userToken || body.tossId || body.id;
+    const tossId = body?.userToken || body?.tossId || body?.id;
 
+    // 테스트 환경에서는 tossId가 없을 수 있으므로 200 OK 반환
     if (!tossId) {
-      return new Response(JSON.stringify({ error: 'Missing Toss user ID in request' }), { 
-        status: 400,
+      console.log('Toss disconnect test ping received (no tossId). Returning 200 OK.');
+      return new Response(JSON.stringify({ success: true, message: 'Test successful' }), { 
+        status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
