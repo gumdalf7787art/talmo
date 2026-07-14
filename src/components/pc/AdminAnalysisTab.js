@@ -328,5 +328,6 @@ export default function AdminAnalysisTab({ adminId }) {
           </div>
         )}
       </div>
+    </div>
   );
 }
