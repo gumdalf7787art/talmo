@@ -12,7 +12,7 @@ import Cropper from 'react-easy-crop';
 import { getCroppedImg } from "@/lib/cropUtils";
 import { toJpeg } from "html-to-image";
 import jsPDF from "jspdf";
-import { getAsiInfo } from "@/lib/asiUtils";
+import { getAsiInfo, getAsiSeverityIndex } from "@/lib/asiUtils";
 
 // renderStageText is replaced by ASI logic
 
@@ -723,28 +723,43 @@ function DiagnosisContent() {
                 {(() => {
                   const asi = getAsiInfo(result);
                   return (
-                    <div className="flex flex-col items-center gap-1.5 mb-2">
+                    <div className="flex flex-col items-center gap-1.5 mb-2 w-full">
                       <span className="text-[15px] font-bold text-gray-900">{asi.code} : {asi.title}</span>
-                      <span className="text-[11px] text-gray-500 leading-tight whitespace-pre-wrap">{asi.desc}</span>
+                      <span className="text-[11px] text-gray-500 leading-tight whitespace-pre-wrap text-center">{asi.desc}</span>
+                      
+                      {/* 1~7단계 (여성은 1~5단계) */}
+                      <div className="flex items-center gap-0.5 mt-3 w-full max-w-[240px]">
+                        {(asi.code.includes('F') ? [1, 2, 3, 4, 5] : [1, 2, 3, 4, 5, 6, 7]).map((step) => {
+                          const isActive = asi.level === step;
+                          return (
+                            <div key={step} className="flex-1 flex flex-col items-center gap-1">
+                              <div className={`h-1.5 w-full rounded-full ${isActive ? 'bg-red-500' : 'bg-slate-200'}`} />
+                              <span className={`text-[9px] whitespace-nowrap ${isActive ? 'font-bold text-red-600' : 'text-slate-400'}`}>
+                                {step}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* 4단계 직관적 심각도 */}
+                      <div className="flex items-center gap-2 w-full mt-4 max-w-[240px] px-1">
+                        {['양호', '초기', '중기', '심각'].map((stage, idx) => {
+                          const severityIdx = getAsiSeverityIndex(asi);
+                          const isActive = severityIdx === idx;
+                          return (
+                            <div key={idx} className="flex-1 flex flex-col items-center gap-1">
+                              <div className={`h-1.5 w-full rounded-full ${isActive ? 'bg-red-500' : 'bg-slate-200'}`} />
+                              <span className={`text-[10px] whitespace-nowrap ${isActive ? 'font-bold text-red-600' : 'text-slate-400 font-medium'}`}>
+                                {stage}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   );
                 })()}
-                
-                {/* 진행 심각도 시각화 스텝퍼 */}
-                <div className="flex items-center gap-2 w-full mt-1 px-1">
-                  {['양호', '진행: 초기', '진행: 중기', '진행: 심각'].map((stage, idx) => {
-                    const currentSeverity = result.summary?.severity || result.severity || "";
-                    const isActive = currentSeverity.includes(stage) || (stage === '양호' && currentSeverity.includes('양호'));
-                    return (
-                      <div key={idx} className="flex-1 flex flex-col items-center gap-1">
-                        <div className={`h-1.5 w-full rounded-full ${isActive ? 'bg-red-500' : 'bg-slate-200'}`} />
-                        <span className={`text-[10px] whitespace-nowrap ${isActive ? 'font-bold text-red-600' : 'text-slate-400 font-medium'}`}>
-                          {stage.replace('진행: ', '')}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
               </div>
             </div>
             

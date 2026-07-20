@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, ChevronRight, FileText, Calendar, User, Activity, Pill, Heart, Home, CheckSquare, Square, X, Scissors, Download, HelpCircle } from "lucide-react";
 import RadarChart from "../RadarChart";
 import { compressImage, dataURLtoFile } from "@/lib/imageUtils";
-import { getAsiInfo } from "@/lib/asiUtils";
+import { getAsiInfo, getAsiSeverityIndex } from "@/lib/asiUtils";
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from "@/lib/cropUtils";
 import { toJpeg } from "html-to-image";
@@ -653,6 +653,19 @@ function PCDiagnosisContent() {
                                 <span className={`text-[9px] whitespace-nowrap ${isActive ? 'font-bold text-red-600' : 'text-slate-400'}`}>
                                   {step}
                                 </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                        
+                        {/* 4단계 직관적 심각도 (양호/초기/중기/심각) */}
+                        <div className="flex items-center gap-2 mt-4 w-full max-w-[260px] bg-white p-2 rounded-lg border border-slate-100 shadow-sm">
+                          {['양호', '초기', '중기', '심각'].map((stage, idx) => {
+                            const severityIdx = getAsiSeverityIndex(asi);
+                            const isActive = severityIdx === idx;
+                            return (
+                              <div key={stage} className={`flex-1 text-center py-1 rounded-md text-[11px] transition-colors ${isActive ? 'bg-red-50 font-bold text-red-600 border border-red-200' : 'text-slate-400 bg-slate-50'}`}>
+                                {stage}
                               </div>
                             );
                           })}
