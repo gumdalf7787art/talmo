@@ -658,9 +658,9 @@ function PCDiagnosisContent() {
                           })}
                         </div>
                         
-                        {/* 4단계 직관적 심각도 (양호/초기/중기/심각) */}
+                        {/* 4단계 직관적 심각도 (양호/주의/위험/심각) */}
                         <div className="flex items-center gap-2 mt-4 w-full max-w-[260px] bg-white p-2 rounded-lg border border-slate-100 shadow-sm">
-                          {['양호', '초기', '중기', '심각'].map((stage, idx) => {
+                          {['양호', '주의', '위험', '심각'].map((stage, idx) => {
                             const severityIdx = getAsiSeverityIndex(asi);
                             const isActive = severityIdx === idx;
                             return (
