@@ -157,7 +157,7 @@ function DiagnosisContent() {
   };
 
   const handleDownloadPDF = async () => {
-    const element = document.getElementById("pdf-report-pc-area");
+    const element = document.getElementById("pdf-report-area");
     if (!element) return;
     
     try {
@@ -882,7 +882,8 @@ function DiagnosisContent() {
             </div>
           </div>
 
-          {/* PC Version Hidden Report for PDF Capture */}
+          {/* PC Version Hidden Report for PDF Capture (Disabled for Mobile OOM) */}
+          {false && (
           <div className="absolute top-0 left-[-9999px] z-[-1]">
             <div id="pdf-report-pc-area" className="w-[1000px] bg-white border border-gray-300 shadow-lg rounded-sm overflow-hidden text-slate-800">
               {/* 리포트 헤더 */}
@@ -1099,6 +1100,7 @@ function DiagnosisContent() {
               </div>
             </div>
           </div>
+          )}
 
         </div>
       )}
