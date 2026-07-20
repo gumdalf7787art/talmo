@@ -254,8 +254,8 @@ function DiagnosisContent() {
     }
   };
 
-  const handleAnalyze = async () => {
-    if (!imageFile || !isProfileComplete || !consentAll) return;
+  const handleAnalyze = async (forceConsent = false) => {
+    if (!imageFile || !isProfileComplete || (!consentAll && forceConsent !== true)) return;
 
     // Auto-save profile if it was empty or changed
     if (user) {
@@ -629,7 +629,7 @@ function DiagnosisContent() {
               onClick={() => {
                 setConsent1(true);
                 setConsent2(true);
-                handleAnalyze();
+                handleAnalyze(true);
               }}
               disabled={!imageFile || isAnalyzing || !isProfileComplete}
               className={`w-full py-4 rounded-2xl font-bold text-white flex flex-col items-center justify-center gap-1.5 transition-all duration-300 ${
