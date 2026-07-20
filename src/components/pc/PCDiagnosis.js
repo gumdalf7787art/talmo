@@ -640,7 +640,8 @@ function PCDiagnosisContent() {
                         <div className="flex flex-col items-center leading-snug mt-1">
                           <span className="text-[13px] font-bold text-slate-500">{asi.sub}</span>
                           <span className="text-2xl font-black text-red-600 my-0.5">{asi.code}</span>
-                          <span className="text-[12px] font-bold text-slate-400">{asi.title}</span>
+                          <span className="text-[13px] font-bold text-slate-700 mb-1">{asi.title}</span>
+                          <span className="text-[11px] text-slate-500 whitespace-pre-wrap text-center leading-tight max-w-[90%]">{asi.desc}</span>
                         </div>
                         
                         {/* ASI 진행 심각도 시각화 스텝퍼 */}
