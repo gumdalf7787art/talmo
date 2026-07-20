@@ -146,83 +146,48 @@ export default function Home() {
     <div className="flex flex-col gap-4 px-4 pt-2 pb-6">
       <div className="flex flex-col gap-3">
       {/* Dynamic Banner Area */}
-      {mounted && bannerType === "diagnosis" && (
-        <section className="relative overflow-hidden bg-gradient-to-br from-teal-900 via-teal-700 to-teal-500 rounded-2xl aspect-[2/1] shadow-lg flex flex-col justify-end p-5 group mt-1">
+      {mounted && bannerType !== "none" && (
+        <section className="relative overflow-hidden bg-gradient-to-br from-teal-900 via-teal-800 to-emerald-700 rounded-2xl aspect-[2/1] shadow-lg flex flex-col justify-end p-5 group mt-1">
           {/* Background Image / Decoration */}
-          <div className="absolute inset-0 bg-[url('/ai_diagnosis_banner.png')] bg-cover bg-center opacity-40 mix-blend-overlay group-hover:scale-105 transition-transform duration-700"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-          <div className="absolute -top-10 -right-10 w-40 h-40 bg-teal-400/20 rounded-full blur-3xl"></div>
+          <div className="absolute inset-0 bg-[url('/ai_diagnosis_banner.png')] bg-cover bg-center opacity-30 mix-blend-overlay group-hover:scale-105 transition-transform duration-700"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-teal-900/90 via-teal-900/50 to-transparent"></div>
+          <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-teal-400/20 rounded-full blur-3xl"></div>
+          <div className="absolute top-5 right-10 w-24 h-24 bg-emerald-300/10 rounded-full blur-2xl"></div>
           
           {/* Content */}
           <div className="relative z-10 flex flex-col gap-1.5 h-full justify-center">
             <div className="flex items-center gap-2">
-              <div className="bg-teal-500/80 p-1.5 rounded-lg backdrop-blur-md">
+              <div className="bg-teal-500/80 p-1.5 rounded-lg backdrop-blur-md shadow-sm border border-teal-400/30">
                 <Camera className="w-4 h-4 text-white" />
               </div>
-              <span className="text-teal-300 text-[10px] font-bold tracking-widest">AI SCAN</span>
+              <span className="text-teal-300 text-[10px] font-bold tracking-widest uppercase">AI SCAN</span>
             </div>
             
-            <div className="flex flex-col mt-0.5">
-              <h2 className="text-xl font-black text-white leading-tight">
+            <div className="flex flex-col mt-1">
+              <h2 className="text-xl font-black text-white leading-tight drop-shadow-sm">
                 Ai 탈모분석
               </h2>
-              <p className="text-gray-200 text-[11px] mt-1 font-medium leading-snug break-keep">
+              <p className="text-teal-50 text-[11px] mt-1.5 font-medium leading-snug break-keep opacity-90">
                 Ai로 내 연령/성별 평균과 비교하기
               </p>
             </div>
             
             <Link
               href="/diagnosis"
-              onClick={handleDismissDiagnosis}
-              className="mt-2 inline-flex items-center justify-between bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-[12px] px-3.5 py-2.5 rounded-xl hover:bg-white/20 transition-colors w-max"
+              className="mt-3 inline-flex items-center justify-between bg-white text-teal-900 font-bold text-[12px] px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-colors w-max shadow-md"
             >
               <span>바로가기</span>
-              <ChevronRight className="w-4 h-4 ml-2" />
+              <ChevronRight className="w-4 h-4 ml-1.5" />
             </Link>
           </div>
           
           {/* Dismiss button */}
           <button 
-            onClick={handleDismissDiagnosis}
+            onClick={() => setBannerType("none")}
             className="absolute top-2 right-2 text-white/50 hover:text-white bg-black/20 p-1.5 rounded-full backdrop-blur-sm z-20 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
-        </section>
-      )}
-
-      {mounted && bannerType === "community" && (
-        <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900 rounded-2xl aspect-[2/1] shadow-lg flex flex-col p-5 group mt-1">
-          {/* Background Decoration */}
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-20 mix-blend-overlay group-hover:scale-105 transition-transform duration-700"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent"></div>
-          <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/20 rounded-full blur-3xl"></div>
-          
-          <div className="relative z-10 flex flex-col gap-1.5 h-full justify-center">
-            <div className="flex items-center gap-2">
-              <div className="bg-teal-500/20 p-1.5 rounded-lg backdrop-blur-md border border-teal-500/30">
-                <MessageCircle className="w-4 h-4 text-teal-400" />
-              </div>
-              <span className="text-teal-300 text-[10px] font-bold tracking-widest">COMMUNITY</span>
-            </div>
-            
-            <div className="flex flex-col mt-0.5">
-              <h2 className="text-xl font-black text-white leading-tight">
-                1000만 탈모의 고민해결
-              </h2>
-              <p className="text-gray-300 text-[11px] mt-1 font-medium leading-snug break-keep">
-                탈모커뮤니티 <span className="text-teal-400 font-bold">탈모톡</span>
-              </p>
-            </div>
-            
-            <Link
-              href="/community"
-              className="mt-2 inline-flex items-center justify-between bg-teal-600/90 backdrop-blur-md border border-teal-500/50 text-white font-bold text-[12px] px-3.5 py-2.5 rounded-xl hover:bg-teal-500 transition-colors w-max shadow-md"
-            >
-              <span>입장하기</span>
-              <ChevronRight className="w-4 h-4 ml-2" />
-            </Link>
-          </div>
         </section>
       )}
       </div>
