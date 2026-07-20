@@ -17,38 +17,47 @@ export default function BottomNav() {
   
   if (isAdminOrHospital) return null;
 
-  const navItems = [
-    { href: "/", label: "홈", icon: Home },
-    { href: "/community", label: "커뮤니티", icon: Users },
-    { href: "/diagnosis", label: "AI분석", icon: Camera },
-    // { href: "/consult", label: "1:1상담", icon: MessageCircle },
-    { 
-      href: isLoggedIn ? "/mypage" : "/login", 
-      label: isLoggedIn ? "마이페이지" : "로그인", 
-      icon: isLoggedIn ? User : LogIn 
-    },
-  ];
-
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 pb-safe">
-      <div className="flex items-center justify-around h-16 max-w-md mx-auto px-2">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href));
+      <div className="flex items-center justify-between h-16 max-w-md mx-auto px-8 relative">
+        
+        {/* 홈 */}
+        <Link
+          href="/"
+          className={`flex flex-col items-center justify-center w-16 gap-1 transition-colors ${
+            pathname === "/" ? "text-teal-600" : "text-gray-400 hover:text-gray-600"
+          }`}
+        >
+          <Home className="w-6 h-6" strokeWidth={pathname === "/" ? 2.5 : 2} />
+          <span className="text-[10px] font-bold">홈</span>
+        </Link>
 
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex flex-col items-center justify-center w-full h-full gap-1 ${
-                isActive ? "text-teal-600" : "text-gray-400 hover:text-gray-600"
-              }`}
-            >
-              <Icon className="w-5 h-5" strokeWidth={isActive ? 2.5 : 2} />
-              <span className="text-[10px] font-medium">{item.label}</span>
-            </Link>
-          );
-        })}
+        {/* AI 분석 (Floating Button) */}
+        <div className="absolute left-1/2 -translate-x-1/2 -top-5">
+          <Link
+            href="/diagnosis"
+            className="flex flex-col items-center justify-center w-16 h-16 bg-teal-600 rounded-full shadow-lg text-white hover:bg-teal-700 hover:scale-105 transition-all duration-300 ring-4 ring-white"
+          >
+            <Camera className="w-7 h-7" strokeWidth={2} />
+            <span className="text-[10px] font-bold mt-0.5">AI분석</span>
+          </Link>
+        </div>
+
+        {/* 마이페이지 / 로그인 */}
+        <Link
+          href={isLoggedIn ? "/mypage" : "/login"}
+          className={`flex flex-col items-center justify-center w-16 gap-1 transition-colors ${
+            pathname?.startsWith("/mypage") || pathname?.startsWith("/login") ? "text-teal-600" : "text-gray-400 hover:text-gray-600"
+          }`}
+        >
+          {isLoggedIn ? (
+            <User className="w-6 h-6" strokeWidth={pathname?.startsWith("/mypage") ? 2.5 : 2} />
+          ) : (
+            <LogIn className="w-6 h-6" strokeWidth={pathname?.startsWith("/login") ? 2.5 : 2} />
+          )}
+          <span className="text-[10px] font-bold">{isLoggedIn ? "마이페이지" : "로그인"}</span>
+        </Link>
+
       </div>
     </nav>
   );
