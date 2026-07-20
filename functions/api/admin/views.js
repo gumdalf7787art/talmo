@@ -19,19 +19,25 @@ export async function onRequestGet(context) {
     }
 
     const period = url.searchParams.get('period') || 'daily'; // daily, weekly, monthly
+    // Get baseDate from query or default to current KST date
+    let baseDate = url.searchParams.get('baseDate');
+    if (!baseDate) {
+      const now = new Date();
+      now.setHours(now.getHours() + 9); // Convert to KST
+      baseDate = now.toISOString().split('T')[0];
+    }
 
     let periodExpr;
     let timeModifier;
 
     if (period === 'daily') {
-      periodExpr = "date(visited_at)";
+      periodExpr = "date(visited_at, '+9 hours')"; // Group by KST date
       timeModifier = "'-30 days'";
     } else if (period === 'weekly') {
-      // SQLite strftime '%W' gives week of year
-      periodExpr = "strftime('%Y-%W', visited_at)";
+      periodExpr = "strftime('%Y-%W', visited_at, '+9 hours')";
       timeModifier = "'-84 days'"; // 12 weeks
     } else if (period === 'monthly') {
-      periodExpr = "strftime('%Y-%m', visited_at)";
+      periodExpr = "strftime('%Y-%m', visited_at, '+9 hours')";
       timeModifier = "'-12 months'";
     } else {
       return new Response(JSON.stringify({ error: '잘못된 기간 설정입니다.' }), { status: 400 });
@@ -45,12 +51,13 @@ export async function onRequestGet(context) {
         SUM(CASE WHEN user_type = 'non_member' THEN 1 ELSE 0 END) as non_member,
         SUM(CASE WHEN user_type NOT IN ('member', 'non_member') OR user_type IS NULL THEN 1 ELSE 0 END) as other
       FROM site_visits
-      WHERE visited_at >= date('now', ${timeModifier})
+      WHERE visited_at >= date(?, ${timeModifier})
+        AND date(visited_at, '+9 hours') <= date(?)
       GROUP BY label
       ORDER BY label ASC
     `;
 
-    const { results } = await db.prepare(query).all();
+    const { results } = await db.prepare(query).bind(baseDate, baseDate).all();
 
     return new Response(JSON.stringify({ success: true, data: results }), {
       status: 200,

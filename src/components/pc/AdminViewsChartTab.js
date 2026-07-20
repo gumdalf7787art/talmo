@@ -5,6 +5,18 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 
 export default function AdminViewsChartTab({ adminId }) {
   const [period, setPeriod] = useState('daily');
+  const [baseDate, setBaseDate] = useState(() => {
+    const now = new Date();
+    now.setHours(now.getHours() + 9);
+    return now.toISOString().split('T')[0];
+  });
+  
+  const todayStr = (() => {
+    const now = new Date();
+    now.setHours(now.getHours() + 9);
+    return now.toISOString().split('T')[0];
+  })();
+
   const [data, setData] = useState([]);
   const [filters, setFilters] = useState({
     all: true,
@@ -17,7 +29,7 @@ export default function AdminViewsChartTab({ adminId }) {
   useEffect(() => {
     if (!adminId) return;
     setLoading(true);
-    fetch(`/api/admin/views?period=${period}&userId=${adminId}`)
+    fetch(`/api/admin/views?period=${period}&userId=${adminId}&baseDate=${baseDate}`)
       .then(res => res.json())
       .then(resData => {
         if (resData.success) {
@@ -25,16 +37,13 @@ export default function AdminViewsChartTab({ adminId }) {
         }
       })
       .finally(() => setLoading(false));
-  }, [period, adminId]);
+  }, [period, adminId, baseDate]);
 
   const toggleFilter = (key) => {
     setFilters(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
   const getFilteredData = () => {
-    // We already have all fields in the data: total, member, non_member, other.
-    // Recharts will automatically plot the lines we tell it to.
-    // The data array doesn't need to be filtered, we just control which <Line> components render.
     return data;
   };
 
@@ -53,10 +62,34 @@ export default function AdminViewsChartTab({ adminId }) {
           </h3>
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex items-center text-gray-700 font-bold">
-            <button className="text-gray-400 hover:text-gray-600 px-2">&lt;</button>
-            <span className="text-sm">현재 기준 📅</span>
-            <button className="text-gray-400 hover:text-gray-600 px-2">&gt;</button>
+          <div className="flex items-center text-gray-700 font-bold relative bg-gray-50 rounded-lg px-2 py-1 shadow-sm border border-gray-100">
+            <button 
+              className="text-gray-400 hover:text-teal-600 px-2 transition-colors cursor-pointer"
+              onClick={() => {
+                const d = new Date(baseDate);
+                d.setDate(d.getDate() - 1);
+                setBaseDate(d.toISOString().split('T')[0]);
+              }}
+            >&lt;</button>
+            <input 
+              type="date" 
+              value={baseDate}
+              max={todayStr}
+              onChange={(e) => setBaseDate(e.target.value)}
+              className="text-sm border-none bg-transparent outline-none cursor-pointer text-center font-bold text-gray-800"
+            />
+            <button 
+              className="text-gray-400 hover:text-teal-600 px-2 transition-colors cursor-pointer"
+              onClick={() => {
+                const d = new Date(baseDate);
+                d.setDate(d.getDate() + 1);
+                // Prevent going beyond today
+                const now = new Date();
+                now.setHours(now.getHours() + 9);
+                if (d > now) return;
+                setBaseDate(d.toISOString().split('T')[0]);
+              }}
+            >&gt;</button>
           </div>
           <div className="flex bg-gray-100 rounded-md p-1">
             <button 
