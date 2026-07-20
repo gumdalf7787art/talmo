@@ -101,6 +101,11 @@ function DiagnosisContent() {
           severity: "진행: 초기",
         });
         setImagePreview("https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?w=500&h=500&fit=crop");
+      } else {
+        // Not history mode, reset state
+        setResult(null);
+        setImagePreview(null);
+        setImageFile(null);
       }
     };
     fetchHistoryDetail();
