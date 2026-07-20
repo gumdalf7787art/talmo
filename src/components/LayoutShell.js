@@ -85,7 +85,6 @@ export default function LayoutShell({ children }) {
         <main className="min-h-[calc(100vh-120px)] flex-1">{children}</main>
         <Footer />
         <BottomNav />
-        <PWAPrompt />
       </div>
     </div>
   );
