@@ -458,15 +458,12 @@ function DiagnosisContent() {
               </div>
               <p className="text-[12px] text-gray-500 mb-2">초개인화 모델 스캔을 진행하고 있습니다...</p>
               
-              {/* Ad Banner */}
-              <a href="https://store.talmotalk.com" target="_blank" rel="noopener noreferrer" className="block w-full mt-1 rounded-xl overflow-hidden border border-gray-200 shadow-sm relative group active:scale-[0.98] transition-transform">
-                <img src="/talmotalk_ad.png" alt="탈모톡 스토어 광고" className="w-full h-[100px] object-cover" />
-                <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                  <span className="bg-white/95 backdrop-blur-sm text-gray-900 text-[12px] font-bold px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1">
-                    맞춤형 케어 제품 구경하기 <ChevronRight className="w-3 h-3" />
-                  </span>
-                </div>
-              </a>
+              {/* Message */}
+              <div className="w-full mt-2 bg-teal-50 border border-teal-100 rounded-xl p-3 shadow-sm flex items-center justify-center">
+                <span className="text-[13px] font-bold text-teal-800">
+                  매주 평가해서 나의 탈모를 관리하세요.
+                </span>
+              </div>
             </div>
           </div>
         </div>
