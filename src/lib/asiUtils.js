@@ -17,30 +17,95 @@ export const ASI_MAPPING = {
 };
 
 export const getAsiInfo = (report) => {
-  if (report?.summary?.asiStage && ASI_MAPPING[report.summary.asiStage]) {
-    return ASI_MAPPING[report.summary.asiStage];
-  }
-  // Fallback parsing from norwoodStage for older reports
-  const stageText = report?.summary?.norwoodStage || "";
+  if (!report) return ASI_MAPPING["ASI-M1"];
   
-  // Check if it's a female stage (Ludwig/Savin)
-  if (stageText.includes("Ludwig") || stageText.includes("여성형")) {
-    if (stageText.includes("Stage III") || stageText.includes("Scale III")) return ASI_MAPPING["ASI-F5"];
-    if (stageText.includes("Stage II-2") || stageText.includes("Scale II-2")) return ASI_MAPPING["ASI-F4"];
-    if (stageText.includes("Stage II-1") || stageText.includes("Scale II-1") || stageText.includes("Stage II") || stageText.includes("Scale II")) return ASI_MAPPING["ASI-F3"];
-    if (stageText.includes("Stage I-3") || stageText.includes("Stage I-2") || stageText.includes("Scale I-3") || stageText.includes("Scale I-2")) return ASI_MAPPING["ASI-F2"];
-    if (stageText.includes("Stage I-1") || stageText.includes("Scale I-1") || stageText.includes("Stage I") || stageText.includes("Scale I")) return ASI_MAPPING["ASI-F1"];
-    return ASI_MAPPING["ASI-F1"];
+  // Extract summary and breakdown (handles both nested report and flat summary objects)
+  const summary = report.summary || report;
+  const breakdown = report.breakdown || report.metrics || [];
+
+  const isFemale = (summary.gender && (summary.gender === 'female' || summary.gender === '여성')) || 
+                   (summary.norwoodStage?.includes("Ludwig") || summary.norwoodStage?.includes("여성형")) ||
+                   (summary.asiStage?.includes('ASI-F'));
+
+  const overallScore = summary.score || 0;
+
+  // Default to 100 so missing metrics don't trigger penalties
+  let densityScore = 100;
+  let hairlineScore = 100;
+  let thicknessScore = 100;
+
+  if (breakdown && breakdown.length > 0) {
+    const densityMetric = breakdown.find(m => m.id === 'density' || m.label?.includes('밀도'));
+    if (densityMetric) densityScore = densityMetric.score;
+
+    const hairlineMetric = breakdown.find(m => m.id === 'hairline' || m.label?.includes('헤어라인') || m.label?.includes('M자'));
+    if (hairlineMetric) hairlineScore = hairlineMetric.score;
+
+    const thicknessMetric = breakdown.find(m => m.id === 'thickness' || m.label?.includes('굵기'));
+    if (thicknessMetric) thicknessScore = thicknessMetric.score;
   }
 
-  // Male fallback
-  if (stageText.includes("Stage 7") || stageText.includes("Scale VII")) return ASI_MAPPING["ASI-M7"];
-  if (stageText.includes("Stage 6") || stageText.includes("Scale VI")) return ASI_MAPPING["ASI-M6"];
-  if (stageText.includes("Stage 5") || stageText.includes("Scale V")) return ASI_MAPPING["ASI-M5"];
-  if (stageText.includes("Stage 4") || stageText.includes("Scale IV")) return ASI_MAPPING["ASI-M4"];
-  if (stageText.includes("Stage 3") || stageText.includes("Scale III")) return ASI_MAPPING["ASI-M3"];
-  if (stageText.includes("Stage 2") || stageText.includes("Scale II")) return ASI_MAPPING["ASI-M2"];
-  if (stageText.includes("Stage 1") || stageText.includes("Scale I")) return ASI_MAPPING["ASI-M1"];
-  
-  return ASI_MAPPING["ASI-M1"]; // Default safe fallback
+  if (isFemale) {
+    let baseLevel = 1;
+    if (overallScore >= 80) baseLevel = 1;
+    else if (overallScore >= 60) baseLevel = 2;
+    else if (overallScore >= 40) baseLevel = 3;
+    else if (overallScore >= 20) baseLevel = 4;
+    else baseLevel = 5;
+
+    let overrideLevel = 1;
+    if (densityScore < 20) overrideLevel = 5;
+    else if (densityScore < 40) overrideLevel = 4;
+    else if (densityScore < 60) overrideLevel = 3;
+    else if (densityScore < 80) overrideLevel = 2;
+
+    let finalLevel = Math.max(baseLevel, overrideLevel);
+
+    if (densityScore < 60 && thicknessScore < 40) {
+      finalLevel += 1;
+    }
+    finalLevel = Math.min(finalLevel, 5);
+
+    return ASI_MAPPING[`ASI-F${finalLevel}`] || ASI_MAPPING["ASI-F1"];
+  } else {
+    let baseLevel = 1;
+    if (overallScore >= 85) baseLevel = 1;
+    else if (overallScore >= 70) baseLevel = 2;
+    else if (overallScore >= 55) baseLevel = 3;
+    else if (overallScore >= 40) baseLevel = 4;
+    else if (overallScore >= 25) baseLevel = 5;
+    else if (overallScore >= 10) baseLevel = 6;
+    else baseLevel = 7;
+
+    let overrideLevel = 1;
+    if (hairlineScore < 20 && densityScore < 20) overrideLevel = 6;
+    else if (hairlineScore < 20 || densityScore < 20) overrideLevel = 5;
+    else if (hairlineScore < 40 || densityScore < 40) overrideLevel = 4;
+    else if (hairlineScore < 60 || densityScore < 60) overrideLevel = 3;
+    else if (hairlineScore < 80 || densityScore < 80) overrideLevel = 2;
+
+    let finalLevel = Math.max(baseLevel, overrideLevel);
+
+    if (densityScore < 60 && thicknessScore < 40) {
+      finalLevel += 1;
+    }
+    finalLevel = Math.min(finalLevel, 7);
+
+    return ASI_MAPPING[`ASI-M${finalLevel}`] || ASI_MAPPING["ASI-M1"];
+  }
+};
+
+export const getAsiSeverityIndex = (asi) => {
+  if (!asi) return 0;
+  if (asi.code.includes('F')) {
+    if (asi.level === 1) return 0; // 양호
+    if (asi.level === 2) return 1; // 주의
+    if (asi.level <= 4) return 2; // 위험
+    return 3; // 심각
+  } else {
+    if (asi.level === 1) return 0; // 양호
+    if (asi.level <= 3) return 1; // 주의
+    if (asi.level <= 5) return 2; // 위험
+    return 3; // 심각
+  }
 };
