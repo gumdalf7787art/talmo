@@ -10,7 +10,8 @@ export async function onRequestPost(context) {
     // Get IP address from headers
     const ip = request.headers.get('cf-connecting-ip') || 
                request.headers.get('x-forwarded-for') || 
-               'unknown';
+               request.headers.get('x-real-ip') ||
+               crypto.randomUUID(); // Fallback to avoid all 'unknown' being treated as same user
     
     // Parse user_type and inflow_source from body if available
     let userType = 'non_member';
@@ -25,11 +26,11 @@ export async function onRequestPost(context) {
       // ignore
     }
 
-    // Check if we already logged this IP today
+    // Check if we already logged this IP today (KST)
     const checkStmt = db.prepare(`
       SELECT id FROM site_visits 
       WHERE ip_address = ? 
-      AND date(visited_at) = date('now')
+      AND date(visited_at, '+9 hours') = date('now', '+9 hours')
     `).bind(ip);
     
     const { results } = await checkStmt.all();
