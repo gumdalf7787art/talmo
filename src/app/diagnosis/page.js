@@ -498,16 +498,16 @@ function DiagnosisContent() {
               {!isProfileComplete && <span className="text-[11px] text-red-500 font-medium ml-auto">필수 입력 항목입니다</span>}
             </div>
             
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-4 mt-2">
               {/* Gender */}
-              <div className="flex items-center gap-3">
-                <span className="text-[12px] text-gray-500 font-medium w-10">성별</span>
-                <div className="flex gap-1 flex-1">
+              <div className="flex flex-col gap-2">
+                <span className="text-[14px] text-gray-800 font-bold">성별 <span className="text-red-500">*</span></span>
+                <div className="flex gap-2 w-full">
                   {["남성", "여성"].map(g => (
                     <button 
                       key={g} 
                       onClick={() => setProfile(prev => ({ ...prev, gender: g }))}
-                      className={`flex-1 py-1.5 rounded text-[12px] font-bold transition-colors ${profile.gender === g ? 'bg-teal-600 text-white' : 'bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100'}`}
+                      className={`flex-1 py-3.5 rounded-xl text-[15px] font-bold transition-all ${profile.gender === g ? 'bg-teal-600 text-white shadow-md border-transparent' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}
                     >
                       {g}
                     </button>
@@ -516,14 +516,14 @@ function DiagnosisContent() {
               </div>
 
               {/* Birth Year */}
-              <div className="flex items-center gap-3">
-                <span className="text-[12px] text-gray-500 font-medium w-10">출생</span>
+              <div className="flex flex-col gap-2">
+                <span className="text-[14px] text-gray-800 font-bold">출생 연도 <span className="text-red-500">*</span></span>
                 <select 
                   value={profile.birthYear}
                   onChange={(e) => setProfile(prev => ({ ...prev, birthYear: e.target.value }))}
-                  className="flex-1 bg-gray-50 border border-gray-200 rounded py-1.5 px-3 text-[12px] font-bold focus:outline-none focus:ring-1 focus:ring-teal-500 text-gray-900"
+                  className="w-full bg-white border border-gray-200 rounded-xl py-3.5 px-4 text-[15px] font-bold focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900 shadow-sm"
                 >
-                  <option value="" disabled>선택</option>
+                  <option value="" disabled>출생 연도를 선택해주세요</option>
                   {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(year => (
                     <option key={year} value={year}>{year}년</option>
                   ))}
@@ -531,14 +531,14 @@ function DiagnosisContent() {
               </div>
 
               {/* Family History */}
-              <div className="flex items-center gap-3">
-                <span className="text-[12px] text-gray-500 font-medium w-10">가족력</span>
+              <div className="flex flex-col gap-2">
+                <span className="text-[14px] text-gray-800 font-bold">유전적 가족력 <span className="text-red-500">*</span></span>
                 <select 
                   value={profile.familyHistory}
                   onChange={(e) => setProfile(prev => ({ ...prev, familyHistory: e.target.value }))}
-                  className="flex-1 bg-gray-50 border border-gray-200 rounded py-1.5 px-3 text-[12px] font-bold focus:outline-none focus:ring-1 focus:ring-teal-500 text-gray-900"
+                  className="w-full bg-white border border-gray-200 rounded-xl py-3.5 px-4 text-[15px] font-bold focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900 shadow-sm"
                 >
-                  <option value="" disabled>선택</option>
+                  <option value="" disabled>가족력 여부를 선택해주세요</option>
                   {["있음 (부계)", "있음 (모계)", "있음 (양가 모두)", "없음", "모름"].map(h => (
                     <option key={h} value={h}>{h}</option>
                   ))}
@@ -611,67 +611,48 @@ function DiagnosisContent() {
             />
           </div>
 
-          <div className="flex flex-col gap-2 bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm mt-1">
-            <div 
-              onClick={() => { const val = !consentAll; setConsent1(val); setConsent2(val); }} 
-              className="flex items-center gap-2 cursor-pointer border-b border-gray-100 pb-2.5 mb-1"
-            >
-              <div className="text-teal-600">
-                {consentAll ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4 text-gray-400" />}
-              </div>
-              <span className="text-[13px] font-bold text-gray-800">전체 동의하기</span>
-            </div>
-            
-            <div className="flex items-start gap-1.5 group mt-1.5">
-              <div onClick={() => setConsent1(!consent1)} className="mt-0.5 text-teal-600 shrink-0 cursor-pointer">
-                {consent1 ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5 text-gray-400" />}
-              </div>
-              <span onClick={() => setConsent1(!consent1)} className="text-[11px] text-gray-600 leading-snug cursor-pointer flex-1">
-                (필수) 서비스 향상 및 AI 학습을 위한 데이터 수집 동의
-              </span>
-              <button onClick={() => setTermsModal('service')} className="text-[11px] font-bold text-gray-400 hover:text-teal-600 underline underline-offset-2 shrink-0 px-1 py-0.5">[보기]</button>
-            </div>
-
-            <div className="flex items-start gap-1.5 group mt-1.5">
-              <div onClick={() => setConsent2(!consent2)} className="mt-0.5 text-teal-600 shrink-0 cursor-pointer">
-                {consent2 ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5 text-gray-400" />}
-              </div>
-              <span onClick={() => setConsent2(!consent2)} className="text-[11px] text-gray-600 leading-snug cursor-pointer flex-1">
-                (필수) 본 리포트는 의학적 진단을 대체할 수 없음에 동의
-              </span>
-              <button onClick={() => setTermsModal('medical')} className="text-[11px] font-bold text-gray-400 hover:text-teal-600 underline underline-offset-2 shrink-0 px-1 py-0.5">[보기]</button>
-            </div>
-          </div>
-
-          {/* 분석 버튼 */}
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center px-1 mb-1">
-              <span className="text-xs font-bold text-gray-700">남은 분석 티켓</span>
-              <span className="text-sm font-bold text-teal-600">
+          {/* 분석 버튼 (약관 동의 통합) */}
+          <div className="flex flex-col gap-3 mt-4">
+            <div className="flex justify-between items-center px-1">
+              <span className="text-[14px] font-bold text-gray-700">남은 분석 티켓</span>
+              <span className="text-[15px] font-black text-teal-600">
                 {user ? (user.tickets_basic || 0) + (user.tickets_premium || 0) : 0}장
               </span>
             </div>
+            
             <button
-              onClick={handleAnalyze}
-              disabled={!imageFile || isAnalyzing || !isProfileComplete || !consentAll}
-              className={`w-full py-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition-all duration-300 ${
-                !imageFile || !isProfileComplete || !consentAll
+              onClick={() => {
+                setConsent1(true);
+                setConsent2(true);
+                handleAnalyze();
+              }}
+              disabled={!imageFile || isAnalyzing || !isProfileComplete}
+              className={`w-full py-4 rounded-2xl font-bold text-white flex flex-col items-center justify-center gap-1.5 transition-all duration-300 ${
+                !imageFile || !isProfileComplete
                   ? "bg-gray-300 cursor-not-allowed" 
-                  : "bg-teal-600 hover:bg-teal-700 hover:-translate-y-1 hover:shadow-lg shadow-md"
+                  : "bg-teal-600 hover:bg-teal-700 hover:-translate-y-1 hover:shadow-xl shadow-md"
               }`}
             >
               {isAnalyzing ? (
-                <>
+                <div className="flex items-center gap-2">
                   <RefreshCcw className="w-5 h-5 animate-spin" />
-                  AI 모델 분석 중...
-                </>
+                  <span>AI 모델 분석 중...</span>
+                </div>
               ) : (
                 <>
-                  <Upload className="w-5 h-5" />
-                  AI 분석 실행 (1장 차감)
+                  <div className="flex items-center gap-2 text-[16px]">
+                    <CheckSquare className="w-5 h-5" />
+                    <span>약관 동의 및 AI 분석 시작</span>
+                  </div>
+                  <span className="text-[11px] text-teal-100 font-medium tracking-wide">수집 동의 및 면책 조항에 동의합니다 (1장 차감)</span>
                 </>
               )}
             </button>
+            <div className="text-center text-[12px] text-gray-400 mt-1 flex justify-center gap-3">
+              <button onClick={() => setTermsModal('service')} className="hover:text-teal-600 underline underline-offset-2">데이터 수집 약관 보기</button>
+              <span className="text-gray-300">|</span>
+              <button onClick={() => setTermsModal('medical')} className="hover:text-teal-600 underline underline-offset-2">의학적 면책 조항 보기</button>
+            </div>
             <button 
               onClick={handleInvite}
               className="w-full bg-[#FEE500] text-black font-bold py-3.5 rounded-xl text-[14px] shadow-sm hover:opacity-90 transition-all flex items-center justify-center gap-2 mt-1"
