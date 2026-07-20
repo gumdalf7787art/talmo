@@ -32,16 +32,26 @@ export default function BottomNav() {
           <span className="text-[10px] font-bold">홈</span>
         </Link>
 
-        {/* AI 분석 (Floating Button) */}
-        <div className="absolute left-1/2 -translate-x-1/2 -top-5">
+        {/* AI 분석 */}
+        {pathname === "/diagnosis" ? (
           <Link
             href="/diagnosis"
-            className="flex flex-col items-center justify-center w-16 h-16 bg-teal-600 rounded-full shadow-lg text-white hover:bg-teal-700 hover:scale-105 transition-all duration-300 ring-4 ring-white"
+            className="flex flex-col items-center justify-center w-16 gap-1 transition-colors text-teal-600"
           >
-            <Camera className="w-7 h-7" strokeWidth={2} />
-            <span className="text-[10px] font-bold mt-0.5">AI분석</span>
+            <Camera className="w-6 h-6" strokeWidth={2.5} />
+            <span className="text-[10px] font-bold">AI분석</span>
           </Link>
-        </div>
+        ) : (
+          <div className="absolute left-1/2 -translate-x-1/2 -top-5">
+            <Link
+              href="/diagnosis"
+              className="flex flex-col items-center justify-center w-16 h-16 bg-teal-600 rounded-full shadow-lg text-white hover:bg-teal-700 hover:scale-105 transition-all duration-300 ring-4 ring-white"
+            >
+              <Camera className="w-7 h-7" strokeWidth={2} />
+              <span className="text-[10px] font-bold mt-0.5">AI분석</span>
+            </Link>
+          </div>
+        )}
 
         {/* 마이페이지 / 로그인 */}
         <Link

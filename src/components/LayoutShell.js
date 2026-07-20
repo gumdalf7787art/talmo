@@ -6,10 +6,12 @@ import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
 import PCHeader from "@/components/pc/PCHeader";
 import PWAPrompt from "@/components/PWAPrompt";
+import { usePathname } from "next/navigation";
 import Footer from "@/components/Footer";
 
 export default function LayoutShell({ children }) {
   const isPC = useMediaQuery("(min-width: 1024px)");
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!sessionStorage.getItem('tracked')) {
@@ -78,12 +80,14 @@ export default function LayoutShell({ children }) {
   }
 
   // 모바일: 기존 레이아웃 그대로
+  const hideFooter = pathname === "/diagnosis";
+  
   return (
     <div className="bg-gray-50">
       <div className="max-w-md mx-auto min-h-screen bg-white relative pb-16 shadow-2xl flex flex-col">
         <Header />
         <main className="min-h-[calc(100vh-120px)] flex-1">{children}</main>
-        <Footer />
+        {!hideFooter && <Footer />}
         <BottomNav />
       </div>
     </div>

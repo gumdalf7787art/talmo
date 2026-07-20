@@ -496,11 +496,76 @@ function DiagnosisContent() {
       {!result && !isHistory && (
         <div className="flex flex-col gap-4">
           
+          {/* 업로드 영역 */}
+          <div className="flex gap-2 w-full mt-2">
+             <button onClick={() => setScanType('이마/헤어라인')} className={`flex-1 py-3 text-[13px] font-bold rounded-xl border-2 transition-all ${scanType === '이마/헤어라인' ? 'border-teal-500 bg-teal-50 text-teal-700 shadow-sm' : 'border-gray-200 bg-white text-gray-500 hover:bg-gray-50'}`}>이마/헤어라인</button>
+             <button onClick={() => setScanType('정수리/가르마')} className={`flex-1 py-3 text-[13px] font-bold rounded-xl border-2 transition-all ${scanType === '정수리/가르마' ? 'border-teal-500 bg-teal-50 text-teal-700 shadow-sm' : 'border-gray-200 bg-white text-gray-500 hover:bg-gray-50'}`}>정수리/가르마</button>
+          </div>
+          
+          <div 
+            onClick={() => fileInputRef.current?.click()}
+            className="border-2 border-dashed border-gray-300 rounded-2xl aspect-[4/3] flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer overflow-hidden transition-colors"
+          >
+            {imagePreview ? (
+              <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+            ) : (
+              <div className="flex flex-col items-center text-gray-400 gap-2">
+                <div className="p-3 bg-white rounded-full shadow-sm">
+                  <Camera className="w-8 h-8 text-teal-500" />
+                </div>
+                <span className="font-medium">사진 업로드</span>
+              </div>
+            )}
+            <input 
+              type="file" 
+              accept="image/*" 
+              className="hidden" 
+              ref={fileInputRef}
+              onChange={handleImageChange}
+            />
+          </div>
+
+          {/* 정확도를 높이는 촬영 팁 (모바일) */}
+          <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 flex flex-col gap-3.5">
+            <div>
+              <h4 className="font-bold text-slate-900 text-[13px] mb-2 flex items-center gap-1.5">
+                <Camera className="w-3.5 h-3.5 text-teal-600"/> 정확도를 높이는 촬영 팁
+              </h4>
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                <div className="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col items-center text-center gap-1.5">
+                  <div className="w-full aspect-[4/3] max-h-[80px] bg-slate-50 rounded-lg flex items-center justify-center overflow-hidden border border-slate-100">
+                    <img src="/tip_m_hairline.jpg" alt="M자 헤어라인 가이드" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-[11px] font-bold text-slate-800">M자 / 헤어라인</span>
+                  <span className="text-[10px] text-slate-500 leading-tight">정면에서<br/>라인이 잘 보이도록</span>
+                </div>
+                <div className="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col items-center text-center gap-1.5">
+                  <div className="w-full aspect-[4/3] max-h-[80px] bg-slate-50 rounded-lg flex items-center justify-center overflow-hidden border border-slate-100">
+                    <img src="/tip_crown_part.jpg" alt="정수리 가이드" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-[11px] font-bold text-slate-800">정수리 / 가르마</span>
+                  <span className="text-[10px] text-slate-500 leading-tight">고개를 숙이고<br/>전체가 잘 보이도록</span>
+                </div>
+              </div>
+              <div className="text-[11px] text-slate-600 mt-2.5 bg-white p-2.5 rounded-lg border border-slate-200 flex flex-col gap-1.5">
+                <div className="flex items-start gap-1">
+                  <AlertCircle className="w-3.5 h-3.5 text-orange-500 shrink-0 mt-0.5" />
+                  <span>밝은 조명 아래에서 흔들림 없이 찍어야 <strong>모발 밀도와 두피 상태(홍반 등)</strong>를 AI가 가장 정확히 판독합니다.</span>
+                </div>
+                <div className="flex flex-col gap-1 pl-4.5 text-[10.5px] text-slate-500">
+                  <span>• Ai 판독은 각도와 조명 그리고 촬영 이미지에 따라 다르게 나올 수 있습니다.</span>
+                  <span>• 확대경으로 찍은 사진이 아니므로 참고용으로만 사용해주시기 바랍니다.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* AI Profile Requirement Box (Compact) */}
           <div className="bg-white border border-gray-200 p-3.5 rounded-xl flex flex-col gap-3 shadow-sm">
             <div className="flex items-center gap-2">
-              <h3 className="font-bold text-[14px] text-gray-900">정보 입력</h3>
-              {!isProfileComplete && <span className="text-[11px] text-red-500 font-medium ml-auto">필수 입력 항목입니다</span>}
+              <h3 className="font-bold text-[16px] text-gray-900 flex items-center gap-2">
+                정보 입력 <span className="text-[16px] text-red-600 font-black tracking-wide">필수</span>
+              </h3>
             </div>
             
             <div className="flex flex-col gap-4 mt-2">
@@ -552,69 +617,6 @@ function DiagnosisContent() {
             </div>
           </div>
 
-          {/* 정확도를 높이는 촬영 팁 (모바일) */}
-          <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 flex flex-col gap-3.5">
-            <div>
-              <h4 className="font-bold text-slate-900 text-[13px] mb-2 flex items-center gap-1.5">
-                <Camera className="w-3.5 h-3.5 text-teal-600"/> 정확도를 높이는 촬영 팁
-              </h4>
-              <div className="grid grid-cols-2 gap-2 mt-2">
-                <div className="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col items-center text-center gap-1.5">
-                  <div className="w-full aspect-[4/3] max-h-[80px] bg-slate-50 rounded-lg flex items-center justify-center overflow-hidden border border-slate-100">
-                    <img src="/tip_m_hairline.jpg" alt="M자 헤어라인 가이드" className="w-full h-full object-cover" />
-                  </div>
-                  <span className="text-[11px] font-bold text-slate-800">M자 / 헤어라인</span>
-                  <span className="text-[10px] text-slate-500 leading-tight">정면에서<br/>라인이 잘 보이도록</span>
-                </div>
-                <div className="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col items-center text-center gap-1.5">
-                  <div className="w-full aspect-[4/3] max-h-[80px] bg-slate-50 rounded-lg flex items-center justify-center overflow-hidden border border-slate-100">
-                    <img src="/tip_crown_part.jpg" alt="정수리 가이드" className="w-full h-full object-cover" />
-                  </div>
-                  <span className="text-[11px] font-bold text-slate-800">정수리 / 가르마</span>
-                  <span className="text-[10px] text-slate-500 leading-tight">고개를 숙이고<br/>전체가 잘 보이도록</span>
-                </div>
-              </div>
-              <div className="text-[11px] text-slate-600 mt-2.5 bg-white p-2.5 rounded-lg border border-slate-200 flex flex-col gap-1.5">
-                <div className="flex items-start gap-1">
-                  <AlertCircle className="w-3.5 h-3.5 text-orange-500 shrink-0 mt-0.5" />
-                  <span>밝은 조명 아래에서 흔들림 없이 찍어야 <strong>모발 밀도와 두피 상태(홍반 등)</strong>를 AI가 가장 정확히 판독합니다.</span>
-                </div>
-                <div className="flex flex-col gap-1 pl-4.5 text-[10.5px] text-slate-500">
-                  <span>• Ai 판독은 각도와 조명 그리고 촬영 이미지에 따라 다르게 나올 수 있습니다.</span>
-                  <span>• 확대경으로 찍은 사진이 아니므로 참고용으로만 사용해주시기 바랍니다.</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* 업로드 영역 */}
-          <div className="flex gap-2 w-full">
-             <button onClick={() => setScanType('이마/헤어라인')} className={`flex-1 py-3 text-[13px] font-bold rounded-xl border-2 transition-all ${scanType === '이마/헤어라인' ? 'border-teal-500 bg-teal-50 text-teal-700 shadow-sm' : 'border-gray-200 bg-white text-gray-500 hover:bg-gray-50'}`}>이마/헤어라인</button>
-             <button onClick={() => setScanType('정수리/가르마')} className={`flex-1 py-3 text-[13px] font-bold rounded-xl border-2 transition-all ${scanType === '정수리/가르마' ? 'border-teal-500 bg-teal-50 text-teal-700 shadow-sm' : 'border-gray-200 bg-white text-gray-500 hover:bg-gray-50'}`}>정수리/가르마</button>
-          </div>
-          
-          <div 
-            onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-gray-300 rounded-2xl aspect-[4/3] flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer overflow-hidden transition-colors mt-2"
-          >
-            {imagePreview ? (
-              <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-            ) : (
-              <div className="flex flex-col items-center text-gray-400 gap-2">
-                <div className="p-3 bg-white rounded-full shadow-sm">
-                  <Camera className="w-8 h-8 text-teal-500" />
-                </div>
-                <span className="font-medium">사진 업로드</span>
-              </div>
-            )}
-            <input 
-              type="file" 
-              accept="image/*" 
-              className="hidden" 
-              ref={fileInputRef}
-              onChange={handleImageChange}
-            />
-          </div>
 
           {/* 분석 버튼 (약관 동의 통합) */}
           <div className="flex flex-col gap-3 mt-4">
