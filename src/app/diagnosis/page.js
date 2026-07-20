@@ -715,8 +715,16 @@ function DiagnosisContent() {
 
               {/* 하단 1개 박스: 진행 단계 */}
               <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl flex flex-col justify-center items-center text-center">
-                <span className="text-[11px] font-bold text-slate-500 mb-2">진행 단계 (Norwood/Ludwig)</span>
-                {renderStageText(result.summary?.norwoodStage || result.norwoodStage, true)}
+                <span className="text-[11px] font-bold text-slate-500 mb-2">AI 정밀 분석 결과 (ASI)</span>
+                {(() => {
+                  const asi = getAsiInfo(result);
+                  return (
+                    <div className="flex flex-col items-center gap-1.5 mb-2">
+                      <span className="text-[15px] font-bold text-gray-900">{asi.code} : {asi.title}</span>
+                      <span className="text-[11px] text-gray-500 leading-tight whitespace-pre-wrap">{asi.desc}</span>
+                    </div>
+                  );
+                })()}
                 
                 {/* 진행 심각도 시각화 스텝퍼 */}
                 <div className="flex items-center gap-2 w-full mt-1 px-1">
