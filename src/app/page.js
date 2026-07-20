@@ -145,46 +145,49 @@ export default function Home() {
   return (
     <div className="flex flex-col gap-4 px-4 pt-2 pb-6">
       <div className="flex flex-col gap-3">
-        {/* Top Search Button */}
-        <Link 
-          href="/search" 
-          className="flex items-center gap-2 bg-white border border-gray-900 rounded-lg px-3 py-2 text-gray-500 hover:bg-gray-50 transition-colors shadow-sm"
-        >
-          <Search className="w-3.5 h-3.5 text-gray-900" />
-          <span className="text-xs font-medium">궁금한 탈모 정보를 검색해보세요</span>
-        </Link>
-
       {/* Dynamic Banner Area */}
       {mounted && bannerType === "diagnosis" && (
-        <section className="relative overflow-hidden bg-gradient-to-r from-teal-500 to-teal-700 rounded-none -mx-4 py-3 px-4 text-white shadow-sm flex items-center justify-between">
-          <div className="relative z-10 flex items-center gap-3">
-            <div className="bg-white/20 p-1.5 rounded-lg backdrop-blur-sm shrink-0">
-              <Camera className="w-5 h-5" />
+        <section className="relative overflow-hidden bg-gradient-to-br from-teal-900 via-teal-700 to-teal-500 rounded-2xl aspect-[4/3] shadow-lg flex flex-col justify-end p-5 group mt-1">
+          {/* Background Image / Decoration */}
+          <div className="absolute inset-0 bg-[url('/ai_diagnosis_banner.png')] bg-cover bg-center opacity-40 mix-blend-overlay group-hover:scale-105 transition-transform duration-700"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+          <div className="absolute -top-10 -right-10 w-40 h-40 bg-teal-400/20 rounded-full blur-3xl"></div>
+          
+          {/* Content */}
+          <div className="relative z-10 flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <div className="bg-teal-500/80 p-1.5 rounded-lg backdrop-blur-md">
+                <Camera className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-teal-300 text-[11px] font-bold tracking-widest">AI SCAN</span>
             </div>
-            <div className="flex flex-col">
-              <h2 className="text-sm font-bold">내 탈모는 평균일까?</h2>
-              <p className="text-teal-100 text-[10px] mt-0.5">
-                AI로 내 연령/성별 평균과 비교하기
+            
+            <div className="flex flex-col mt-1">
+              <h2 className="text-2xl font-black text-white leading-tight">
+                Ai 탈모분석
+              </h2>
+              <p className="text-gray-200 text-sm mt-1.5 font-medium leading-snug break-keep">
+                Ai로 내 연령/성별 평균과 비교하기
               </p>
             </div>
-          </div>
-          
-          <div className="relative z-10 flex items-center gap-2">
+            
             <Link
               href="/diagnosis"
               onClick={handleDismissDiagnosis}
-              className="bg-white text-teal-600 font-bold text-xs px-3 py-1.5 rounded-md shadow-sm hover:bg-gray-50 transition-colors whitespace-nowrap"
+              className="mt-3 flex items-center justify-between bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-[15px] px-5 py-3.5 rounded-xl hover:bg-white/20 transition-colors"
             >
-              무료 진단
+              <span>바로가기</span>
+              <ChevronRight className="w-5 h-5" />
             </Link>
-            <button 
-              onClick={handleDismissDiagnosis}
-              className="text-white/70 hover:text-white p-1"
-            >
-              <X className="w-4 h-4" />
-            </button>
           </div>
-          <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+          
+          {/* Dismiss button */}
+          <button 
+            onClick={handleDismissDiagnosis}
+            className="absolute top-3 right-3 text-white/50 hover:text-white bg-black/20 p-1.5 rounded-full backdrop-blur-sm z-20 transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </section>
       )}
 
