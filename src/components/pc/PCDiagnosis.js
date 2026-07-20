@@ -257,6 +257,7 @@ function PCDiagnosisContent() {
           details.created_at = data.created_at || new Date().toISOString();
         }
         setResult(details); 
+        window.scrollTo(0, 0);
         
         // update user's tickets silently
         if (user) {

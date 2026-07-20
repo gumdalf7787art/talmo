@@ -327,6 +327,7 @@ function DiagnosisContent() {
           details.created_at = data.created_at || new Date().toISOString();
         }
         setResult(details);
+        window.scrollTo(0, 0);
         
         // update user's tickets in local storage silently by fetching me again
         if (user) {
