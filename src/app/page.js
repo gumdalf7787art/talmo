@@ -147,34 +147,35 @@ export default function Home() {
       <div className="flex flex-col gap-3">
       {/* Dynamic Banner Area */}
       {mounted && bannerType !== "none" && (
-        <section className="relative overflow-hidden bg-gradient-to-br from-teal-900 via-teal-800 to-emerald-700 rounded-2xl aspect-[2/1] shadow-lg flex flex-col justify-end p-5 group mt-1">
-          {/* Background Image / Decoration */}
-          <div className="absolute inset-0 bg-[url('/ai_diagnosis_banner.png')] bg-cover bg-center opacity-30 mix-blend-overlay group-hover:scale-105 transition-transform duration-700"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-teal-900/90 via-teal-900/50 to-transparent"></div>
-          <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-teal-400/20 rounded-full blur-3xl"></div>
-          <div className="absolute top-5 right-10 w-24 h-24 bg-emerald-300/10 rounded-full blur-2xl"></div>
+        <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-900 rounded-2xl aspect-[2/1] shadow-lg flex flex-col justify-end p-5 group mt-1">
+          {/* Background Image / Decoration - Using a text-less tech/medical image */}
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=800&q=80')] bg-cover bg-center opacity-40 mix-blend-overlay group-hover:scale-105 transition-transform duration-700"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-blue-900/60 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent"></div>
+          
+          <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-blue-500/20 rounded-full blur-3xl"></div>
           
           {/* Content */}
           <div className="relative z-10 flex flex-col gap-1.5 h-full justify-center">
             <div className="flex items-center gap-2">
-              <div className="bg-teal-500/80 p-1.5 rounded-lg backdrop-blur-md shadow-sm border border-teal-400/30">
+              <div className="bg-blue-600/80 p-1.5 rounded-lg backdrop-blur-md shadow-sm border border-blue-400/30">
                 <Camera className="w-4 h-4 text-white" />
               </div>
-              <span className="text-teal-300 text-[10px] font-bold tracking-widest uppercase">AI SCAN</span>
+              <span className="text-blue-300 text-[10px] font-bold tracking-widest uppercase">AI SCAN</span>
             </div>
             
             <div className="flex flex-col mt-1">
-              <h2 className="text-xl font-black text-white leading-tight drop-shadow-sm">
+              <h2 className="text-xl font-black text-white leading-tight drop-shadow-md">
                 Ai 탈모분석
               </h2>
-              <p className="text-teal-50 text-[11px] mt-1.5 font-medium leading-snug break-keep opacity-90">
+              <p className="text-blue-100 text-[11px] mt-1.5 font-medium leading-snug break-keep opacity-90 drop-shadow-sm">
                 Ai로 내 연령/성별 평균과 비교하기
               </p>
             </div>
             
             <Link
               href="/diagnosis"
-              className="mt-3 inline-flex items-center justify-between bg-white text-teal-900 font-bold text-[12px] px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-colors w-max shadow-md"
+              className="mt-3 inline-flex items-center justify-between bg-white text-blue-950 font-bold text-[12px] px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-colors w-max shadow-md"
             >
               <span>바로가기</span>
               <ChevronRight className="w-4 h-4 ml-1.5" />
