@@ -147,44 +147,18 @@ export default function Home() {
       <div className="flex flex-col gap-3">
       {/* Dynamic Banner Area */}
       {mounted && bannerType === "diagnosis" && (
-        <section className="relative overflow-hidden bg-gradient-to-br from-teal-900 via-teal-700 to-teal-500 rounded-2xl aspect-[4/3] shadow-lg flex flex-col justify-end p-5 group mt-1">
-          {/* Background Image / Decoration */}
-          <div className="absolute inset-0 bg-[url('/ai_diagnosis_banner.png')] bg-cover bg-center opacity-40 mix-blend-overlay group-hover:scale-105 transition-transform duration-700"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-          <div className="absolute -top-10 -right-10 w-40 h-40 bg-teal-400/20 rounded-full blur-3xl"></div>
-          
-          {/* Content */}
-          <div className="relative z-10 flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <div className="bg-teal-500/80 p-1.5 rounded-lg backdrop-blur-md">
-                <Camera className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-teal-300 text-[11px] font-bold tracking-widest">AI SCAN</span>
-            </div>
-            
-            <div className="flex flex-col mt-1">
-              <h2 className="text-2xl font-black text-white leading-tight">
-                Ai 탈모분석
-              </h2>
-              <p className="text-gray-200 text-sm mt-1.5 font-medium leading-snug break-keep">
-                Ai로 내 연령/성별 평균과 비교하기
-              </p>
-            </div>
-            
-            <Link
-              href="/diagnosis"
-              onClick={handleDismissDiagnosis}
-              className="mt-3 flex items-center justify-between bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-[15px] px-5 py-3.5 rounded-xl hover:bg-white/20 transition-colors"
-            >
-              <span>바로가기</span>
-              <ChevronRight className="w-5 h-5" />
-            </Link>
-          </div>
-          
+        <section className="relative overflow-hidden rounded-2xl aspect-[2/1] shadow-lg mt-1 group">
+          <Link href="/diagnosis" onClick={handleDismissDiagnosis} className="block w-full h-full">
+            <img 
+              src="/ai_diagnosis_banner.png" 
+              alt="Ai 탈모분석 배너" 
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+            />
+          </Link>
           {/* Dismiss button */}
           <button 
             onClick={handleDismissDiagnosis}
-            className="absolute top-3 right-3 text-white/50 hover:text-white bg-black/20 p-1.5 rounded-full backdrop-blur-sm z-20 transition-colors"
+            className="absolute top-2 right-2 text-white/70 hover:text-white bg-black/30 p-1.5 rounded-full backdrop-blur-sm z-20 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
