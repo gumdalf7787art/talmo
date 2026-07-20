@@ -147,18 +147,44 @@ export default function Home() {
       <div className="flex flex-col gap-3">
       {/* Dynamic Banner Area */}
       {mounted && bannerType === "diagnosis" && (
-        <section className="relative overflow-hidden rounded-2xl aspect-[2/1] shadow-lg mt-1 group">
-          <Link href="/diagnosis" onClick={handleDismissDiagnosis} className="block w-full h-full">
-            <img 
-              src="/ai_diagnosis_banner.png" 
-              alt="Ai 탈모분석 배너" 
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-            />
-          </Link>
+        <section className="relative overflow-hidden bg-gradient-to-br from-teal-900 via-teal-700 to-teal-500 rounded-2xl aspect-[2/1] shadow-lg flex flex-col justify-end p-5 group mt-1">
+          {/* Background Image / Decoration */}
+          <div className="absolute inset-0 bg-[url('/ai_diagnosis_banner.png')] bg-cover bg-center opacity-40 mix-blend-overlay group-hover:scale-105 transition-transform duration-700"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+          <div className="absolute -top-10 -right-10 w-40 h-40 bg-teal-400/20 rounded-full blur-3xl"></div>
+          
+          {/* Content */}
+          <div className="relative z-10 flex flex-col gap-1.5 h-full justify-center">
+            <div className="flex items-center gap-2">
+              <div className="bg-teal-500/80 p-1.5 rounded-lg backdrop-blur-md">
+                <Camera className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-teal-300 text-[10px] font-bold tracking-widest">AI SCAN</span>
+            </div>
+            
+            <div className="flex flex-col mt-0.5">
+              <h2 className="text-xl font-black text-white leading-tight">
+                Ai 탈모분석
+              </h2>
+              <p className="text-gray-200 text-[11px] mt-1 font-medium leading-snug break-keep">
+                Ai로 내 연령/성별 평균과 비교하기
+              </p>
+            </div>
+            
+            <Link
+              href="/diagnosis"
+              onClick={handleDismissDiagnosis}
+              className="mt-2 inline-flex items-center justify-between bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-[12px] px-3.5 py-2.5 rounded-xl hover:bg-white/20 transition-colors w-max"
+            >
+              <span>바로가기</span>
+              <ChevronRight className="w-4 h-4 ml-2" />
+            </Link>
+          </div>
+          
           {/* Dismiss button */}
           <button 
             onClick={handleDismissDiagnosis}
-            className="absolute top-2 right-2 text-white/70 hover:text-white bg-black/30 p-1.5 rounded-full backdrop-blur-sm z-20 transition-colors"
+            className="absolute top-2 right-2 text-white/50 hover:text-white bg-black/20 p-1.5 rounded-full backdrop-blur-sm z-20 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -166,28 +192,37 @@ export default function Home() {
       )}
 
       {mounted && bannerType === "community" && (
-        <section className="relative overflow-hidden bg-gray-900 rounded-none -mx-4 py-3 px-4 text-white shadow-sm flex items-center justify-between">
-          <div className="relative z-10 flex items-center gap-3">
-            <div className="bg-teal-500/20 p-1.5 rounded-lg backdrop-blur-sm shrink-0 border border-teal-500/30">
-              <MessageCircle className="w-5 h-5 text-teal-400" />
+        <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900 rounded-2xl aspect-[2/1] shadow-lg flex flex-col p-5 group mt-1">
+          {/* Background Decoration */}
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-20 mix-blend-overlay group-hover:scale-105 transition-transform duration-700"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/20 rounded-full blur-3xl"></div>
+          
+          <div className="relative z-10 flex flex-col gap-1.5 h-full justify-center">
+            <div className="flex items-center gap-2">
+              <div className="bg-teal-500/20 p-1.5 rounded-lg backdrop-blur-md border border-teal-500/30">
+                <MessageCircle className="w-4 h-4 text-teal-400" />
+              </div>
+              <span className="text-teal-300 text-[10px] font-bold tracking-widest">COMMUNITY</span>
             </div>
-            <div className="flex flex-col">
-              <h2 className="text-sm font-bold text-teal-50">1000만 탈모의 고민해결</h2>
-              <p className="text-gray-400 text-[10px] mt-0.5">
+            
+            <div className="flex flex-col mt-0.5">
+              <h2 className="text-xl font-black text-white leading-tight">
+                1000만 탈모의 고민해결
+              </h2>
+              <p className="text-gray-300 text-[11px] mt-1 font-medium leading-snug break-keep">
                 탈모커뮤니티 <span className="text-teal-400 font-bold">탈모톡</span>
               </p>
             </div>
-          </div>
-          
-          <div className="relative z-10">
+            
             <Link
               href="/community"
-              className="bg-teal-600 text-white font-bold text-xs px-4 py-1.5 rounded-md shadow-sm hover:bg-teal-700 transition-colors whitespace-nowrap"
+              className="mt-2 inline-flex items-center justify-between bg-teal-600/90 backdrop-blur-md border border-teal-500/50 text-white font-bold text-[12px] px-3.5 py-2.5 rounded-xl hover:bg-teal-500 transition-colors w-max shadow-md"
             >
-              입장하기
+              <span>입장하기</span>
+              <ChevronRight className="w-4 h-4 ml-2" />
             </Link>
           </div>
-          <div className="absolute right-0 top-0 w-32 h-32 bg-teal-500/10 rounded-full blur-2xl"></div>
         </section>
       )}
       </div>
