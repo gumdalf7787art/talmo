@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Camera, ChevronRight, MessageCircle, X, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import PCHome from "@/components/pc/PCHome";
 
 export default function Home() {
   const isPC = useMediaQuery("(min-width: 1024px)");
+  const router = useRouter();
   const [bannerType, setBannerType] = useState(null); // 'diagnosis' or 'community'
   const [mounted, setMounted] = useState(false);
   const [currentDoctorSlide, setCurrentDoctorSlide] = useState(0);
@@ -147,7 +149,10 @@ export default function Home() {
       <div className="flex flex-col gap-3">
       {/* Dynamic Banner Area */}
       {mounted && bannerType !== "none" && (
-        <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-900 rounded-2xl aspect-[2/1] shadow-lg flex flex-col justify-end p-5 group mt-1">
+        <section 
+          onClick={() => router.push('/diagnosis')}
+          className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-900 rounded-2xl aspect-[2/1] shadow-lg flex flex-col justify-end p-5 group mt-1 cursor-pointer"
+        >
           {/* Background Image / Decoration - Using a text-less tech/medical image */}
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=800&q=80')] bg-cover bg-center opacity-40 mix-blend-overlay group-hover:scale-105 transition-transform duration-700"></div>
           <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-blue-900/60 to-transparent"></div>
@@ -173,18 +178,20 @@ export default function Home() {
               </p>
             </div>
             
-            <Link
-              href="/diagnosis"
-              className="mt-3 inline-flex items-center justify-between bg-white text-blue-950 font-bold text-[12px] px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-colors w-max shadow-md"
+            <div
+              className="mt-3 inline-flex items-center justify-between bg-white text-blue-950 font-bold text-[12px] px-4 py-2.5 rounded-xl transition-colors w-max shadow-md pointer-events-none group-hover:bg-gray-50"
             >
               <span>바로가기</span>
               <ChevronRight className="w-4 h-4 ml-1.5" />
-            </Link>
+            </div>
           </div>
           
           {/* Dismiss button */}
           <button 
-            onClick={() => setBannerType("none")}
+            onClick={(e) => {
+              e.stopPropagation();
+              setBannerType("none");
+            }}
             className="absolute top-2 right-2 text-white/50 hover:text-white bg-black/20 p-1.5 rounded-full backdrop-blur-sm z-20 transition-colors"
           >
             <X className="w-4 h-4" />
