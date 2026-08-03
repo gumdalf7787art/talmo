@@ -48,9 +48,8 @@ export default function AdminViewsChartTab({ adminId }) {
   };
 
   const calculateTotals = () => {
-    let totalViews = 0;
-    data.forEach(item => totalViews += item.total);
-    return totalViews;
+    if (data.length === 0) return 0;
+    return data[data.length - 1].total;
   };
 
   return (

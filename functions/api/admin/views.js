@@ -34,7 +34,7 @@ export async function onRequestGet(context) {
       periodExpr = "date(visited_at, '+9 hours')"; // Group by KST date
       timeModifier = "'-30 days'";
     } else if (period === 'weekly') {
-      periodExpr = "strftime('%Y-%W', visited_at, '+9 hours')";
+      periodExpr = "date(visited_at, '+9 hours', 'weekday 1', '-7 days')";
       timeModifier = "'-84 days'"; // 12 weeks
     } else if (period === 'monthly') {
       periodExpr = "strftime('%Y-%m', visited_at, '+9 hours')";
