@@ -51,7 +51,7 @@ export default function LayoutShell({ children }) {
         }
       } catch (e) {}
       
-      fetch('/api/track', { 
+      fetch('/api/visit', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_type: userType, inflow_source: inflowSource })

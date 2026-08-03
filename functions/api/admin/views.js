@@ -57,7 +57,18 @@ export async function onRequestGet(context) {
       ORDER BY label ASC
     `;
 
-    const { results } = await db.prepare(query).bind(baseDate, baseDate).all();
+    let results;
+    try {
+      results = await db.prepare(query).bind(baseDate, baseDate).all().then(r => r.results);
+    } catch (err) {
+      if (err.message.includes('no such column')) {
+        try { await db.prepare("ALTER TABLE site_visits ADD COLUMN user_type TEXT DEFAULT 'non_member'").run(); } catch(e) {}
+        try { await db.prepare("ALTER TABLE site_visits ADD COLUMN inflow_source TEXT DEFAULT '직접 유입 및 기타'").run(); } catch(e) {}
+        results = await db.prepare(query).bind(baseDate, baseDate).all().then(r => r.results);
+      } else {
+        throw err;
+      }
+    }
 
     return new Response(JSON.stringify({ success: true, data: results }), {
       status: 200,

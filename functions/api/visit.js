@@ -40,12 +40,32 @@ export async function onRequestPost(context) {
       const id = crypto.randomUUID();
       const userAgent = request.headers.get('user-agent') || '';
       
-      const insertStmt = db.prepare(`
-        INSERT INTO site_visits (id, ip_address, user_agent, user_type, inflow_source) 
-        VALUES (?, ?, ?, ?, ?)
-      `).bind(id, ip, userAgent, userType, inflowSource);
-      
-      await insertStmt.run();
+      try {
+        const insertStmt = db.prepare(`
+          INSERT INTO site_visits (id, ip_address, user_agent, user_type, inflow_source) 
+          VALUES (?, ?, ?, ?, ?)
+        `).bind(id, ip, userAgent, userType, inflowSource);
+        
+        await insertStmt.run();
+      } catch (err) {
+        // Fallback: If columns are missing, add them and retry
+        if (err.message.includes('no such column')) {
+          try {
+            await db.prepare("ALTER TABLE site_visits ADD COLUMN user_type TEXT DEFAULT 'non_member'").run();
+          } catch(e) {}
+          try {
+            await db.prepare("ALTER TABLE site_visits ADD COLUMN inflow_source TEXT DEFAULT '직접 유입 및 기타'").run();
+          } catch(e) {}
+          
+          const retryStmt = db.prepare(`
+            INSERT INTO site_visits (id, ip_address, user_agent, user_type, inflow_source) 
+            VALUES (?, ?, ?, ?, ?)
+          `).bind(id, ip, userAgent, userType, inflowSource);
+          await retryStmt.run();
+        } else {
+          throw err;
+        }
+      }
     }
 
     return new Response(JSON.stringify({ success: true }), {
