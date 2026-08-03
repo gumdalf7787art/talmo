@@ -28,7 +28,7 @@ export async function onRequestPost(context) {
 
     // Check if we already logged this IP today (KST)
     const checkStmt = db.prepare(`
-      SELECT id FROM site_visits 
+      SELECT id, user_type FROM site_visits 
       WHERE ip_address = ? 
       AND date(visited_at, '+9 hours') = date('now', '+9 hours')
     `).bind(ip);
@@ -65,6 +65,17 @@ export async function onRequestPost(context) {
         } else {
           throw err;
         }
+      }
+    } else {
+      // If already logged today, check if they changed from non_member to member
+      if (results[0].user_type !== 'member' && userType === 'member') {
+        const updateStmt = db.prepare(`
+          UPDATE site_visits 
+          SET user_type = 'member' 
+          WHERE id = ?
+        `).bind(results[0].id);
+        
+        await updateStmt.run();
       }
     }
 

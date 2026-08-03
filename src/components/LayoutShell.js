@@ -14,10 +14,12 @@ export default function LayoutShell({ children }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!sessionStorage.getItem('tracked')) {
-      const savedUser = localStorage.getItem('user');
-      const userType = savedUser ? 'member' : 'non_member';
-
+    const savedUser = localStorage.getItem('user');
+    const userType = savedUser ? 'member' : 'non_member';
+    
+    const trackedUserType = sessionStorage.getItem('tracked_user_type');
+    
+    if (trackedUserType !== userType) {
       let inflowSource = '직접 유입 및 기타';
       try {
         const referrer = document.referrer || '';
@@ -56,7 +58,8 @@ export default function LayoutShell({ children }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_type: userType, inflow_source: inflowSource })
       }).catch(() => {});
-      sessionStorage.setItem('tracked', 'true');
+      
+      sessionStorage.setItem('tracked_user_type', userType);
     }
 
     // Capture referral code from URL and save to cookie (expires in 1 day)
