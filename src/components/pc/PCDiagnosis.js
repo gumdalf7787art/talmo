@@ -174,25 +174,26 @@ function PCDiagnosisContent() {
           }
           const inviteUrl = `https://talmotalk.com/signup?ref=${rawCode}`;
           const safeInviteUrl = encodeURI(inviteUrl);
+          const shareUrl = safeInviteUrl;
           
           // 6. 결과 썸네일과 함께 공유
           window.Kakao.Share.sendDefault({
             objectType: 'feed',
             content: {
-              title: '제 탈모 진단 결과를 확인해보세요!',
+              title: '탈모톡 AI 분석 리포트',
               description: `AI가 분석한 나의 두피 건강 상태입니다.\n초대장을 클릭하고 간편가입 하시면 AI 탈모분석 티켓 5장(기본2+보너스3)이 즉시 발급됩니다.\n추천인 코드: ${rawCode}`,
               imageUrl: uploadedImageUrl,
               link: {
-                mobileWebUrl: safeInviteUrl,
-                webUrl: safeInviteUrl,
+                mobileWebUrl: shareUrl,
+                webUrl: shareUrl,
               },
             },
             buttons: [
               {
-                title: '나도 AI 탈모 진단 해보기',
+                title: '나도 AI 탈모 분석 해보기',
                 link: {
-                  mobileWebUrl: safeInviteUrl,
-                  webUrl: safeInviteUrl,
+                  mobileWebUrl: shareUrl,
+                  webUrl: shareUrl,
                 },
               },
             ],
@@ -651,7 +652,7 @@ function PCDiagnosisContent() {
             }}
           >
             <div style={{ position: 'absolute', top: '60px', width: '100%', textAlign: 'center' }}>
-              <h2 style={{ fontSize: '42px', fontWeight: '900', color: '#1e293b', margin: '0 0 10px 0' }}>탈모톡 AI 정밀 진단 결과</h2>
+              <h2 style={{ fontSize: '42px', fontWeight: '900', color: '#1e293b', margin: '0 0 10px 0' }}>탈모톡 AI 분석 리포트</h2>
               <p style={{ fontSize: '24px', color: '#64748b', margin: 0 }}>TalmoTalk Precision AI Assessment</p>
             </div>
             
@@ -701,7 +702,7 @@ function PCDiagnosisContent() {
               onClick={handleShareResult}
               className="flex items-center gap-2 bg-[#FEE500] text-black px-5 py-2.5 rounded-lg font-bold text-[14px] shadow-sm hover:opacity-90 transition-all hover:scale-[1.02]"
             >
-              <Share2 className="w-4 h-4" /> 내 결과 카카오톡으로 자랑하기
+              <Share2 className="w-4 h-4" /> 내 결과 카톡으로 공유하고 초대하기
             </button>
           </div>
 
