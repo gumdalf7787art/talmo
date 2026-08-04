@@ -321,14 +321,17 @@ export default function PCHome() {
              <img src={banners.main_a_2.image_url} alt={banners.main_a_2.title} className="w-full h-auto object-cover group-hover:opacity-90 transition-opacity" />
           </Link>
         ) : (
-          <Link href="/quote" className="flex items-center justify-between bg-gradient-to-r from-slate-800 to-slate-900 rounded-lg py-6 px-8 shadow-lg group relative overflow-hidden">
+          <div 
+            onClick={() => alert("준비중입니다.")} 
+            className="flex items-center justify-between bg-gradient-to-r from-slate-800 to-slate-900 rounded-lg py-6 px-8 shadow-lg group relative overflow-hidden cursor-pointer"
+          >
             <div className="absolute right-0 top-0 w-40 h-40 bg-teal-500/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-teal-500/20 transition-colors" />
             <div className="flex flex-col gap-1 z-10">
               <span className="text-teal-400 text-sm font-bold">모발이식 비용, 직접 비교하세요!</span>
               <h3 className="text-white font-bold text-xl">비대면 견적받기</h3>
             </div>
             <div className="bg-teal-500 text-white font-bold px-6 py-2.5 rounded-md z-10 shadow-md group-hover:bg-teal-400 transition-colors">시작하기</div>
-          </Link>
+          </div>
         )}
 
         {/* 원장님 칼럼 */}
