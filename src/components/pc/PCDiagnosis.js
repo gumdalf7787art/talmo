@@ -143,9 +143,13 @@ function PCDiagnosisContent() {
           window.Kakao.init('f557c50a623379e0c2abb685232ade41');
         }
         
+        // DataTransfer를 사용하여 FileList 객체 생성 (Kakao API 요구사항)
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        
         // 4. 카카오 서버에 임시 이미지 업로드
         window.Kakao.Share.uploadImage({
-          file: [file]
+          file: dataTransfer.files
         })
         .then(function(response) {
           const uploadedImageUrl = response.infos[0].url;
@@ -189,7 +193,7 @@ function PCDiagnosisContent() {
         })
         .catch(function(error) {
           console.error("카카오 이미지 업로드 실패:", error);
-          alert("이미지 공유 중 오류가 발생했습니다.");
+          alert(`이미지 공유 중 오류가 발생했습니다.\n에러 내용: ${error.message || JSON.stringify(error)}`);
         });
       } else {
         alert("카카오톡 공유 기능을 사용할 수 없는 환경입니다.");
