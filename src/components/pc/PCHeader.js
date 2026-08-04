@@ -15,7 +15,7 @@ function PCHeaderContent() {
     { href: "/community?category=탈모수다", label: "탈모수다" },
     { href: "/community?category=리얼후기", label: "리얼후기" },
     { href: "/community?category=탈모정보", label: "탈모정보" },
-    { href: "/community?category=닥터칼럼", label: "닥터칼럼" },
+    { href: "/community?category=전문가칼럼", label: "전문가 칼럼" },
   ];
 
   const highlightItems = [
@@ -28,7 +28,7 @@ function PCHeaderContent() {
     "관리 및 이식에 대한 리얼후기",
     "신뢰할만한 탈모 정보",
     "1000만 탈모의 고민해결",
-    "원장님들이 작성하는 리얼칼럼",
+    "전문가 칼럼",
   ];
   const [searchIndex, setSearchIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");

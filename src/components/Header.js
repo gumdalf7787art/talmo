@@ -16,7 +16,7 @@ function HeaderContent() {
   const searchTexts = [
     "탈모 상태 분석하기",
     "이식/치료 리얼후기",
-    "원장님 닥터칼럼",
+    "전문가 칼럼",
     // "1:1 무료 상담"
   ];
   const [searchIndex, setSearchIndex] = useState(0);

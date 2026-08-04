@@ -34,7 +34,15 @@ export default function PCSidebar() {
   }, []);
 
   const handleInvite = () => {
-    if (!user) {
+    let currentUser = user;
+    if (!currentUser) {
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        try { currentUser = JSON.parse(savedUser); } catch(e){}
+      }
+    }
+
+    if (!currentUser) {
       alert("로그인이 필요합니다.");
       window.location.href = "/login";
       return;
@@ -45,7 +53,7 @@ export default function PCSidebar() {
       return;
     }
 
-    const rawCode = user.recommend_code || user.id;
+    const rawCode = currentUser.recommend_code || currentUser.id;
     const inviteUrl = `https://talmotalk.com/signup?ref=${rawCode}`;
     const safeInviteUrl = encodeURI(inviteUrl);
     const shareUrl = safeInviteUrl;
