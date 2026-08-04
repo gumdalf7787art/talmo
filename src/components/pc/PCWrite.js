@@ -316,17 +316,17 @@ export default function PCWrite({ editId }) {
         </header>
 
         {/* 2. 카테고리 선택 */}
-        <div className="p-6 pb-4 flex flex-col gap-3">
-          <label className="text-sm font-bold text-gray-700">카테고리</label>
-          <div className="flex gap-2">
+        <div className="px-6 py-4 flex items-center gap-6">
+          <label className="text-[15px] font-bold text-gray-700 shrink-0">카테고리</label>
+          <div className="flex gap-2 flex-wrap">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setCategory(cat)}
-                className={`px-5 py-2.5 rounded-md text-[14px] font-bold transition-colors border ${
+                className={`px-5 py-2 rounded-md text-[14px] font-bold transition-colors border ${
                   category === cat 
                     ? 'bg-teal-600 border-teal-600 text-white shadow-sm' 
-                    : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'
+                    : 'bg-gray-100 border-gray-200 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
                 }`}
               >
                 {cat}
