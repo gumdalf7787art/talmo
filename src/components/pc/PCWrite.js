@@ -279,13 +279,14 @@ export default function PCWrite({ editId }) {
   const isFormValid = category && title.trim() && content.trim() && content !== "<p><br></p>" && !isLoading;
 
   return (
-    <div className="flex flex-col w-full bg-gray-50/30 pb-20">
+    <div className="flex flex-col w-full bg-gray-50 pb-20 items-center pt-8">
       
-      {/* ===== 상단 통짜 고정 래퍼 (글로벌 GNB 아래에 찰싹 붙음) ===== */}
-      <div className="sticky top-[60px] md:top-[64px] z-40 w-full flex flex-col items-center bg-white shadow-sm border-b border-gray-200">
+      {/* ===== 상단 통짜 고정 래퍼 (글로벌 GNB 136px 아래에 찰싹 붙음) ===== */}
+      {/* '하나의 문서' 처럼 보이기 위해 넓이를 800px로 통일하고 상단 둥글기 적용 */}
+      <div className="sticky top-[136px] z-40 w-full max-w-[800px] flex flex-col bg-white rounded-t-xl shadow-sm border border-gray-200 border-b-0">
         
         {/* 1. PCWrite 헤더 (새 글 작성 / 등록 버튼) */}
-        <header className="w-full max-w-[1080px] h-16 flex items-center justify-between px-6 bg-white">
+        <header className="w-full h-16 flex items-center justify-between px-6 bg-white rounded-t-xl border-b border-gray-100">
           <div className="flex items-center gap-4">
             <button onClick={() => router.back()} className="p-2 -ml-2 text-gray-500 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-100">
               <X className="w-6 h-6" />
@@ -314,158 +315,157 @@ export default function PCWrite({ editId }) {
           </div>
         </header>
 
-        {/* 2. 카테고리 및 툴바 컨테이너 */}
-        <div className="w-full max-w-[800px] flex flex-col bg-white">
-          {/* 카테고리 선택 */}
-          <div className="p-6 pb-4 flex flex-col gap-3 border-t border-gray-100">
-            <label className="text-sm font-bold text-gray-700">카테고리</label>
-            <div className="flex gap-2">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setCategory(cat)}
-                  className={`px-5 py-2.5 rounded-md text-[14px] font-bold transition-colors border ${
-                    category === cat 
-                      ? 'bg-teal-600 border-teal-600 text-white shadow-sm' 
-                      : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
+        {/* 2. 카테고리 선택 */}
+        <div className="p-6 pb-4 flex flex-col gap-3">
+          <label className="text-sm font-bold text-gray-700">카테고리</label>
+          <div className="flex gap-2">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setCategory(cat)}
+                className={`px-5 py-2.5 rounded-md text-[14px] font-bold transition-colors border ${
+                  category === cat 
+                    ? 'bg-teal-600 border-teal-600 text-white shadow-sm' 
+                    : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
           </div>
+        </div>
 
-          {/* 커스텀 버튼부 (사진/유튜브) */}
-          <div className="flex gap-6 px-6 py-3 border-t border-gray-100 bg-gray-50/50">
-            <button 
-              onClick={handleCustomImage}
-              className="flex flex-col items-center gap-2 text-gray-500 hover:text-teal-600 transition-colors"
-            >
-              <ImageIcon className="w-8 h-8" />
-              <span className="text-[12px] font-bold">사진 첨부</span>
-            </button>
-            <button 
-              onClick={handleCustomVideo}
-              className="flex flex-col items-center gap-2 text-gray-500 hover:text-teal-600 transition-colors"
-            >
-              <Video className="w-8 h-8" />
-              <span className="text-[12px] font-bold">유튜브 삽입</span>
-            </button>
-          </div>
+        {/* 3. 커스텀 버튼부 (사진/유튜브) */}
+        <div className="flex gap-6 px-6 py-3 border-t border-gray-100 bg-gray-50/50">
+          <button 
+            onClick={handleCustomImage}
+            className="flex flex-col items-center gap-2 text-gray-500 hover:text-teal-600 transition-colors"
+          >
+            <ImageIcon className="w-8 h-8" />
+            <span className="text-[12px] font-bold">사진 첨부</span>
+          </button>
+          <button 
+            onClick={handleCustomVideo}
+            className="flex flex-col items-center gap-2 text-gray-500 hover:text-teal-600 transition-colors"
+          >
+            <Video className="w-8 h-8" />
+            <span className="text-[12px] font-bold">유튜브 삽입</span>
+          </button>
+        </div>
 
-          {/* ReactQuill 외부 툴바 DOM */}
-          <div id="quill-external-toolbar" className="px-4 py-2 bg-white flex items-center flex-wrap gap-1 border-t border-gray-100">
-            <select className="ql-header" defaultValue="false">
-              <option value="1">제목 1</option>
-              <option value="2">제목 2</option>
-              <option value="3">제목 3</option>
-              <option value="false">본문</option>
-            </select>
-            <div className="w-px h-5 bg-gray-300 mx-2"></div>
-            <button className="ql-bold" />
-            <button className="ql-italic" />
-            <button className="ql-underline" />
-            <button className="ql-strike" />
-            <button className="ql-blockquote" />
-            <div className="w-px h-5 bg-gray-300 mx-2"></div>
-            <select className="ql-color" />
-            <select className="ql-background" />
-            <div className="w-px h-5 bg-gray-300 mx-2"></div>
-            <button className="ql-list" value="ordered" />
-            <button className="ql-list" value="bullet" />
-            <div className="w-px h-5 bg-gray-300 mx-2"></div>
-            <button className="ql-align" value="" />
-            <button className="ql-align" value="center" />
-            <button className="ql-align" value="right" />
-            <div className="w-px h-5 bg-gray-300 mx-2"></div>
-            <button className="ql-link" />
-            <button className="ql-clean" />
-          </div>
+        {/* 4. ReactQuill 외부 툴바 DOM */}
+        <div id="quill-external-toolbar" className="px-4 py-2 bg-white flex items-center flex-wrap gap-1 border-t border-gray-100 border-b border-gray-200">
+          <select className="ql-header" defaultValue="false">
+            <option value="1">제목 1</option>
+            <option value="2">제목 2</option>
+            <option value="3">제목 3</option>
+            <option value="false">본문</option>
+          </select>
+          <div className="w-px h-5 bg-gray-300 mx-2"></div>
+          <button className="ql-bold" />
+          <button className="ql-italic" />
+          <button className="ql-underline" />
+          <button className="ql-strike" />
+          <button className="ql-blockquote" />
+          <div className="w-px h-5 bg-gray-300 mx-2"></div>
+          <select className="ql-color" />
+          <select className="ql-background" />
+          <div className="w-px h-5 bg-gray-300 mx-2"></div>
+          <button className="ql-list" value="ordered" />
+          <button className="ql-list" value="bullet" />
+          <div className="w-px h-5 bg-gray-300 mx-2"></div>
+          <button className="ql-align" value="" />
+          <button className="ql-align" value="center" />
+          <button className="ql-align" value="right" />
+          <div className="w-px h-5 bg-gray-300 mx-2"></div>
+          <button className="ql-link" />
+          <button className="ql-clean" />
         </div>
       </div>
 
-      {/* ===== 하단 본문 (브라우저 창 전체 스크롤 영역) ===== */}
-      <main className="flex flex-col items-center w-full pt-8 px-4">
-        <div className="w-full max-w-[800px] bg-white rounded-lg border border-gray-200 shadow-sm flex flex-col quill-pc-container relative">
-          
-          <style jsx global>{`
-            /* 자연스러운 윈도우 스크롤을 위해 에디터 자체 높이를 유동적으로 */
-            .quill-pc-container {
-              min-height: 500px;
-            }
-            .quill-pc-container .quill {
-              display: flex;
-              flex-direction: column;
-              border: none;
-            }
-            .quill-pc-container .ql-container.ql-snow {
-              border: none;
-              font-family: inherit;
-            }
-            /* 툴바 보더 제거 */
-            #quill-external-toolbar.ql-toolbar.ql-snow {
-              border: none;
-            }
-            .quill-pc-container .ql-editor {
-              padding: 0 32px 32px 32px;
-              font-size: 16px;
-              line-height: 1.8;
-              color: #374151;
-              min-height: 500px;
-            }
-            .quill-pc-container .ql-editor.ql-blank::before {
-              color: #9ca3af;
-              font-style: normal;
-              left: 32px;
-            }
-            .quill-pc-container .ql-editor img {
-              border-radius: 8px;
-              margin: 16px 0;
-              max-width: 100%;
-            }
-            .quill-pc-container .ql-editor h1, 
-            .quill-pc-container .ql-editor h2 {
-              margin-top: 24px;
-              margin-bottom: 12px;
-              color: #111827;
-            }
-            .quill-pc-container .ql-editor p {
-              margin-bottom: 8px;
-            }
-            .quill-pc-container .ql-snow .ql-picker-label {
-              font-weight: 500;
-              color: #4b5563;
-            }
-            /* 툴팁 위치 조정 */
-            #quill-external-toolbar .ql-tooltip {
-              left: 50% !important;
-              transform: translateX(-50%);
-              top: 100% !important;
-              position: absolute !important;
-              z-index: 100;
-              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            }
-          `}</style>
-          
-          {/* 제목 입력칸 */}
-          <div className="px-8 pt-8 pb-4">
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="제목을 입력하세요"
-              className="w-full text-[32px] font-bold text-gray-900 placeholder-gray-300 focus:outline-none py-2"
-            />
-          </div>
+      {/* ===== 하단 본문 (스크롤 시 자연스럽게 올라가는 부분) ===== */}
+      <main className="w-full max-w-[800px] bg-white rounded-b-xl border border-gray-200 border-t-0 shadow-sm flex flex-col quill-pc-container relative">
+        
+        <style jsx global>{`
+          /* 자연스러운 윈도우 스크롤을 위해 에디터 자체 높이를 유동적으로 */
+          .quill-pc-container {
+            min-height: 500px;
+          }
+          .quill-pc-container .quill {
+            display: flex;
+            flex-direction: column;
+            border: none;
+          }
+          .quill-pc-container .ql-container.ql-snow {
+            border: none;
+            font-family: inherit;
+          }
+          /* 툴바 보더 제거 */
+          #quill-external-toolbar.ql-toolbar.ql-snow {
+            border: none;
+          }
+          .quill-pc-container .ql-editor {
+            padding: 24px 32px 32px 32px;
+            font-size: 16px;
+            line-height: 1.8;
+            color: #374151;
+            min-height: 500px;
+          }
+          .quill-pc-container .ql-editor.ql-blank::before {
+            color: #9ca3af;
+            font-style: normal;
+            left: 32px;
+          }
+          .quill-pc-container .ql-editor img {
+            border-radius: 8px;
+            margin: 16px 0;
+            max-width: 100%;
+          }
+          .quill-pc-container .ql-editor h1, 
+          .quill-pc-container .ql-editor h2 {
+            margin-top: 24px;
+            margin-bottom: 12px;
+            color: #111827;
+          }
+          .quill-pc-container .ql-editor p {
+            margin-bottom: 8px;
+          }
+          .quill-pc-container .ql-snow .ql-picker-label {
+            font-weight: 500;
+            color: #4b5563;
+          }
+          /* 툴팁 위치 조정 */
+          #quill-external-toolbar .ql-tooltip {
+            left: 50% !important;
+            transform: translateX(-50%);
+            top: 100% !important;
+            position: absolute !important;
+            z-index: 100;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          }
+        `}</style>
+        
+        {/* 제목 입력칸 */}
+        <div className="px-8 pt-8 pb-4">
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="제목을 입력하세요"
+            className="w-full text-[32px] font-bold text-gray-900 placeholder-gray-300 focus:outline-none py-2"
+          />
+        </div>
 
-          {/* 내용 에디터 (onPasteCapture 등 바인딩) */}
-          <div 
-            className="flex-1"
-            onPasteCapture={handlePasteAndDrop}
-            onDropCapture={handlePasteAndDrop}
-          >
-            <ReactQuill
+        {/* 구분 회색 줄 */}
+        <div className="w-[calc(100%-64px)] mx-auto h-[1px] bg-gray-200 my-2"></div>
+
+        {/* 내용 에디터 (onPasteCapture 등 바인딩) */}
+        <div 
+          className="flex-1"
+          onPasteCapture={handlePasteAndDrop}
+          onDropCapture={handlePasteAndDrop}
+        >
+          <ReactQuill
               ref={quillRef}
               theme="snow"
               value={content}
@@ -475,7 +475,6 @@ export default function PCWrite({ editId }) {
               placeholder="내용을 자유롭게 작성해주세요. 이미지와 동영상도 첨부할 수 있습니다."
             />
           </div>
-        </div>
       </main>
     </div>
   );
