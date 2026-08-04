@@ -140,12 +140,7 @@ export default function PCHome() {
   const reviewPhotos = reviewPosts.slice(0, 4);
   const infoPhotos = infoPosts.slice(0, 4);
 
-  const columnPhotos = [
-    { id: 201, title: "절개 vs 비절개", imgUrl: "https://images.unsplash.com/photo-1620331311520-246422fd82f9?w=200&h=200&fit=crop" },
-    { id: 202, title: "3000모 이식 과정", imgUrl: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=200&h=200&fit=crop" },
-    { id: 203, title: "이식 후 생착률", imgUrl: "https://images.unsplash.com/photo-1551076805-e1869033e561?w=200&h=200&fit=crop" },
-    { id: 204, title: "병원 고르는 꿀팁", imgUrl: "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=200&h=200&fit=crop" },
-  ];
+
 
   return (
     <div className="flex gap-6">
@@ -334,28 +329,7 @@ export default function PCHome() {
           </div>
         )}
 
-        {/* 원장님 칼럼 */}
-        {false && (
-        <section className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-2">
-              <h3 className="font-bold text-lg text-gray-900">전문가 칼럼</h3>
-              <span className="bg-gray-100 text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded">공식</span>
-            </div>
-            <Link href="/transplant" className="text-sm font-medium text-teal-600 flex items-center">더보기 <ChevronRight className="w-4 h-4" /></Link>
-          </div>
-          <div className="grid grid-cols-4 gap-4">
-            {columnPhotos.map((photo) => (
-              <Link key={photo.id} href={`/transplant/${photo.id}`} className="flex flex-col gap-2 group">
-                <div className="w-full aspect-square rounded-md overflow-hidden border border-gray-100 shadow-sm">
-                  <img src={photo.imgUrl} alt={photo.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                </div>
-                <h4 className="font-medium text-gray-800 text-[13px] line-clamp-1">{photo.title}</h4>
-              </Link>
-            ))}
-          </div>
-        </section>
-        )}
+
 
         {/* 1:1 상담 의사 목록 */}
         {false && (

@@ -423,67 +423,7 @@ export default function Home() {
         </Link>
       </section>
 
-      {/* Doctor's Real Column */}
-      {false && (
-      <section className="flex flex-col gap-1 mt-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <h3 className="font-bold text-base text-gray-900">전문가 칼럼</h3>
-            <span className="bg-gray-100 text-gray-500 text-[9px] font-bold px-1.5 py-0.5 rounded-sm">공식</span>
-          </div>
-          <Link href="/transplant" className="text-xs font-medium text-teal-600 flex items-center">
-            더보기 <ChevronRight className="w-3 h-3" />
-          </Link>
-        </div>
-        
-        {/* Photos (6 items) */}
-        <div className="flex overflow-x-auto pb-2 -mx-4 snap-x hide-scrollbar">
-          <div className="w-4 shrink-0 snap-start" aria-hidden="true"></div>
-          {[
-            { id: 201, title: "절개 vs 비절개", imgUrl: "https://images.unsplash.com/photo-1620331311520-246422fd82f9?w=200&h=200&fit=crop" },
-            { id: 202, title: "3000모 이식 과정", imgUrl: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=200&h=200&fit=crop" },
-            { id: 203, title: "이식 후 생착률", imgUrl: "https://images.unsplash.com/photo-1551076805-e1869033e561?w=200&h=200&fit=crop" },
-            { id: 204, title: "병원 고르는 꿀팁", imgUrl: "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=200&h=200&fit=crop" },
-            { id: 205, title: "모발이식 부작용", imgUrl: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=200&h=200&fit=crop" },
-            { id: 206, title: "수술 전후 주의사항", imgUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=200&h=200&fit=crop" },
-          ].map((photo) => (
-            <Link 
-              key={`transplant-photo-${photo.id}`} 
-              href={`/transplant/${photo.id}`} 
-              className="flex-shrink-0 w-[25%] snap-start flex flex-col gap-1.5 group mr-1.5"
-            >
-              <div className={`w-full aspect-square rounded-md shadow-sm border border-gray-100 flex items-center justify-center overflow-hidden relative`}>
-                <img src={photo.imgUrl} alt={photo.title} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors"></div>
-              </div>
-              <h4 className="font-medium text-gray-800 text-[11px] line-clamp-1 px-0.5">{photo.title}</h4>
-            </Link>
-          ))}
-          <div className="w-4 shrink-0 snap-end" aria-hidden="true"></div>
-        </div>
 
-        {/* Text Posts (4 items) */}
-        <div className="flex flex-col">
-          {[
-            { id: 211, title: "3000모 비절개 모발이식 1년차 리얼 후기", comments: 128 },
-            { id: 212, title: "모발이식 수술 전후 주의사항 총정리", comments: 45 },
-            { id: 213, title: "터키 모발이식, 비용과 위험성 알아보기", comments: 82 },
-            { id: 214, title: "20대 모발이식, 과연 빠를수록 좋을까?", comments: 64 },
-          ].map((post) => (
-            <Link key={`transplant-post-${post.id}`} href={`/transplant/${post.id}`} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0 group">
-              <div className="flex items-center gap-2 overflow-hidden">
-                <span className="w-1 h-1 rounded-full bg-teal-500 shrink-0"></span>
-                <h4 className="font-medium text-gray-800 text-[13px] leading-tight line-clamp-1 group-hover:text-teal-600 transition-colors">{post.title}</h4>
-              </div>
-              <div className="flex items-center gap-1 text-gray-400 text-xs shrink-0 ml-4">
-                <MessageCircle className="w-3.5 h-3.5" />
-                {post.comments}
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-      )}
       {/* 1:1 Consultation */}
       {false && (
       <section className="flex flex-col gap-3 mt-4 mb-8">
