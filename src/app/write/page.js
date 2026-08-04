@@ -103,6 +103,61 @@ export default function WritePage() {
     e.target.value = ''; // Reset input
   };
 
+  const handlePasteAndDrop = async (e) => {
+    let items;
+    if (e.type === 'paste') {
+      items = e.clipboardData?.items;
+    } else if (e.type === 'drop') {
+      items = e.dataTransfer?.items;
+    }
+    
+    if (!items) return;
+
+    const imageFiles = [];
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        imageFiles.push(items[i].getAsFile());
+      }
+    }
+
+    if (imageFiles.length > 0) {
+      e.preventDefault(); // Prevent default base64 injection
+      
+      // Focus editor if not active to ensure we have a selection
+      if (document.activeElement !== editorRef.current) {
+        editorRef.current.focus();
+      }
+
+      for (const file of imageFiles) {
+        if (!file) continue;
+        try {
+          const compressedBase64 = await compressImage(file, 800, 0.6);
+          const res = await fetch(compressedBase64);
+          const blob = await res.blob();
+          
+          const formData = new FormData();
+          formData.append("image", blob, file.name || "image.jpg");
+          
+          const uploadRes = await fetch("/api/posts/upload-image", {
+            method: "POST",
+            body: formData,
+          });
+          
+          if (uploadRes.ok) {
+            const uploadData = await uploadRes.json();
+            if (uploadData.success) {
+              const imgHtml = `<img src="${uploadData.url}" style="width: calc(100% + 40px); max-width: none; margin-left: -20px; margin-top: 16px; margin-bottom: 16px; display: block;" alt="uploaded" /><p><br></p>`;
+              document.execCommand("insertHTML", false, imgHtml);
+              setContent(editorRef.current.innerHTML);
+            }
+          }
+        } catch (err) {
+          console.error("Paste/Drop Image upload failed:", err);
+        }
+      }
+    }
+  };
+
   const handlePost = async () => {
     if (!category || !title.trim() || !content.trim() || content === "<p><br></p>") return;
     
@@ -220,6 +275,8 @@ export default function WritePage() {
             suppressContentEditableWarning
             className="w-full flex-1 text-[15px] text-gray-800 focus:outline-none min-h-[300px] leading-relaxed"
             onInput={(e) => setContent(e.currentTarget.innerHTML)}
+            onPaste={handlePasteAndDrop}
+            onDrop={handlePasteAndDrop}
           ></div>
         </div>
       </main>

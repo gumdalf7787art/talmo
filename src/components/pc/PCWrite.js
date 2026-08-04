@@ -93,6 +93,57 @@ export default function PCWrite({ editId }) {
     };
   };
 
+  const handlePasteAndDrop = async (e) => {
+    let items;
+    if (e.type === 'paste') {
+      items = e.clipboardData?.items;
+    } else if (e.type === 'drop') {
+      items = e.dataTransfer?.items;
+    }
+    
+    if (!items) return;
+
+    const imageFiles = [];
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        imageFiles.push(items[i].getAsFile());
+      }
+    }
+
+    if (imageFiles.length > 0) {
+      e.preventDefault(); // Prevent default base64 injection
+      
+      for (const file of imageFiles) {
+        if (!file) continue;
+        try {
+          const compressedBase64 = await compressImage(file, 800, 0.6);
+          const res = await fetch(compressedBase64);
+          const blob = await res.blob();
+          
+          const formData = new FormData();
+          formData.append("image", blob, file.name || "image.jpg");
+          
+          const uploadRes = await fetch("/api/posts/upload-image", {
+            method: "POST",
+            body: formData,
+          });
+          
+          if (uploadRes.ok) {
+            const uploadData = await uploadRes.json();
+            if (uploadData.success) {
+              const quill = quillRef.current.getEditor();
+              const range = quill.getSelection(true);
+              quill.insertEmbed(range.index, "image", uploadData.url);
+              quill.setSelection(range.index + 1);
+            }
+          }
+        } catch (err) {
+          console.error("Paste/Drop Image upload failed:", err);
+        }
+      }
+    }
+  };
+
   // Memoize modules to prevent Quill from re-rendering and losing focus
   const modules = useMemo(
     () => ({
@@ -254,7 +305,11 @@ export default function PCWrite({ editId }) {
           </div>
 
           {/* Quill Editor wrapper */}
-          <div className="flex-1 flex flex-col relative quill-pc-container">
+          <div 
+            className="flex-1 flex flex-col relative quill-pc-container"
+            onPasteCapture={handlePasteAndDrop}
+            onDropCapture={handlePasteAndDrop}
+          >
             <style jsx global>{`
               /* Customizing React Quill to look like a modern blog editor */
               .quill-pc-container .quill {
