@@ -13,6 +13,8 @@ export default function PCWrite({ editId }) {
   const [isLoading, setIsLoading] = useState(editId ? true : false);
   const quillRef = useRef(null);
 
+  const [isAdminOrHospital, setIsAdminOrHospital] = useState(false);
+
   useEffect(() => {
     if (editId) {
       fetch(`/api/posts/detail?id=${editId}`)
@@ -26,9 +28,22 @@ export default function PCWrite({ editId }) {
         })
         .finally(() => setIsLoading(false));
     }
+
+    // 사용자 권한 확인하여 전문가칼럼 노출 여부 결정
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      try {
+        const user = JSON.parse(savedUser);
+        if (user.role === 'admin' || user.role === 'hospital') {
+          setIsAdminOrHospital(true);
+        }
+      } catch (e) {}
+    }
   }, [editId]);
 
-  const categories = ["탈모수다", "리얼후기", "탈모정보"];
+  const categories = isAdminOrHospital 
+    ? ["탈모수다", "리얼후기", "탈모정보", "전문가칼럼"] 
+    : ["탈모수다", "리얼후기", "탈모정보"];
 
   // Custom Image Handler for Quill
   const imageHandler = () => {
