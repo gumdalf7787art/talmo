@@ -152,7 +152,7 @@ function PCDiagnosisContent() {
           file: dataTransfer.files
         })
         .then(function(response) {
-          const uploadedImageUrl = response.infos[0].url;
+          const uploadedImageUrl = response.infos.original.url;
           
           // 5. 추천인 코드 획득
           let rawCode = '';
