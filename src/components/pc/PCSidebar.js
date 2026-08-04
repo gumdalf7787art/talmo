@@ -155,7 +155,7 @@ export default function PCSidebar() {
 
       {/* 4. 네이버 탈모톡 카페 바로가기 배너 (이전에 상단에 있던 main_b_1 활용) */}
       {banners.main_b_1?.is_active ? (
-        <Link href={banners.main_b_1.link_url || "#"} className="w-full rounded-lg shadow-sm overflow-hidden block border border-gray-200 group">
+        <Link href={banners.main_b_1.link_url || "#"} target="_blank" className="w-full rounded-lg shadow-sm overflow-hidden block border border-gray-200 group">
           <img src={banners.main_b_1.image_url} alt={banners.main_b_1.title} className="w-full h-auto object-cover group-hover:opacity-90 transition-opacity" />
         </Link>
       ) : (
