@@ -736,8 +736,8 @@ function DiagnosisContent() {
               <div style={{ fontSize: '70px', color: '#0d9488', fontWeight: '900' }}>{result.summary?.scalpAge || result.scalpAge || "-"}<span style={{ fontSize: '32px', color: '#5eead4' }}>세</span></div>
             </div>
 
-            <div style={{ position: 'absolute', top: '440px', left: '40px', width: '720px', height: '220px', backgroundColor: '#fef2f2', borderRadius: '24px', border: '3px solid #fee2e2', textAlign: 'center' }}>
-              <div style={{ fontSize: '26px', color: '#991b1b', fontWeight: 'bold', marginTop: '45px', marginBottom: '20px' }}>AI 정밀 분석 진행 단계</div>
+            <div style={{ position: 'absolute', top: '440px', left: '40px', width: '720px', height: '240px', backgroundColor: '#fef2f2', borderRadius: '24px', border: '3px solid #fee2e2', textAlign: 'center' }}>
+              <div style={{ fontSize: '26px', color: '#991b1b', fontWeight: 'bold', marginTop: '35px', marginBottom: '15px' }}>AI 정밀 분석 진행 단계</div>
               {(() => {
                 const asi = getAsiInfo(result);
                 const severityIdx = getAsiSeverityIndex(asi);
