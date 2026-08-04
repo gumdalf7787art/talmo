@@ -203,14 +203,7 @@ export default function PCWrite({ editId }) {
   const modules = useMemo(
     () => ({
       toolbar: {
-        container: [
-          [{ header: [1, 2, 3, false] }],
-          ["bold", "italic", "underline", "strike", "blockquote"],
-          [{ color: [] }, { background: [] }],
-          [{ align: [] }],
-          [{ list: "ordered" }, { list: "bullet" }],
-          ["link", "clean"], // image, video removed to use custom buttons
-        ],
+        container: "#quill-external-toolbar",
       },
     }),
     []
@@ -321,11 +314,13 @@ export default function PCWrite({ editId }) {
 
       {/* Main Content Area */}
       <main className="flex flex-col items-center flex-1 w-full bg-gray-50/30 py-8 px-4 h-[calc(100vh-64px)] overflow-hidden">
-        <div className="w-full max-w-[800px] bg-white rounded-lg border border-gray-200 shadow-sm flex flex-col h-full overflow-hidden">
+        <div className="w-full max-w-[800px] bg-white rounded-lg border border-gray-200 shadow-sm flex flex-col h-full overflow-hidden relative">
           
-          {/* Category & Title Section */}
-          <div className="p-8 border-b border-gray-100 flex flex-col gap-6">
-            <div className="flex flex-col gap-3">
+          {/* ===== 상단 고정 영역 (스크롤 X) ===== */}
+          <div className="flex flex-col shrink-0 border-b border-gray-200 bg-white z-50">
+            
+            {/* 1. 카테고리 선택 */}
+            <div className="p-6 pb-4 flex flex-col gap-3">
               <label className="text-sm font-bold text-gray-700">카테고리</label>
               <div className="flex gap-2">
                 {categories.map((cat) => (
@@ -344,63 +339,82 @@ export default function PCWrite({ editId }) {
               </div>
             </div>
 
-            <div className="flex flex-col mt-2">
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="제목을 입력하세요"
-                className="w-full text-[32px] font-bold text-gray-900 placeholder-gray-300 focus:outline-none py-2"
-              />
+            {/* 2. 커스텀 버튼부 (사진/유튜브) */}
+            <div className="flex gap-6 px-6 py-3 border-t border-gray-100 bg-gray-50/50">
+              <button 
+                onClick={handleCustomImage}
+                className="flex flex-col items-center gap-2 text-gray-500 hover:text-teal-600 transition-colors"
+              >
+                <ImageIcon className="w-8 h-8" />
+                <span className="text-[12px] font-bold">사진 첨부</span>
+              </button>
+              <button 
+                onClick={handleCustomVideo}
+                className="flex flex-col items-center gap-2 text-gray-500 hover:text-teal-600 transition-colors"
+              >
+                <Video className="w-8 h-8" />
+                <span className="text-[12px] font-bold">유튜브 삽입</span>
+              </button>
+            </div>
+
+            {/* 3. ReactQuill 외부 툴바 DOM */}
+            <div id="quill-external-toolbar" className="px-4 py-2 bg-white flex items-center flex-wrap gap-1 border-t border-gray-100">
+              <select className="ql-header" defaultValue="false">
+                <option value="1">제목 1</option>
+                <option value="2">제목 2</option>
+                <option value="3">제목 3</option>
+                <option value="false">본문</option>
+              </select>
+              <div className="w-px h-5 bg-gray-300 mx-2"></div>
+              <button className="ql-bold" />
+              <button className="ql-italic" />
+              <button className="ql-underline" />
+              <button className="ql-strike" />
+              <button className="ql-blockquote" />
+              <div className="w-px h-5 bg-gray-300 mx-2"></div>
+              <select className="ql-color" />
+              <select className="ql-background" />
+              <div className="w-px h-5 bg-gray-300 mx-2"></div>
+              <button className="ql-list" value="ordered" />
+              <button className="ql-list" value="bullet" />
+              <div className="w-px h-5 bg-gray-300 mx-2"></div>
+              <button className="ql-align" value="" />
+              <button className="ql-align" value="center" />
+              <button className="ql-align" value="right" />
+              <div className="w-px h-5 bg-gray-300 mx-2"></div>
+              <button className="ql-link" />
+              <button className="ql-clean" />
             </div>
           </div>
 
-          {/* Quill Editor wrapper */}
+          {/* ===== 하단 스크롤 영역 (제목 + 에디터) ===== */}
           <div 
-            className="flex-1 flex flex-col relative quill-pc-container"
+            className="flex-1 flex flex-col overflow-y-auto relative quill-pc-container"
             onPasteCapture={handlePasteAndDrop}
             onDropCapture={handlePasteAndDrop}
           >
             <style jsx global>{`
-              /* Customizing React Quill to look like a modern blog editor */
               .quill-pc-container {
-                overflow-y: auto;
+                scroll-behavior: smooth;
               }
               .quill-pc-container .quill {
                 display: flex;
                 flex-direction: column;
                 min-height: 500px;
-              }
-              .quill-pc-container .ql-toolbar.ql-snow {
                 border: none;
-                border-bottom: 1px solid #f3f4f6;
-                padding: 12px 32px;
-                background-color: #ffffff;
-                position: sticky;
-                top: 89px; /* Top custom button row height */
-                z-index: 40;
-              }
-              .custom-top-bar {
-                position: sticky;
-                top: 0;
-                z-index: 40;
-                background-color: #f9fafb;
-              }
-              .quill-pc-container .ql-tooltip {
-                left: 50% !important;
-                transform: translateX(-50%);
-                top: 10px !important;
-                position: absolute !important;
-                z-index: 100;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
               }
               .quill-pc-container .ql-container.ql-snow {
                 border: none;
                 flex: 1;
                 font-family: inherit;
               }
+              /* 툴바 기본 보더 제거 */
+              #quill-external-toolbar.ql-toolbar.ql-snow {
+                border: none;
+                border-top: 1px solid #f3f4f6;
+              }
               .quill-pc-container .ql-editor {
-                padding: 32px;
+                padding: 0 32px 32px 32px;
                 font-size: 16px;
                 line-height: 1.8;
                 color: #374151;
@@ -429,26 +443,29 @@ export default function PCWrite({ editId }) {
                 font-weight: 500;
                 color: #4b5563;
               }
+              /* 툴팁 위치 고정 */
+              #quill-external-toolbar .ql-tooltip {
+                left: 50% !important;
+                transform: translateX(-50%);
+                top: 100% !important;
+                position: absolute !important;
+                z-index: 100;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+              }
             `}</style>
             
-            {/* Custom Top Toolbar (Outside of Quill's control) */}
-            <div className="custom-top-bar flex gap-6 p-4 border-b border-gray-200">
-              <button 
-                onClick={handleCustomImage}
-                className="flex flex-col items-center gap-2 text-gray-500 hover:text-teal-600 transition-colors"
-              >
-                <ImageIcon className="w-8 h-8" />
-                <span className="text-[12px] font-bold">사진 첨부</span>
-              </button>
-              <button 
-                onClick={handleCustomVideo}
-                className="flex flex-col items-center gap-2 text-gray-500 hover:text-teal-600 transition-colors"
-              >
-                <Video className="w-8 h-8" />
-                <span className="text-[12px] font-bold">유튜브 삽입</span>
-              </button>
+            {/* 제목 입력칸 */}
+            <div className="px-8 pt-8 pb-4">
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="제목을 입력하세요"
+                className="w-full text-[32px] font-bold text-gray-900 placeholder-gray-300 focus:outline-none py-2"
+              />
             </div>
 
+            {/* 내용 에디터 */}
             <ReactQuill
               ref={quillRef}
               theme="snow"
