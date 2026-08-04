@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { X, Image as ImageIcon } from "lucide-react";
+import { X, Image as ImageIcon, Video } from "lucide-react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import { compressImage } from "@/lib/imageUtils";
@@ -144,19 +144,52 @@ export default function PCWrite({ editId }) {
     }
   };
 
+  const CustomToolbar = () => (
+    <div id="toolbar" className="flex flex-col border-b border-gray-200 bg-white">
+      <div className="flex gap-6 p-4 border-b border-gray-100 bg-gray-50/50">
+        <button className="ql-image flex flex-col items-center gap-2 text-gray-500 hover:text-teal-600 transition-colors">
+          <ImageIcon className="w-8 h-8" />
+          <span className="text-[12px] font-bold">사진 첨부</span>
+        </button>
+        <button className="ql-video flex flex-col items-center gap-2 text-gray-500 hover:text-teal-600 transition-colors">
+          <Video className="w-8 h-8" />
+          <span className="text-[12px] font-bold">유튜브 삽입</span>
+        </button>
+      </div>
+      <div className="flex items-center gap-1 p-3 flex-wrap">
+        <select className="ql-header" defaultValue="false">
+          <option value="1">제목 1</option>
+          <option value="2">제목 2</option>
+          <option value="3">제목 3</option>
+          <option value="false">본문</option>
+        </select>
+        <div className="w-px h-5 bg-gray-300 mx-2"></div>
+        <button className="ql-bold" />
+        <button className="ql-italic" />
+        <button className="ql-underline" />
+        <button className="ql-strike" />
+        <div className="w-px h-5 bg-gray-300 mx-2"></div>
+        <select className="ql-color" />
+        <select className="ql-background" />
+        <div className="w-px h-5 bg-gray-300 mx-2"></div>
+        <button className="ql-list" value="ordered" />
+        <button className="ql-list" value="bullet" />
+        <div className="w-px h-5 bg-gray-300 mx-2"></div>
+        <button className="ql-align" value="" />
+        <button className="ql-align" value="center" />
+        <button className="ql-align" value="right" />
+        <div className="w-px h-5 bg-gray-300 mx-2"></div>
+        <button className="ql-link" />
+        <button className="ql-clean" />
+      </div>
+    </div>
+  );
+
   // Memoize modules to prevent Quill from re-rendering and losing focus
   const modules = useMemo(
     () => ({
       toolbar: {
-        container: [
-          [{ header: [1, 2, 3, false] }],
-          ["bold", "italic", "underline", "strike", "blockquote"],
-          [{ color: [] }, { background: [] }],
-          [{ align: [] }],
-          [{ list: "ordered" }, { list: "bullet" }],
-          ["link", "image", "video"],
-          ["clean"],
-        ],
+        container: "#toolbar",
         handlers: {
           image: imageHandler,
         },
@@ -269,8 +302,8 @@ export default function PCWrite({ editId }) {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex flex-col items-center flex-1 w-full bg-gray-50/30 py-8">
-        <div className="w-full max-w-[800px] bg-white rounded-lg border border-gray-200 shadow-sm flex flex-col min-h-[800px] overflow-hidden">
+      <main className="flex flex-col items-center flex-1 w-full bg-gray-50/30 py-8 px-4">
+        <div className="w-full max-w-[800px] bg-white rounded-lg border border-gray-200 shadow-sm flex flex-col min-h-[800px]">
           
           {/* Category & Title Section */}
           <div className="p-8 border-b border-gray-100 flex flex-col gap-6">
@@ -319,13 +352,20 @@ export default function PCWrite({ editId }) {
                 min-height: 500px;
               }
               .quill-pc-container .ql-toolbar.ql-snow {
+                padding: 0;
                 border: none;
-                border-bottom: 1px solid #f3f4f6;
-                padding: 12px 32px;
                 background-color: #ffffff;
                 position: sticky;
                 top: 64px; /* Header height */
                 z-index: 40;
+              }
+              .quill-pc-container .ql-tooltip {
+                left: 50% !important;
+                transform: translateX(-50%);
+                top: 10px !important;
+                position: absolute !important;
+                z-index: 100;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
               }
               .quill-pc-container .ql-container.ql-snow {
                 border: none;
@@ -364,6 +404,7 @@ export default function PCWrite({ editId }) {
               }
             `}</style>
             
+            <CustomToolbar />
             <ReactQuill
               ref={quillRef}
               theme="snow"
