@@ -133,10 +133,12 @@ export default function Home({ onNavigate }) {
           <div className="logo" style={{ flexShrink: 0, display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <img src="https://talmotalk.pages.dev/logo-mobile.png?v=2" alt="탈모톡 로고" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
           </div>
-          <div className="search-bar" style={{
+          <div className="search-bar" 
+            onClick={() => setShowMypageModal(true)}
+            style={{
             flex: 1, display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'white', 
             border: '2px solid var(--talmo-green)', borderRadius: '25px', padding: '0 12px',
-            overflow: 'hidden', height: '34px'
+            overflow: 'hidden', height: '34px', cursor: 'pointer'
           }}>
             <Search size={16} color="var(--talmo-green)" />
             <div style={{ height: '18px', overflow: 'hidden', flex: 1, position: 'relative' }}>
@@ -154,7 +156,9 @@ export default function Home({ onNavigate }) {
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
-            <Bell size={22} color="#4b5563" />
+            <div onClick={() => setShowMypageModal(true)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+              <Bell size={22} color="#4b5563" />
+            </div>
             <div onClick={() => setShowMypageModal(true)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
               <User size={22} color="#4b5563" />
             </div>
@@ -258,7 +262,7 @@ export default function Home({ onNavigate }) {
           <div style={{ backgroundColor: 'white', borderRadius: '16px', width: '100%', maxWidth: '320px', overflow: 'hidden', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', padding: '24px 20px', textAlign: 'center' }}>
             <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1f2937', marginBottom: '8px' }}>탈모톡 본 페이지로 이동</h3>
             <p style={{ fontSize: '14px', color: '#6b7280', lineHeight: '1.5', marginBottom: '24px' }}>
-              마이페이지 기능은 <strong style={{ color: 'var(--talmo-green)' }}>탈모톡</strong>에서 가능합니다.<br/>
+              해당 기능은 <strong style={{ color: 'var(--talmo-green)' }}>탈모톡</strong>에서 가능합니다.<br/>
               탈모톡으로 옮겨집니다.
             </p>
             <div style={{ display: 'flex', gap: '8px' }}>

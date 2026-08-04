@@ -20,13 +20,13 @@ export default function BottomNav({ currentView, onNavigate }) {
       paddingBottom: 'env(safe-area-inset-bottom)'
     }}>
       
-      {/* 커뮤니티 (홈 화면) */}
+      {/* 홈 (기존 커뮤니티) */}
       <div 
         onClick={() => onNavigate('home')}
         style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', cursor: 'pointer' }}
       >
         <Home size={22} color={currentView === 'home' ? 'var(--talmo-green)' : '#9ca3af'} />
-        <span style={{ fontSize: '10px', fontWeight: currentView === 'home' ? 'bold' : 'normal', color: currentView === 'home' ? 'var(--talmo-green)' : '#9ca3af' }}>커뮤니티</span>
+        <span style={{ fontSize: '10px', fontWeight: currentView === 'home' ? 'bold' : 'normal', color: currentView === 'home' ? 'var(--talmo-green)' : '#9ca3af' }}>홈</span>
       </div>
 
       {/* 중앙 AI 분석 튀어나온 버튼 */}

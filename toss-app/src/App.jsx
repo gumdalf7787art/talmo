@@ -27,30 +27,94 @@ const ASI_MAPPING = {
   "ASI-F5": { code: 'ASI-F5', level: 5, title: '인텐시브 솔루션 (Intensive)', sub: 'Clinical Matching', desc: '정수리 광범위 구역의 밀도가 크게 낮아진 상태로, 정밀 스캔과 함께 집중적인 밸런스 케어 및 전문가 상담을 권장합니다.' }
 };
 
-const getAsiInfo = (summary) => {
-  if (summary?.asiStage && ASI_MAPPING[summary.asiStage]) {
-    return ASI_MAPPING[summary.asiStage];
-  }
-  const stageText = summary?.norwoodStage || "";
+const getAsiInfo = (summary, breakdown = []) => {
+  if (!summary) return ASI_MAPPING["ASI-M1"];
   
-  if (stageText.includes("Ludwig") || stageText.includes("여성형")) {
-    if (stageText.includes("Stage III") || stageText.includes("Scale III")) return ASI_MAPPING["ASI-F5"];
-    if (stageText.includes("Stage II-2") || stageText.includes("Scale II-2")) return ASI_MAPPING["ASI-F4"];
-    if (stageText.includes("Stage II-1") || stageText.includes("Scale II-1") || stageText.includes("Stage II") || stageText.includes("Scale II")) return ASI_MAPPING["ASI-F3"];
-    if (stageText.includes("Stage I-3") || stageText.includes("Stage I-2") || stageText.includes("Scale I-3") || stageText.includes("Scale I-2")) return ASI_MAPPING["ASI-F2"];
-    if (stageText.includes("Stage I-1") || stageText.includes("Scale I-1") || stageText.includes("Stage I") || stageText.includes("Scale I")) return ASI_MAPPING["ASI-F1"];
-    return ASI_MAPPING["ASI-F1"];
+  const isFemale = (summary.gender && (summary.gender === 'female' || summary.gender === '여성')) || 
+                   (summary.norwoodStage && (summary.norwoodStage.includes("Ludwig") || summary.norwoodStage.includes("여성형"))) ||
+                   (summary.asiStage && summary.asiStage.includes('ASI-F'));
+
+  const overallScore = summary.score || 0;
+
+  // Default to 100 so missing metrics don't trigger penalties
+  let densityScore = 100;
+  let hairlineScore = 100;
+  let thicknessScore = 100;
+
+  if (breakdown && breakdown.length > 0) {
+    const densityMetric = breakdown.find(m => m.id === 'density' || m.label?.includes('밀도'));
+    if (densityMetric) densityScore = densityMetric.score;
+
+    const hairlineMetric = breakdown.find(m => m.id === 'hairline' || m.label?.includes('헤어라인') || m.label?.includes('M자'));
+    if (hairlineMetric) hairlineScore = hairlineMetric.score;
+
+    const thicknessMetric = breakdown.find(m => m.id === 'thickness' || m.label?.includes('굵기'));
+    if (thicknessMetric) thicknessScore = thicknessMetric.score;
   }
 
-  if (stageText.includes("Stage 7") || stageText.includes("Scale VII")) return ASI_MAPPING["ASI-M7"];
-  if (stageText.includes("Stage 6") || stageText.includes("Scale VI")) return ASI_MAPPING["ASI-M6"];
-  if (stageText.includes("Stage 5") || stageText.includes("Scale V")) return ASI_MAPPING["ASI-M5"];
-  if (stageText.includes("Stage 4") || stageText.includes("Scale IV")) return ASI_MAPPING["ASI-M4"];
-  if (stageText.includes("Stage 3") || stageText.includes("Scale III")) return ASI_MAPPING["ASI-M3"];
-  if (stageText.includes("Stage 2") || stageText.includes("Scale II")) return ASI_MAPPING["ASI-M2"];
-  if (stageText.includes("Stage 1") || stageText.includes("Scale I")) return ASI_MAPPING["ASI-M1"];
-  
-  return ASI_MAPPING["ASI-M1"];
+  if (isFemale) {
+    let baseLevel = 1;
+    if (overallScore >= 80) baseLevel = 1;
+    else if (overallScore >= 60) baseLevel = 2;
+    else if (overallScore >= 40) baseLevel = 3;
+    else if (overallScore >= 20) baseLevel = 4;
+    else baseLevel = 5;
+
+    let overrideLevel = 1;
+    if (densityScore < 20) overrideLevel = 5;
+    else if (densityScore < 40) overrideLevel = 4;
+    else if (densityScore < 60) overrideLevel = 3;
+    else if (densityScore < 80) overrideLevel = 2;
+
+    let finalLevel = Math.max(baseLevel, overrideLevel);
+
+    if (densityScore < 60 && thicknessScore < 40) {
+      finalLevel += 1;
+    }
+    finalLevel = Math.min(finalLevel, 5);
+
+    return ASI_MAPPING[`ASI-F${finalLevel}`] || ASI_MAPPING["ASI-F1"];
+  } else {
+    let baseLevel = 1;
+    if (overallScore >= 85) baseLevel = 1;
+    else if (overallScore >= 70) baseLevel = 2;
+    else if (overallScore >= 55) baseLevel = 3;
+    else if (overallScore >= 40) baseLevel = 4;
+    else if (overallScore >= 25) baseLevel = 5;
+    else if (overallScore >= 10) baseLevel = 6;
+    else baseLevel = 7;
+
+    let overrideLevel = 1;
+    if (hairlineScore < 20 && densityScore < 20) overrideLevel = 6;
+    else if (hairlineScore < 20 || densityScore < 20) overrideLevel = 5;
+    else if (hairlineScore < 40 || densityScore < 40) overrideLevel = 4;
+    else if (hairlineScore < 60 || densityScore < 60) overrideLevel = 3;
+    else if (hairlineScore < 80 || densityScore < 80) overrideLevel = 2;
+
+    let finalLevel = Math.max(baseLevel, overrideLevel);
+
+    if (densityScore < 60 && thicknessScore < 40) {
+      finalLevel += 1;
+    }
+    finalLevel = Math.min(finalLevel, 7);
+
+    return ASI_MAPPING[`ASI-M${finalLevel}`] || ASI_MAPPING["ASI-M1"];
+  }
+};
+
+const getAsiSeverityIndex = (asi) => {
+  if (!asi) return 0;
+  if (asi.code.includes('F')) {
+    if (asi.level === 1) return 0; // 양호
+    if (asi.level === 2) return 1; // 주의
+    if (asi.level <= 4) return 2; // 위험
+    return 3; // 심각
+  } else {
+    if (asi.level === 1) return 0; // 양호
+    if (asi.level <= 3) return 1; // 주의
+    if (asi.level <= 5) return 2; // 위험
+    return 3; // 심각
+  }
 };
 
 function App() {
@@ -125,6 +189,12 @@ function App() {
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
+
+  useEffect(() => {
+    if (result) {
+      window.scrollTo(0, 0);
+    }
+  }, [result]);
 
   const handleCropDone = async () => {
     try {
@@ -225,14 +295,16 @@ function App() {
     }
   };
 
-  // 결과 화면
-  if (result && result.diagnosis) {
-    const diag = result.diagnosis;
-    const summary = diag.summary || {};
-    const breakdown = diag.breakdown || [];
-    
-    const renderStageText = (stageStr) => {
-      if (!stageStr) return null;
+  // 컨텐츠 렌더링 함수
+  const renderContent = () => {
+    // 결과 화면
+    if (result && result.diagnosis) {
+      const diag = result.diagnosis;
+      const summary = diag.summary || {};
+      const breakdown = diag.breakdown || [];
+      
+      const renderStageText = (stageStr) => {
+        if (!stageStr) return null;
       let title = stageStr;
       let sub = "";
       if (stageStr.includes('Norwood')) { title = '남성형 탈모'; sub = stageStr.replace('남성형 탈모 ', ''); }
@@ -256,10 +328,12 @@ function App() {
             <div className="logo" style={{ flexShrink: 0, display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => handleNavigate('home')}>
               <img src="https://talmotalk.pages.dev/logo-mobile.png?v=2" alt="탈모톡 로고" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
             </div>
-            <div className="search-bar" style={{
+            <div className="search-bar" 
+              onClick={() => setShowMypageModal(true)}
+              style={{
               flex: 1, display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'white', 
               border: '2px solid var(--talmo-green)', borderRadius: '25px', padding: '0 12px',
-              overflow: 'hidden', height: '34px'
+              overflow: 'hidden', height: '34px', cursor: 'pointer'
             }}>
               <Search size={16} color="var(--talmo-green)" />
               <div style={{ height: '18px', overflow: 'hidden', flex: 1, position: 'relative' }}>
@@ -277,7 +351,9 @@ function App() {
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
-              <Bell size={22} color="#4b5563" />
+              <div onClick={() => setShowMypageModal(true)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                <Bell size={22} color="#4b5563" />
+              </div>
               <div onClick={() => setShowMypageModal(true)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
                 <User size={22} color="#4b5563" />
               </div>
@@ -322,7 +398,7 @@ function App() {
               </div>
               
               {(() => {
-                const asi = getAsiInfo(summary);
+                const asi = getAsiInfo(summary, breakdown);
                 return (
                   <>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: '1.2' }}>
@@ -340,6 +416,19 @@ function App() {
                             <span style={{ fontSize: '9px', whiteSpace: 'nowrap', fontWeight: isActive ? 'bold' : '500', color: isActive ? '#dc2626' : '#94a3b8' }}>
                               {step}
                             </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* 4단계 직관적 심각도 (양호/주의/위험/심각) */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '16px', width: '100%', maxWidth: '280px', backgroundColor: 'white', padding: '6px', borderRadius: '8px', border: '1px solid #f1f5f9', boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)' }}>
+                      {['양호', '주의', '위험', '심각'].map((stage, idx) => {
+                        const severityIdx = getAsiSeverityIndex(asi);
+                        const isActive = severityIdx === idx;
+                        return (
+                          <div key={stage} style={{ flex: 1, textAlign: 'center', padding: '4px 0', borderRadius: '6px', fontSize: '11px', transition: 'all 0.2s', ...(isActive ? { backgroundColor: '#fef2f2', fontWeight: 'bold', color: '#dc2626', border: '1px solid #fecaca' } : { color: '#94a3b8', backgroundColor: '#f8fafc', border: '1px solid transparent' }) }}>
+                            {stage}
                           </div>
                         );
                       })}
@@ -600,10 +689,12 @@ function App() {
           <div className="logo" style={{ flexShrink: 0, display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => handleNavigate('home')}>
             <img src="https://talmotalk.pages.dev/logo-mobile.png?v=2" alt="탈모톡 로고" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
           </div>
-          <div className="search-bar" style={{
+          <div className="search-bar" 
+            onClick={() => setShowMypageModal(true)}
+            style={{
             flex: 1, display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'white', 
             border: '2px solid var(--talmo-green)', borderRadius: '25px', padding: '0 12px',
-            overflow: 'hidden', height: '34px'
+            overflow: 'hidden', height: '34px', cursor: 'pointer'
           }}>
             <Search size={16} color="var(--talmo-green)" />
             <div style={{ height: '18px', overflow: 'hidden', flex: 1, position: 'relative' }}>
@@ -621,7 +712,9 @@ function App() {
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
-            <Bell size={22} color="#4b5563" />
+            <div onClick={() => setShowMypageModal(true)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+              <Bell size={22} color="#4b5563" />
+            </div>
             <div onClick={() => setShowMypageModal(true)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
               <User size={22} color="#4b5563" />
             </div>
@@ -788,6 +881,13 @@ function App() {
       </div>
       
       <BottomNav currentView="analysis" onNavigate={handleNavigate} />
+      </div>
+    );
+  };
+
+  return (
+    <>
+      {renderContent()}
 
       {/* 마이페이지 이동 확인 모달 */}
       {showMypageModal && (
@@ -795,7 +895,7 @@ function App() {
           <div style={{ backgroundColor: 'white', borderRadius: '16px', width: '100%', maxWidth: '320px', overflow: 'hidden', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', padding: '24px 20px', textAlign: 'center' }}>
             <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1f2937', marginBottom: '8px' }}>탈모톡 본 페이지로 이동</h3>
             <p style={{ fontSize: '14px', color: '#6b7280', lineHeight: '1.5', marginBottom: '24px' }}>
-              마이페이지 기능은 <strong style={{ color: 'var(--talmo-green)' }}>탈모톡</strong>에서 가능합니다.<br/>
+              해당 기능은 <strong style={{ color: 'var(--talmo-green)' }}>탈모톡</strong>에서 가능합니다.<br/>
               탈모톡으로 옮겨집니다.
             </p>
             <div style={{ display: 'flex', gap: '8px' }}>
@@ -848,7 +948,7 @@ function App() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
 

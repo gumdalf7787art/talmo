@@ -9,6 +9,7 @@ export default function PostDetail({ postId, onNavigate }) {
   const [error, setError] = useState(null);
   const [commentInput, setCommentInput] = useState('');
   const [showMypageModal, setShowMypageModal] = useState(false);
+  const [showCommentModal, setShowCommentModal] = useState(false);
 
   // 로그인된 유저 ID (현재 미니앱은 게스트 환경이므로 하드코딩하거나 null 처리)
   const currentUserId = null; 
@@ -94,16 +95,20 @@ export default function PostDetail({ postId, onNavigate }) {
           <div className="logo" style={{ flexShrink: 0, display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => onNavigate('home')}>
             <img src="https://talmotalk.pages.dev/logo-mobile.png?v=2" alt="탈모톡 로고" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
           </div>
-          <div className="search-bar" style={{
+          <div className="search-bar" 
+            onClick={() => setShowMypageModal(true)}
+            style={{
             flex: 1, display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'white', 
             border: '2px solid var(--talmo-green)', borderRadius: '25px', padding: '0 12px',
-            overflow: 'hidden', height: '34px'
+            overflow: 'hidden', height: '34px', cursor: 'pointer'
           }}>
             <Search size={16} color="var(--talmo-green)" />
             <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#9ca3af' }}>원장님 닥터칼럼</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
-            <Bell size={22} color="#4b5563" />
+            <div onClick={() => setShowMypageModal(true)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+              <Bell size={22} color="#4b5563" />
+            </div>
             <div onClick={() => setShowMypageModal(true)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
               <User size={22} color="#4b5563" />
             </div>
@@ -232,6 +237,7 @@ export default function PostDetail({ postId, onNavigate }) {
       <div style={{ 
         position: 'fixed', bottom: '58px', // 하단 메뉴바 위로 올림
         width: '100%', maxWidth: '480px', // app-container 너비에 맞춤
+        boxSizing: 'border-box',
         backgroundColor: '#fff', borderTop: '1px solid #f3f4f6', 
         padding: '10px 16px', paddingBottom: 'calc(10px + env(safe-area-inset-bottom))',
         display: 'flex', alignItems: 'center', gap: '10px', zIndex: 90
@@ -251,13 +257,20 @@ export default function PostDetail({ postId, onNavigate }) {
             }}
           />
         </div>
-        <button style={{ 
-          background: 'none', border: 'none', width: '36px', height: '36px', 
-          borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          backgroundColor: commentInput.trim() ? 'var(--talmo-green)' : '#e5e7eb',
-          cursor: commentInput.trim() ? 'pointer' : 'default',
-          transition: 'background-color 0.2s'
-        }}>
+        <button 
+          onClick={() => {
+            if (commentInput.trim()) {
+              setShowCommentModal(true);
+            }
+          }}
+          style={{ 
+            background: 'none', border: 'none', width: '36px', height: '36px', 
+            borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            backgroundColor: commentInput.trim() ? 'var(--talmo-green)' : '#e5e7eb',
+            cursor: commentInput.trim() ? 'pointer' : 'default',
+            transition: 'background-color 0.2s',
+            flexShrink: 0
+          }}>
           <Send size={16} color={commentInput.trim() ? '#fff' : '#9ca3af'} style={{ marginLeft: '-2px', marginTop: '2px' }} />
         </button>
       </div>
@@ -271,7 +284,7 @@ export default function PostDetail({ postId, onNavigate }) {
           <div style={{ backgroundColor: 'white', borderRadius: '16px', width: '100%', maxWidth: '320px', overflow: 'hidden', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', padding: '24px 20px', textAlign: 'center' }}>
             <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1f2937', marginBottom: '8px' }}>탈모톡 본 페이지로 이동</h3>
             <p style={{ fontSize: '14px', color: '#6b7280', lineHeight: '1.5', marginBottom: '24px' }}>
-              마이페이지 기능은 <strong style={{ color: 'var(--talmo-green)' }}>탈모톡</strong>에서 가능합니다.<br/>
+              해당 기능은 <strong style={{ color: 'var(--talmo-green)' }}>탈모톡</strong>에서 가능합니다.<br/>
               탈모톡으로 옮겨집니다.
             </p>
             <div style={{ display: 'flex', gap: '8px' }}>
@@ -285,6 +298,36 @@ export default function PostDetail({ postId, onNavigate }) {
                 onClick={() => {
                   setShowMypageModal(false);
                   window.open('https://talmotalk.com/my-page', '_blank');
+                }}
+                style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', backgroundColor: 'var(--talmo-green)', color: 'white', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}
+              >
+                탈모톡 가기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 댓글 작성 확인 모달 */}
+      {showCommentModal && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '16px', width: '100%', maxWidth: '320px', overflow: 'hidden', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', padding: '24px 20px', textAlign: 'center' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1f2937', marginBottom: '8px' }}>탈모톡 본 페이지로 이동</h3>
+            <p style={{ fontSize: '14px', color: '#6b7280', lineHeight: '1.5', marginBottom: '24px' }}>
+              댓글 작성 기능은 <strong style={{ color: 'var(--talmo-green)' }}>탈모톡</strong>에서 가능합니다.<br/>
+              탈모톡으로 옮겨집니다.
+            </p>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button 
+                onClick={() => setShowCommentModal(false)}
+                style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', backgroundColor: '#f3f4f6', color: '#4b5563', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}
+              >
+                그냥 있기
+              </button>
+              <button 
+                onClick={() => {
+                  setShowCommentModal(false);
+                  window.open(`https://talmotalk.com/board/${postId}`, '_blank');
                 }}
                 style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', backgroundColor: 'var(--talmo-green)', color: 'white', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' }}
               >

@@ -91,8 +91,12 @@ export default function BoardList({ initialTab, onNavigate }) {
           <div style={{ flex: 1 }}></div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
-            <Search size={22} color="#4b5563" />
-            <Bell size={22} color="#4b5563" />
+            <div onClick={() => setShowMypageModal(true)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+              <Search size={22} color="#4b5563" />
+            </div>
+            <div onClick={() => setShowMypageModal(true)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+              <Bell size={22} color="#4b5563" />
+            </div>
             <div onClick={() => setShowMypageModal(true)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
               <User size={22} color="#4b5563" />
             </div>
@@ -279,7 +283,7 @@ export default function BoardList({ initialTab, onNavigate }) {
           <div style={{ backgroundColor: 'white', borderRadius: '16px', width: '100%', maxWidth: '320px', overflow: 'hidden', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', padding: '24px 20px', textAlign: 'center' }}>
             <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1f2937', marginBottom: '8px' }}>탈모톡 본 페이지로 이동</h3>
             <p style={{ fontSize: '14px', color: '#6b7280', lineHeight: '1.5', marginBottom: '24px' }}>
-              마이페이지 기능은 <strong style={{ color: 'var(--talmo-green)' }}>탈모톡</strong>에서 가능합니다.<br/>
+              해당 기능은 <strong style={{ color: 'var(--talmo-green)' }}>탈모톡</strong>에서 가능합니다.<br/>
               탈모톡으로 옮겨집니다.
             </p>
             <div style={{ display: 'flex', gap: '8px' }}>
