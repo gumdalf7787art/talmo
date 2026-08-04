@@ -120,24 +120,46 @@ function PCDiagnosisContent() {
   };
 
   const handleShareResult = async () => {
-    // 오프스크린 템플릿 캡처
-    const element = document.getElementById("kakao-share-template");
+    // 실제 화면에 보이는 요약 영역 캡처
+    const element = document.getElementById("summary-report-area");
     if (!element) {
-      alert("공유 템플릿을 찾을 수 없습니다.");
+      alert("공유 영역을 찾을 수 없습니다.");
       return;
     }
     
     try {
-      // 1. 요약 박스만 캡처
+      // 1. 요약 박스 캡처
       const imgData = await toJpeg(element, { 
         quality: 0.9, 
         pixelRatio: 2, 
         backgroundColor: "#ffffff",
-        style: { margin: "0", padding: "16px" } // 캡처 시 여백 추가
+        style: { margin: "0", padding: "16px" }
       });
       
-      // 2. Base64 -> File 객체 변환
-      const res = await fetch(imgData);
+      // 2. 800x800 정사각형 흰색 캔버스에 중앙 정렬하여 그리기
+      const img = new Image();
+      img.src = imgData;
+      await new Promise(resolve => img.onload = resolve);
+
+      const canvas = document.createElement("canvas");
+      canvas.width = 800;
+      canvas.height = 800;
+      const ctx = canvas.getContext("2d");
+      
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      const scale = Math.min(800 / img.width, 800 / img.height) * 0.9;
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (800 - w) / 2;
+      const y = (800 - h) / 2;
+      ctx.drawImage(img, x, y, w, h);
+      
+      const finalImgData = canvas.toDataURL("image/jpeg", 0.9);
+      
+      // 3. Base64 -> File 객체 변환
+      const res = await fetch(finalImgData);
       const blob = await res.blob();
       const file = new File([blob], "talmotalk_result.jpg", { type: "image/jpeg" });
       
@@ -633,62 +655,6 @@ function PCDiagnosisContent() {
       ) : result ? (
         /* 결과 모드: 전문 리포트 UI (Medical Report Style) */
         <div className="flex flex-col items-center relative">
-          {/* 카카오톡 공유 전용 오프스크린 템플릿 (800x800 해상도) */}
-          <div 
-            id="kakao-share-template" 
-            style={{
-              position: 'absolute',
-              left: 0,
-              top: 0,
-              zIndex: -100,
-              opacity: 0.001,
-              pointerEvents: 'none',
-              width: '800px',
-              height: '800px',
-              backgroundColor: '#ffffff',
-              padding: '50px',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              fontFamily: 'sans-serif',
-              zIndex: -999
-            }}
-          >
-            <h2 style={{ fontSize: '42px', fontWeight: '900', color: '#1e293b', marginBottom: '10px' }}>탈모톡 AI 정밀 진단 결과</h2>
-            <p style={{ fontSize: '24px', color: '#64748b', marginBottom: '50px' }}>TalmoTalk Precision AI Assessment</p>
-            
-            <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', marginBottom: '30px' }}>
-              <div style={{ flex: 1, backgroundColor: '#f8fafc', borderRadius: '24px', padding: '40px', margin: '0 15px', textAlign: 'center', border: '3px solid #f1f5f9' }}>
-                <div style={{ fontSize: '24px', color: '#64748b', fontWeight: 'bold', marginBottom: '15px' }}>두피 종합 점수</div>
-                <div style={{ fontSize: '70px', color: '#0f172a', fontWeight: '900' }}>{report?.summary?.score || 0}<span style={{ fontSize: '32px', color: '#94a3b8' }}>/100</span></div>
-              </div>
-              
-              <div style={{ flex: 1, backgroundColor: '#f0fdfa', borderRadius: '24px', padding: '40px', margin: '0 15px', textAlign: 'center', border: '3px solid #ccfbf1' }}>
-                <div style={{ fontSize: '24px', color: '#0f766e', fontWeight: 'bold', marginBottom: '15px' }}>추정 두피 나이</div>
-                <div style={{ fontSize: '70px', color: '#0d9488', fontWeight: '900' }}>{report?.summary?.scalpAge || "-"}<span style={{ fontSize: '32px', color: '#5eead4' }}>세</span></div>
-              </div>
-            </div>
-
-            <div style={{ width: 'calc(100% - 30px)', backgroundColor: '#fef2f2', borderRadius: '24px', padding: '40px', textAlign: 'center', border: '3px solid #fee2e2' }}>
-              <div style={{ fontSize: '26px', color: '#991b1b', fontWeight: 'bold', marginBottom: '20px' }}>AI 정밀 분석 진행 단계</div>
-              {(() => {
-                const asi = getAsiInfo(report);
-                const severityIdx = getAsiSeverityIndex(asi);
-                const stageText = ['양호', '주의', '위험', '심각'][severityIdx] || '진행';
-                return (
-                  <>
-                    <div style={{ fontSize: '55px', color: '#dc2626', fontWeight: '900', marginBottom: '10px' }}>{asi.code} ({stageText})</div>
-                    <div style={{ fontSize: '30px', color: '#7f1d1d', fontWeight: 'bold' }}>{asi.title}</div>
-                  </>
-                );
-              })()}
-            </div>
-            
-            <div style={{ marginTop: '50px', fontSize: '22px', color: '#94a3b8', fontWeight: 'bold' }}>
-              탈모톡에서 나의 두피 상태를 확인해보세요!
-            </div>
-          </div>
           {isHistory && (
             <div className="w-full mb-4">
               <button onClick={() => window.history.back()} className="flex items-center gap-1 text-gray-500 hover:text-gray-900 text-sm font-medium w-fit">← 목록으로</button>
