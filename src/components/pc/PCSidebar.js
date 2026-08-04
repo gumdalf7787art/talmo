@@ -48,7 +48,11 @@ export default function PCSidebar() {
       return;
     }
     
-    if (!window.Kakao || !window.Kakao.Share) {
+    if (typeof window !== "undefined" && window.Kakao) {
+      if (!window.Kakao.isInitialized()) {
+        window.Kakao.init('f557c50a623379e0c2abb685232ade41');
+      }
+    } else {
       alert("카카오톡 공유 기능을 불러오는 중입니다. 잠시 후 다시 시도해주세요.");
       return;
     }
