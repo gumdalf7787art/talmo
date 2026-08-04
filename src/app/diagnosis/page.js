@@ -708,8 +708,11 @@ function DiagnosisContent() {
             id="kakao-share-template" 
             style={{
               position: 'absolute',
-              left: '-9999px',
-              top: '-9999px',
+              left: 0,
+              top: 0,
+              zIndex: -100,
+              opacity: 0.001,
+              pointerEvents: 'none',
               width: '800px',
               height: '800px',
               backgroundColor: '#ffffff',
