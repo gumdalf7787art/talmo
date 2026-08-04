@@ -144,55 +144,73 @@ export default function PCWrite({ editId }) {
     }
   };
 
-  const CustomToolbar = () => (
-    <div id="toolbar" className="flex flex-col border-b border-gray-200 bg-white">
-      <div className="flex gap-6 p-4 border-b border-gray-100 bg-gray-50/50">
-        <button className="ql-image flex flex-col items-center gap-2 text-gray-500 hover:text-teal-600 transition-colors">
-          <ImageIcon className="w-8 h-8" />
-          <span className="text-[12px] font-bold">사진 첨부</span>
-        </button>
-        <button className="ql-video flex flex-col items-center gap-2 text-gray-500 hover:text-teal-600 transition-colors">
-          <Video className="w-8 h-8" />
-          <span className="text-[12px] font-bold">유튜브 삽입</span>
-        </button>
-      </div>
-      <div className="flex items-center gap-1 p-3 flex-wrap">
-        <select className="ql-header" defaultValue="false">
-          <option value="1">제목 1</option>
-          <option value="2">제목 2</option>
-          <option value="3">제목 3</option>
-          <option value="false">본문</option>
-        </select>
-        <div className="w-px h-5 bg-gray-300 mx-2"></div>
-        <button className="ql-bold" />
-        <button className="ql-italic" />
-        <button className="ql-underline" />
-        <button className="ql-strike" />
-        <div className="w-px h-5 bg-gray-300 mx-2"></div>
-        <select className="ql-color" />
-        <select className="ql-background" />
-        <div className="w-px h-5 bg-gray-300 mx-2"></div>
-        <button className="ql-list" value="ordered" />
-        <button className="ql-list" value="bullet" />
-        <div className="w-px h-5 bg-gray-300 mx-2"></div>
-        <button className="ql-align" value="" />
-        <button className="ql-align" value="center" />
-        <button className="ql-align" value="right" />
-        <div className="w-px h-5 bg-gray-300 mx-2"></div>
-        <button className="ql-link" />
-        <button className="ql-clean" />
-      </div>
-    </div>
-  );
+  const handleCustomImage = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
 
-  // Memoize modules to prevent Quill from re-rendering and losing focus
+    input.onchange = async () => {
+      const file = input.files[0];
+      if (file) {
+        try {
+          const compressedBase64 = await compressImage(file, 800, 0.6);
+          const res = await fetch(compressedBase64);
+          const blob = await res.blob();
+          
+          const formData = new FormData();
+          formData.append("image", blob, file.name || "image.jpg");
+          
+          const uploadRes = await fetch("/api/posts/upload-image", {
+            method: "POST",
+            body: formData,
+          });
+          
+          if (uploadRes.ok) {
+            const data = await uploadRes.json();
+            if (data.success) {
+              const quill = quillRef.current.getEditor();
+              const range = quill.getSelection(true);
+              quill.insertEmbed(range.index, "image", data.url);
+              quill.setSelection(range.index + 1);
+            }
+          }
+        } catch (err) {
+          alert("이미지 업로드에 실패했습니다.");
+        }
+      }
+    };
+  };
+
+  const handleCustomVideo = () => {
+    const url = prompt("유튜브 동영상 링크를 입력하세요:");
+    if (url) {
+      // Basic check for youtube url
+      let embedUrl = url;
+      if (url.includes("watch?v=")) {
+        embedUrl = url.replace("watch?v=", "embed/");
+      } else if (url.includes("youtu.be/")) {
+        embedUrl = url.replace("youtu.be/", "youtube.com/embed/");
+      }
+
+      const quill = quillRef.current.getEditor();
+      const range = quill.getSelection(true);
+      quill.insertEmbed(range.index, "video", embedUrl);
+      quill.setSelection(range.index + 1);
+    }
+  };
+
   const modules = useMemo(
     () => ({
       toolbar: {
-        container: "#toolbar",
-        handlers: {
-          image: imageHandler,
-        },
+        container: [
+          [{ header: [1, 2, 3, false] }],
+          ["bold", "italic", "underline", "strike", "blockquote"],
+          [{ color: [] }, { background: [] }],
+          [{ align: [] }],
+          [{ list: "ordered" }, { list: "bullet" }],
+          ["link", "clean"], // image, video removed to use custom buttons
+        ],
       },
     }),
     []
@@ -302,8 +320,8 @@ export default function PCWrite({ editId }) {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex flex-col items-center flex-1 w-full bg-gray-50/30 py-8 px-4">
-        <div className="w-full max-w-[800px] bg-white rounded-lg border border-gray-200 shadow-sm flex flex-col min-h-[800px]">
+      <main className="flex flex-col items-center flex-1 w-full bg-gray-50/30 py-8 px-4 h-[calc(100vh-64px)] overflow-hidden">
+        <div className="w-full max-w-[800px] bg-white rounded-lg border border-gray-200 shadow-sm flex flex-col h-full overflow-hidden">
           
           {/* Category & Title Section */}
           <div className="p-8 border-b border-gray-100 flex flex-col gap-6">
@@ -345,19 +363,28 @@ export default function PCWrite({ editId }) {
           >
             <style jsx global>{`
               /* Customizing React Quill to look like a modern blog editor */
+              .quill-pc-container {
+                overflow-y: auto;
+              }
               .quill-pc-container .quill {
                 display: flex;
                 flex-direction: column;
-                height: 100%;
                 min-height: 500px;
               }
               .quill-pc-container .ql-toolbar.ql-snow {
-                padding: 0;
                 border: none;
+                border-bottom: 1px solid #f3f4f6;
+                padding: 12px 32px;
                 background-color: #ffffff;
                 position: sticky;
-                top: 64px; /* Header height */
+                top: 89px; /* Top custom button row height */
                 z-index: 40;
+              }
+              .custom-top-bar {
+                position: sticky;
+                top: 0;
+                z-index: 40;
+                background-color: #f9fafb;
               }
               .quill-pc-container .ql-tooltip {
                 left: 50% !important;
@@ -404,7 +431,24 @@ export default function PCWrite({ editId }) {
               }
             `}</style>
             
-            <CustomToolbar />
+            {/* Custom Top Toolbar (Outside of Quill's control) */}
+            <div className="custom-top-bar flex gap-6 p-4 border-b border-gray-200">
+              <button 
+                onClick={handleCustomImage}
+                className="flex flex-col items-center gap-2 text-gray-500 hover:text-teal-600 transition-colors"
+              >
+                <ImageIcon className="w-8 h-8" />
+                <span className="text-[12px] font-bold">사진 첨부</span>
+              </button>
+              <button 
+                onClick={handleCustomVideo}
+                className="flex flex-col items-center gap-2 text-gray-500 hover:text-teal-600 transition-colors"
+              >
+                <Video className="w-8 h-8" />
+                <span className="text-[12px] font-bold">유튜브 삽입</span>
+              </button>
+            </div>
+
             <ReactQuill
               ref={quillRef}
               theme="snow"
