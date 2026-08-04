@@ -159,7 +159,7 @@ export default function PCSidebar() {
           <img src={banners.main_b_1.image_url} alt={banners.main_b_1.title} className="w-full h-auto object-cover group-hover:opacity-90 transition-opacity" />
         </Link>
       ) : (
-        <Link href="https://cafe.naver.com/talmotalk" target="_blank" className="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-lg p-5 shadow-sm overflow-hidden relative group block">
+        <Link href="https://cafe.naver.com/bboyforeverhiphop" target="_blank" className="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-lg p-5 shadow-sm overflow-hidden relative group block">
           <div className="absolute right-0 top-0 w-24 h-24 bg-white/10 rounded-full blur-xl -mr-8 -mt-8 group-hover:bg-white/20 transition-colors" />
           <div className="relative z-10 flex flex-col gap-1">
             <div className="flex items-center gap-2 mb-2">

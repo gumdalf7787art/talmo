@@ -506,7 +506,7 @@ export default function Home() {
       {/* Cafe Banner */}
       <section className="mt-4 -mx-4 px-4">
         <Link 
-          href="https://cafe.naver.com/talmotalk" 
+          href="https://cafe.naver.com/bboyforeverhiphop" 
           target="_blank" 
           className="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-lg p-4 shadow-sm overflow-hidden relative block group"
         >
