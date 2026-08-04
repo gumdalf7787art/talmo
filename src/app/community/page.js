@@ -15,6 +15,11 @@ function CommunityContent() {
   const initialTab = searchParams.get('category') || "전체";
   
   const [activeTab, setActiveTab] = useState(initialTab || "전체");
+  
+  useEffect(() => {
+    setActiveTab(initialTab || "전체");
+  }, [initialTab]);
+  
   const [isNoticeOpen, setIsNoticeOpen] = useState(true);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);

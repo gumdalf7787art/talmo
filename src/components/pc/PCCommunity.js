@@ -10,6 +10,11 @@ import AuthorPopover from "@/components/common/AuthorPopover";
 export default function PCCommunity({ initialTab }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState(initialTab || "전체");
+  
+  useEffect(() => {
+    setActiveTab(initialTab || "전체");
+  }, [initialTab]);
+
   const [isNoticeOpen, setIsNoticeOpen] = useState(true);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
