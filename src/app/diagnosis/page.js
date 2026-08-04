@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, Suspense, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, ChevronRight, ChevronLeft, CheckSquare, Square, X, Scissors, Pill, Home, Heart, Download, Activity, Calendar, User, FileText, HelpCircle } from "lucide-react";
+import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, ChevronRight, ChevronLeft, CheckSquare, Square, X, Scissors, Pill, Home, Heart, Share2, Activity, Calendar, User, FileText, HelpCircle } from "lucide-react";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import PCDiagnosis from "@/components/pc/PCDiagnosis";
 import RadarChart from "@/components/RadarChart";
@@ -11,7 +11,6 @@ import { compressImage, dataURLtoFile } from "@/lib/imageUtils";
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from "@/lib/cropUtils";
 import { toJpeg } from "html-to-image";
-import jsPDF from "jspdf";
 import { getAsiInfo, getAsiSeverityIndex } from "@/lib/asiUtils";
 
 // renderStageText is replaced by ASI logic
@@ -161,63 +160,84 @@ function DiagnosisContent() {
     }
   };
 
-  const handleDownloadPDF = async () => {
-    const element = document.getElementById("pdf-report-area");
+  const handleShareResult = async () => {
+    const element = document.getElementById("summary-report-area");
     if (!element) return;
     
     try {
-      // Use toJpeg instead of toPng and lower pixel ratio to prevent Mobile OOM crashes
+      // 1. 요약 박스만 캡처
       const imgData = await toJpeg(element, { 
         quality: 0.9, 
         pixelRatio: 2, 
-        backgroundColor: "#ffffff"
-      });
-      const img = new Image();
-      img.src = imgData;
-      await new Promise(resolve => img.onload = resolve);
-      
-      const pdfWidth = 210; // Base width in mm (A4 width)
-      const pdfHeight = (img.height * pdfWidth) / img.width;
-      
-      const pdf = new jsPDF({
-        orientation: pdfHeight > pdfWidth ? "portrait" : "landscape",
-        unit: "mm",
-        format: [pdfWidth, pdfHeight]
+        backgroundColor: "#ffffff",
+        style: { margin: "0", padding: "16px" } // 캡처 시 여백 추가
       });
       
-      pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
-      const fileName = `탈모톡_AI_리포트_${new Date().toISOString().slice(0,10)}.pdf`;
+      // 2. Base64 -> File 객체 변환
+      const res = await fetch(imgData);
+      const blob = await res.blob();
+      const file = new File([blob], "talmotalk_result.jpg", { type: "image/jpeg" });
       
-      // Try Web Share API (mobile/modern browsers)
-      if (navigator.share && navigator.canShare) {
-        try {
-          const blob = pdf.output('blob');
-          const file = new File([blob], fileName, { type: 'application/pdf' });
-          if (navigator.canShare({ files: [file] })) {
-            await navigator.share({
-              title: '탈모톡 AI 분석 리포트',
-              text: '탈모톡에서 분석한 나의 두피/탈모 진단 리포트입니다.',
-              files: [file]
-            });
-            return; // If shared successfully, don't download it automatically
-          }
-        } catch (e) {
-          console.log("Share failed or unsupported", e);
+      // 3. 카카오톡 API 초기화 확인
+      if (typeof window !== "undefined" && window.Kakao) {
+        if (!window.Kakao.isInitialized()) {
+          window.Kakao.init('f557c50a623379e0c2abb685232ade41');
         }
+        
+        // 4. 카카오 서버에 임시 이미지 업로드
+        window.Kakao.Share.uploadImage({
+          file: [file]
+        })
+        .then(function(response) {
+          const uploadedImageUrl = response.infos[0].url;
+          
+          // 5. 추천인 코드 획득
+          let rawCode = '';
+          try {
+            const savedUser = localStorage.getItem('user');
+            if (savedUser) {
+              const u = JSON.parse(savedUser);
+              rawCode = u?.referral_code ? u.referral_code.trim() : '';
+            }
+          } catch (e) {
+            console.error(e);
+          }
+          const inviteUrl = `https://talmotalk.com/signup?ref=${rawCode}`;
+          const safeInviteUrl = encodeURI(inviteUrl);
+          
+          // 6. 결과 썸네일과 함께 공유
+          window.Kakao.Share.sendDefault({
+            objectType: 'feed',
+            content: {
+              title: '제 탈모 진단 결과를 확인해보세요!',
+              description: `AI가 분석한 나의 두피 건강 상태입니다.\n초대장을 클릭하고 간편가입 하시면 AI 탈모분석 티켓 5장(기본2+보너스3)이 즉시 발급됩니다.\n추천인 코드: ${rawCode}`,
+              imageUrl: uploadedImageUrl,
+              link: {
+                mobileWebUrl: safeInviteUrl,
+                webUrl: safeInviteUrl,
+              },
+            },
+            buttons: [
+              {
+                title: '나도 AI 탈모 진단 해보기',
+                link: {
+                  mobileWebUrl: safeInviteUrl,
+                  webUrl: safeInviteUrl,
+                },
+              },
+            ],
+          });
+        })
+        .catch(function(error) {
+          console.error("카카오 이미지 업로드 실패:", error);
+          alert("이미지 공유 중 오류가 발생했습니다.");
+        });
+      } else {
+        alert("카카오톡 공유 기능을 사용할 수 없는 환경입니다.");
       }
-      
-      // Fallback: Check if in-app browser (Kakao, Line, Instagram) before calling pdf.save()
-      const userAgent = navigator.userAgent.toLowerCase();
-      const isInApp = /kakao|line|instagram|inapp|naver|snapchat|webview/.test(userAgent);
-      
-      if (isInApp) {
-        alert("현재 접속하신 브라우저(앱 내장 브라우저)에서는 파일 다운로드가 지원되지 않을 수 있습니다. 우측 상단 메뉴에서 '다른 브라우저로 열기(Safari/Chrome)'를 선택해 주세요.");
-      }
-      
-      pdf.save(fileName);
     } catch (error) {
-      console.error("PDF 생성 실패:", error);
-      alert("PDF 처리 중 오류가 발생했습니다: " + (error.message || "알 수 없는 오류"));
+      console.error("이미지 캡처 실패:", error);
+      alert("공유 이미지 처리 중 오류가 발생했습니다.");
     }
   };
 
@@ -683,10 +703,10 @@ function DiagnosisContent() {
               🎁 친구 초대하고 분석권 받기
             </button>
             <button 
-              onClick={handleDownloadPDF}
-              className="flex items-center gap-1.5 bg-slate-800 text-white px-3 py-2 rounded-lg font-bold text-[12px] shadow-sm hover:bg-slate-900 transition-all active:scale-[0.98]"
+              onClick={handleShareResult}
+              className="flex items-center gap-1.5 bg-[#FEE500] text-black px-3 py-2 rounded-lg font-bold text-[12px] shadow-sm hover:opacity-90 transition-all active:scale-[0.98]"
             >
-              <Download className="w-3.5 h-3.5" /> 리포트 PDF 저장/공유
+              <Share2 className="w-3.5 h-3.5" /> 내 결과 카카오톡으로 자랑하기
             </button>
           </div>
 
@@ -705,7 +725,7 @@ function DiagnosisContent() {
             </div>
 
             {/* 핵심 요약 대시보드 박스 */}
-            <div className="flex flex-col gap-2 mb-6">
+            <div id="summary-report-area" className="flex flex-col gap-2 mb-6 bg-white rounded-2xl">
               {/* 상단 2개 박스 */}
               <div className="grid grid-cols-2 gap-2">
                 <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl flex flex-col justify-center items-center text-center">

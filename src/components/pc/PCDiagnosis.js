@@ -3,14 +3,13 @@
 import { useState, useRef, useEffect, Suspense, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, ChevronRight, FileText, Calendar, User, Activity, Pill, Heart, Home, CheckSquare, Square, X, Scissors, Download, HelpCircle } from "lucide-react";
+import { Camera, Upload, AlertCircle, RefreshCcw, MapPin, MessageCircle, ChevronRight, FileText, Calendar, User, Activity, Pill, Heart, Home, CheckSquare, Square, X, Scissors, Share2, HelpCircle } from "lucide-react";
 import RadarChart from "../RadarChart";
 import { compressImage, dataURLtoFile } from "@/lib/imageUtils";
 import { getAsiInfo, getAsiSeverityIndex } from "@/lib/asiUtils";
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from "@/lib/cropUtils";
 import { toJpeg } from "html-to-image";
-import jsPDF from "jspdf";
 
 // renderStageText is no longer needed, using getAsiInfo directly.
 
@@ -120,39 +119,84 @@ function PCDiagnosisContent() {
     }
   };
 
-  const handleDownloadPDF = async () => {
-    const element = document.getElementById("pdf-report-area");
+  const handleShareResult = async () => {
+    const element = document.getElementById("summary-report-area");
     if (!element) return;
     
     try {
+      // 1. 요약 박스만 캡처
       const imgData = await toJpeg(element, { 
         quality: 0.9, 
         pixelRatio: 2, 
-        backgroundColor: "#ffffff"
+        backgroundColor: "#ffffff",
+        style: { margin: "0", padding: "16px" } // 캡처 시 여백 추가
       });
       
-      // Calculate height dynamically. Since we don't have canvas.width, 
-      // we can load the image into an Image object to get its dimensions.
-      const img = new Image();
-      img.src = imgData;
-      await new Promise(resolve => img.onload = resolve);
+      // 2. Base64 -> File 객체 변환
+      const res = await fetch(imgData);
+      const blob = await res.blob();
+      const file = new File([blob], "talmotalk_result.jpg", { type: "image/jpeg" });
       
-      const pdfWidth = 210; // Base width in mm (A4 width)
-      const pdfHeight = (img.height * pdfWidth) / img.width;
-      
-      const pdf = new jsPDF({
-        orientation: pdfHeight > pdfWidth ? "portrait" : "landscape",
-        unit: "mm",
-        format: [pdfWidth, pdfHeight]
-      });
-      
-      pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
-      const fileName = `탈모톡_AI_리포트_${new Date().toISOString().slice(0,10)}.pdf`;
-      
-      pdf.save(fileName);
+      // 3. 카카오톡 API 초기화 확인
+      if (typeof window !== "undefined" && window.Kakao) {
+        if (!window.Kakao.isInitialized()) {
+          window.Kakao.init('f557c50a623379e0c2abb685232ade41');
+        }
+        
+        // 4. 카카오 서버에 임시 이미지 업로드
+        window.Kakao.Share.uploadImage({
+          file: [file]
+        })
+        .then(function(response) {
+          const uploadedImageUrl = response.infos[0].url;
+          
+          // 5. 추천인 코드 획득
+          let rawCode = '';
+          try {
+            const savedUser = localStorage.getItem('user');
+            if (savedUser) {
+              const u = JSON.parse(savedUser);
+              rawCode = u?.referral_code ? u.referral_code.trim() : '';
+            }
+          } catch (e) {
+            console.error(e);
+          }
+          const inviteUrl = `https://talmotalk.com/signup?ref=${rawCode}`;
+          const safeInviteUrl = encodeURI(inviteUrl);
+          
+          // 6. 결과 썸네일과 함께 공유
+          window.Kakao.Share.sendDefault({
+            objectType: 'feed',
+            content: {
+              title: '제 탈모 진단 결과를 확인해보세요!',
+              description: `AI가 분석한 나의 두피 건강 상태입니다.\n초대장을 클릭하고 간편가입 하시면 AI 탈모분석 티켓 5장(기본2+보너스3)이 즉시 발급됩니다.\n추천인 코드: ${rawCode}`,
+              imageUrl: uploadedImageUrl,
+              link: {
+                mobileWebUrl: safeInviteUrl,
+                webUrl: safeInviteUrl,
+              },
+            },
+            buttons: [
+              {
+                title: '나도 AI 탈모 진단 해보기',
+                link: {
+                  mobileWebUrl: safeInviteUrl,
+                  webUrl: safeInviteUrl,
+                },
+              },
+            ],
+          });
+        })
+        .catch(function(error) {
+          console.error("카카오 이미지 업로드 실패:", error);
+          alert("이미지 공유 중 오류가 발생했습니다.");
+        });
+      } else {
+        alert("카카오톡 공유 기능을 사용할 수 없는 환경입니다.");
+      }
     } catch (error) {
-      console.error("PDF 생성 실패:", error);
-      alert("PDF 처리 중 오류가 발생했습니다: " + (error.message || "알 수 없는 오류"));
+      console.error("이미지 캡처 실패:", error);
+      alert("공유 이미지 처리 중 오류가 발생했습니다.");
     }
   };
 
@@ -595,10 +639,10 @@ function PCDiagnosisContent() {
               🎁 친구 초대하고 분석권 받기
             </button>
             <button 
-              onClick={handleDownloadPDF}
-              className="flex items-center gap-2 bg-slate-800 text-white px-5 py-2.5 rounded-lg font-bold text-[14px] shadow-sm hover:bg-slate-900 transition-all hover:scale-[1.02]"
+              onClick={handleShareResult}
+              className="flex items-center gap-2 bg-[#FEE500] text-black px-5 py-2.5 rounded-lg font-bold text-[14px] shadow-sm hover:opacity-90 transition-all hover:scale-[1.02]"
             >
-              <Download className="w-4 h-4" /> 리포트 PDF 저장/공유
+              <Share2 className="w-4 h-4" /> 내 결과 카카오톡으로 자랑하기
             </button>
           </div>
 
@@ -617,7 +661,7 @@ function PCDiagnosisContent() {
 
             <div className="p-8">
               {/* 핵심 요약 대시보드 */}
-              <div className="grid grid-cols-3 gap-4 mb-10">
+              <div id="summary-report-area" className="grid grid-cols-3 gap-4 mb-10 bg-white rounded-2xl">
                 <div className="bg-slate-50 border border-slate-200 p-5 rounded-lg flex flex-col justify-center items-center text-center">
                   <span className="text-[13px] font-bold text-slate-500 mb-1">두피 종합 점수</span>
                   <div className="text-4xl font-black text-slate-900">{report?.summary?.score}<span className="text-lg text-slate-400 font-medium">/100</span></div>
