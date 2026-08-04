@@ -7,6 +7,7 @@ import { MessageCircle, TrendingUp, MapPin, ChevronRight, Camera } from "lucide-
 export default function PCSidebar() {
   const [hotPosts, setHotPosts] = useState([]);
   const [banners, setBanners] = useState({});
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     fetch('/api/posts/list?sort=popular&limit=5')
@@ -22,7 +23,55 @@ export default function PCSidebar() {
           setBanners(bMap);
         }
       });
+
+    fetch('/api/user/profile')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.user) {
+          setUser(data.user);
+        }
+      });
   }, []);
+
+  const handleInvite = () => {
+    if (!user) {
+      alert("로그인이 필요합니다.");
+      window.location.href = "/login";
+      return;
+    }
+    
+    if (!window.Kakao || !window.Kakao.Share) {
+      alert("카카오톡 공유 기능을 불러오는 중입니다. 잠시 후 다시 시도해주세요.");
+      return;
+    }
+
+    const rawCode = user.recommend_code || user.id;
+    const inviteUrl = `https://talmotalk.com/signup?ref=${rawCode}`;
+    const safeInviteUrl = encodeURI(inviteUrl);
+    const shareUrl = safeInviteUrl;
+
+    window.Kakao.Share.sendDefault({
+      objectType: 'feed',
+      content: {
+        title: '탈모톡에 초대합니다!',
+        description: `초대장을 클릭하고 간편가입 하시면 AI 탈모분석 티켓 5장(기본2+보너스3)이 즉시 발급됩니다.\n추천인 코드: ${rawCode}`,
+        imageUrl: 'https://talmotalk.com/og-image.jpg', // 사이트 기본 OG 이미지
+        link: {
+          mobileWebUrl: shareUrl,
+          webUrl: shareUrl,
+        },
+      },
+      buttons: [
+        {
+          title: '무료 분석권 받기',
+          link: {
+            mobileWebUrl: shareUrl,
+            webUrl: shareUrl,
+          },
+        },
+      ],
+    });
+  };
 
   const hotKeywords = ["모발이식 비용", "핀페시아", "미녹시딜", "두피문신", "강남 병원"];
 
@@ -54,30 +103,27 @@ export default function PCSidebar() {
         </div>
       </div>
 
-      {/* 2. AI 진단 배너 (main_b_1) */}
-      {banners.main_b_1?.is_active ? (
-        <Link href={banners.main_b_1.link_url || "#"} className="w-full rounded-lg shadow-sm overflow-hidden block border border-gray-200 group">
-          <img src={banners.main_b_1.image_url} alt={banners.main_b_1.title} className="w-full h-auto object-cover group-hover:opacity-90 transition-opacity" />
-        </Link>
-      ) : (
-        <Link href="/diagnosis" className="bg-gradient-to-br from-teal-500 to-teal-700 rounded-lg p-5 shadow-sm overflow-hidden relative group block">
-          <div className="absolute right-0 top-0 w-24 h-24 bg-white/10 rounded-full blur-xl -mr-8 -mt-8 group-hover:bg-white/20 transition-colors" />
-          <div className="relative z-10 flex flex-col gap-1">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="bg-white/20 p-2 rounded-lg backdrop-blur-sm">
-                <Camera className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-teal-100 text-[11px] font-bold">무료 스마트 분석</span>
+      {/* 2. 친구 초대 배너 (상단 고정 기능) */}
+      <button 
+        onClick={handleInvite} 
+        className="bg-[#FEE500] rounded-lg p-5 shadow-sm overflow-hidden relative group block text-left w-full border border-[#f4dc00] hover:bg-[#F4DC00] transition-colors"
+      >
+        <div className="absolute right-0 top-0 w-24 h-24 bg-white/40 rounded-full blur-xl -mr-8 -mt-8 group-hover:bg-white/50 transition-colors" />
+        <div className="relative z-10 flex flex-col gap-1">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="bg-black/10 p-2 rounded-lg backdrop-blur-sm">
+              <MessageCircle className="w-5 h-5 text-black/80" />
             </div>
-            <h3 className="text-white font-bold text-[16px] leading-snug mb-1">
-              내 탈모 상태,<br/>AI가 진단해드립니다
-            </h3>
-            <span className="text-teal-50 text-[12px] flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
-              분석하기 <ChevronRight className="w-3 h-3" />
-            </span>
+            <span className="text-black/80 text-[11px] font-bold">무료 분석권 이벤트</span>
           </div>
-        </Link>
-      )}
+          <h3 className="text-black font-bold text-[16px] leading-snug mb-1">
+            카톡으로 친구 초대하고<br/>분석권 받기
+          </h3>
+          <span className="text-black/70 text-[12px] flex items-center gap-1 group-hover:text-black transition-colors font-medium">
+            초대 링크 보내기 <ChevronRight className="w-3 h-3" />
+          </span>
+        </div>
+      </button>
 
       {/* 3. 인기 검색어 */}
       <div className="bg-white rounded-lg border border-gray-200 p-5 shadow-sm">
@@ -95,24 +141,26 @@ export default function PCSidebar() {
         </div>
       </div>
 
-      {/* 4. 1:1 Ad Banner (main_b_2) */}
-      {banners.main_b_2?.is_active ? (
-        <Link href={banners.main_b_2.link_url || "#"} className="w-full rounded-lg shadow-sm overflow-hidden block border border-gray-200 group">
-          <img src={banners.main_b_2.image_url} alt={banners.main_b_2.title} className="w-full h-auto object-cover group-hover:opacity-90 transition-opacity" />
+      {/* 4. 네이버 탈모톡 카페 바로가기 배너 (이전에 상단에 있던 main_b_1 활용) */}
+      {banners.main_b_1?.is_active ? (
+        <Link href={banners.main_b_1.link_url || "#"} className="w-full rounded-lg shadow-sm overflow-hidden block border border-gray-200 group">
+          <img src={banners.main_b_1.image_url} alt={banners.main_b_1.title} className="w-full h-auto object-cover group-hover:opacity-90 transition-opacity" />
         </Link>
       ) : (
-        <Link href="#" className="bg-gray-100 rounded-lg border border-gray-200 shadow-sm overflow-hidden aspect-square relative group block">
-          <img 
-            src="/shampoo_ad_banner.png" 
-            alt="탈모 샴푸 추천 광고" 
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-          <div className="absolute top-3 right-3 bg-black/40 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded">
-            AD
-          </div>
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-5 pt-12">
-            <span className="text-teal-400 text-[11px] font-bold mb-1 block">프리미엄 탈모 샴푸</span>
-            <h3 className="text-white font-bold text-[16px] leading-snug">모근부터 튼튼하게,<br/>기적의 두피 케어</h3>
+        <Link href="https://cafe.naver.com/talmotalk" target="_blank" className="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-lg p-5 shadow-sm overflow-hidden relative group block">
+          <div className="absolute right-0 top-0 w-24 h-24 bg-white/10 rounded-full blur-xl -mr-8 -mt-8 group-hover:bg-white/20 transition-colors" />
+          <div className="relative z-10 flex flex-col gap-1">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="bg-white/20 px-2 py-1 rounded backdrop-blur-sm flex items-center gap-1 text-white text-[10px] font-bold">
+                <span className="bg-white text-emerald-600 px-1 rounded-sm text-[8px] font-black">N</span> 카페
+              </div>
+            </div>
+            <h3 className="text-white font-bold text-[16px] leading-snug mb-1">
+              네이버 탈모톡 카페<br/>함께 나누고 해결해요!
+            </h3>
+            <span className="text-emerald-50 text-[12px] flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity mt-1">
+              바로가기 <ChevronRight className="w-3 h-3" />
+            </span>
           </div>
         </Link>
       )}
