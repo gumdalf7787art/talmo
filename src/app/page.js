@@ -82,6 +82,15 @@ export default function Home() {
     }
     return [];
   });
+  const [expertPosts, setExpertPosts] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem("cache_expert");
+        return cached ? JSON.parse(cached) : [];
+      } catch { return []; }
+    }
+    return [];
+  });
 
   useEffect(() => {
     fetch('/api/posts/list?sort=popular&hasImage=true&limit=6')
@@ -124,6 +133,16 @@ export default function Home() {
         }
       });
       
+    fetch('/api/posts/list?category=전문가칼럼&limit=6')
+      .then(res => res.json())
+      .then(data => {
+        const posts = data.posts || [];
+        setExpertPosts(posts);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("cache_expert", JSON.stringify(posts));
+        }
+      });
+      
     fetch('/api/hospital/list')
       .then(res => res.json())
       .then(data => {
@@ -141,6 +160,8 @@ export default function Home() {
 
   const infoPhotos = infoPosts.filter(p => p.imageUrl).slice(0, 6);
   const infoTextPosts = infoPosts.filter(p => !p.imageUrl).slice(0, 4);
+  const expertPhotos = expertPosts.filter(p => p.imageUrl).slice(0, 6);
+  const expertTextPosts = expertPosts.filter(p => !p.imageUrl).slice(0, 4);
 
   if (isPC) return <PCHome />;
 
@@ -421,6 +442,85 @@ export default function Home() {
             AD
           </div>
         </Link>
+      </section>
+
+      {/* Doctor's Real Column */}
+      <section className="flex flex-col gap-1 mt-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <h3 className="font-bold text-base text-gray-900">전문가 칼럼</h3>
+            <span className="bg-gray-100 text-gray-500 text-[9px] font-bold px-1.5 py-0.5 rounded-sm">공식</span>
+          </div>
+          <Link href="/community?category=전문가칼럼" className="text-xs font-medium text-teal-600 flex items-center">
+            더보기 <ChevronRight className="w-3 h-3" />
+          </Link>
+        </div>
+        
+        {/* Photos (6 items) */}
+        {expertPhotos.length > 0 ? (
+          <div className="flex overflow-x-auto pb-2 -mx-4 snap-x hide-scrollbar">
+            <div className="w-4 shrink-0 snap-start" aria-hidden="true"></div>
+            {expertPhotos.map((photo) => (
+              <Link 
+                key={`expert-photo-${photo.id}`} 
+                href={`/community/detail?id=${photo.id}`} 
+                className="flex-shrink-0 w-[30%] snap-start flex flex-col gap-1.5 group mr-2"
+              >
+                <div className={`w-full aspect-square rounded-xl shadow-sm border border-gray-100 flex items-center justify-center overflow-hidden relative ${!photo.imageUrl && 'bg-gray-50'}`}>
+                  {photo.imageUrl ? (
+                    <img src={photo.imageUrl} alt={photo.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-gray-400 text-[10px]">사진 없음</span>
+                  )}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors"></div>
+                </div>
+                <h4 className="font-medium text-gray-800 text-xs leading-snug line-clamp-2 px-0.5 break-keep">{photo.title}</h4>
+              </Link>
+            ))}
+            <div className="w-4 shrink-0 snap-end" aria-hidden="true"></div>
+          </div>
+        ) : (
+          <div className="flex overflow-x-auto pb-2 -mx-4 snap-x hide-scrollbar">
+            <div className="w-4 shrink-0 snap-start"></div>
+            {[1, 2, 3].map((i) => (
+              <div key={`sk-exp-${i}`} className="flex-shrink-0 w-[30%] snap-start flex flex-col gap-1.5 mr-2 animate-pulse">
+                <div className="w-full aspect-square rounded-xl bg-gray-200 border border-gray-100"></div>
+                <div className="h-3 bg-gray-200 rounded-sm w-3/4 mx-0.5 mt-1"></div>
+              </div>
+            ))}
+            <div className="w-4 shrink-0 snap-end"></div>
+          </div>
+        )}
+
+        {/* Text Posts (4 items) */}
+        {expertTextPosts.length > 0 ? (
+          <div className="flex flex-col">
+            {expertTextPosts.map((post) => (
+              <Link key={`expert-post-${post.id}`} href={`/community/detail?id=${post.id}`} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0 group">
+                <div className="flex items-center gap-2 overflow-hidden">
+                  <span className="w-1 h-1 rounded-full bg-teal-500 shrink-0"></span>
+                  <h4 className="font-medium text-gray-800 text-[13px] leading-tight line-clamp-2 group-hover:text-teal-600 transition-colors">{post.title}</h4>
+                </div>
+                <div className="flex items-center gap-1 text-gray-400 text-xs shrink-0 ml-4">
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  {post.comments}
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2 py-1.5">
+            {[1, 2].map((i) => (
+              <div key={`sk-exp-txt-${i}`} className="flex items-center justify-between py-1.5 animate-pulse">
+                <div className="flex items-center gap-2 flex-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gray-200 shrink-0"></span>
+                  <div className="h-3 bg-gray-200 rounded-sm w-2/3"></div>
+                </div>
+                <div className="w-8 h-3 bg-gray-200 rounded-sm"></div>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
 

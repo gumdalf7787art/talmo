@@ -44,6 +44,15 @@ export default function PCHome() {
     }
     return [];
   });
+  const [expertPosts, setExpertPosts] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem("cache_expert");
+        return cached ? JSON.parse(cached) : [];
+      } catch { return []; }
+    }
+    return [];
+  });
   const [doctors, setDoctors] = useState(() => {
     if (typeof window !== "undefined") {
       try {
@@ -107,6 +116,16 @@ export default function PCHome() {
         }
       });
       
+    fetch('/api/posts/list?category=전문가칼럼&limit=4')
+      .then(res => res.json())
+      .then(data => {
+        const posts = data.posts || [];
+        setExpertPosts(posts);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("cache_expert", JSON.stringify(posts));
+        }
+      });
+      
     fetch('/api/hospital/list')
       .then(res => res.json())
       .then(data => {
@@ -139,6 +158,7 @@ export default function PCHome() {
 
   const reviewPhotos = reviewPosts.slice(0, 4);
   const infoPhotos = infoPosts.slice(0, 4);
+  const expertPhotos = expertPosts.filter(p => p.imageUrl).slice(0, 4);
 
 
 
@@ -328,6 +348,42 @@ export default function PCHome() {
             <div className="bg-teal-500 text-white font-bold px-6 py-2.5 rounded-md z-10 shadow-md group-hover:bg-teal-400 transition-colors">시작하기</div>
           </div>
         )}
+
+        {/* 전문가 칼럼 (서버 연동) */}
+        <section className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-2">
+              <h3 className="font-bold text-lg text-gray-900">전문가 칼럼</h3>
+              <span className="bg-gray-100 text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded">공식</span>
+            </div>
+            <Link href="/community?category=전문가칼럼" className="text-sm font-medium text-teal-600 flex items-center">더보기 <ChevronRight className="w-4 h-4" /></Link>
+          </div>
+          {expertPhotos.length > 0 ? (
+            <div className="grid grid-cols-4 gap-4">
+              {expertPhotos.map((photo) => (
+                <Link key={photo.id} href={`/community/detail?id=${photo.id}`} className="flex flex-col gap-2 group">
+                  <div className="w-full aspect-square rounded-md overflow-hidden border border-gray-100 shadow-sm flex items-center justify-center bg-gray-50">
+                    {photo.imageUrl ? (
+                      <img src={photo.imageUrl} alt={photo.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    ) : (
+                      <span className="text-gray-400 text-[10px]">사진 없음</span>
+                    )}
+                  </div>
+                  <h4 className="font-medium text-gray-800 text-[13px] line-clamp-1">{photo.title}</h4>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-4 gap-4">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={`sk-pc-exp-${i}`} className="flex flex-col gap-2 animate-pulse">
+                  <div className="w-full aspect-square rounded-md bg-gray-200 border border-gray-100 shadow-sm"></div>
+                  <div className="h-3 bg-gray-200 rounded-sm w-3/4 mt-1"></div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
 
 
 
