@@ -43,6 +43,9 @@ export const metadata = {
     title: "탈모톡 - 무료 실시간 AI 탈모 분석",
     description: "대한민국 리얼 탈모 커뮤니티",
     images: ["/og_thumbnail.jpg?v=2"],
+  },
+  verification: {
+    google: "MnaSHd4gYEGz_DLSpGE4v2sNCP1atXa8qnXaHedjHbI",
   }
 };
 
