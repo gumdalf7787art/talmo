@@ -222,14 +222,7 @@ export default function PCHome() {
       <div className="max-w-[1080px] w-full mx-auto py-8 px-4 flex gap-6">
         {/* Main Content */}
         <div className="flex-1 min-w-0 flex flex-col gap-3">
-        {/* Hero Banner (main_a_1) */}
-        {!bannersLoaded ? (
-          <div className="w-full h-[180px] rounded-lg bg-gray-200 animate-pulse shrink-0 border border-gray-100" />
-        ) : banners.main_a_1?.is_active ? (
-          <Link href={banners.main_a_1.link_url || "#"} className="relative overflow-hidden rounded-lg shadow-lg flex group w-full h-[180px] shrink-0 border border-gray-100">
-            <img src={banners.main_a_1.image_url} alt={banners.main_a_1.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-          </Link>
-        ) : null}
+
 
         {/* 탈모 리얼후기 + 탈모 정보 - 2열 */}
         <div className="grid grid-cols-2 gap-3">
