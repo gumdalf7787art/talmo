@@ -89,6 +89,28 @@ export default function PCSidebar() {
 
   return (
     <aside className="w-[280px] shrink-0 flex flex-col gap-2">
+      {/* 2. 친구 초대 배너 (상단 고정 기능) */}
+      <button 
+        onClick={handleInvite} 
+        className="bg-[#FEE500] rounded-lg p-5 shadow-sm overflow-hidden relative group block text-left w-full border border-[#f4dc00] hover:bg-[#F4DC00] transition-colors"
+      >
+        <div className="absolute right-0 top-0 w-24 h-24 bg-white/40 rounded-full blur-xl -mr-8 -mt-8 group-hover:bg-white/50 transition-colors" />
+        <div className="relative z-10 flex flex-col gap-1">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="bg-black/10 p-2 rounded-lg backdrop-blur-sm">
+              <MessageCircle className="w-5 h-5 text-black/80" />
+            </div>
+            <span className="text-black/80 text-[11px] font-bold">무료 분석권 이벤트</span>
+          </div>
+          <h3 className="text-black font-bold text-[16px] leading-snug mb-1">
+            카톡으로 친구 초대하고<br/>분석권 받기
+          </h3>
+          <span className="text-black/70 text-[12px] flex items-center gap-1 group-hover:text-black transition-colors font-medium">
+            초대 링크 보내기 <ChevronRight className="w-3 h-3" />
+          </span>
+        </div>
+      </button>
+
       {/* 실시간 인기글 */}
       <div className="bg-white rounded-lg border border-gray-200 p-5 shadow-sm">
         <div className="flex items-center gap-2 mb-4">
@@ -114,28 +136,6 @@ export default function PCSidebar() {
           )}
         </div>
       </div>
-
-      {/* 2. 친구 초대 배너 (상단 고정 기능) */}
-      <button 
-        onClick={handleInvite} 
-        className="bg-[#FEE500] rounded-lg p-5 shadow-sm overflow-hidden relative group block text-left w-full border border-[#f4dc00] hover:bg-[#F4DC00] transition-colors"
-      >
-        <div className="absolute right-0 top-0 w-24 h-24 bg-white/40 rounded-full blur-xl -mr-8 -mt-8 group-hover:bg-white/50 transition-colors" />
-        <div className="relative z-10 flex flex-col gap-1">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="bg-black/10 p-2 rounded-lg backdrop-blur-sm">
-              <MessageCircle className="w-5 h-5 text-black/80" />
-            </div>
-            <span className="text-black/80 text-[11px] font-bold">무료 분석권 이벤트</span>
-          </div>
-          <h3 className="text-black font-bold text-[16px] leading-snug mb-1">
-            카톡으로 친구 초대하고<br/>분석권 받기
-          </h3>
-          <span className="text-black/70 text-[12px] flex items-center gap-1 group-hover:text-black transition-colors font-medium">
-            초대 링크 보내기 <ChevronRight className="w-3 h-3" />
-          </span>
-        </div>
-      </button>
 
       {/* 3. 인기 검색어 */}
       <div className="bg-white rounded-lg border border-gray-200 p-5 shadow-sm">
