@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Camera, ChevronRight, MessageCircle, X, Search, TrendingUp, MapPin, Star } from "lucide-react";
 import PCSidebar from "@/components/pc/PCSidebar";
+import MoltenMetal from "@/components/MoltenMetal";
+import EchoText from "@/components/EchoText";
 
 export default function PCHome() {
   const [mounted, setMounted] = useState(false);
@@ -163,9 +165,63 @@ export default function PCHome() {
 
 
   return (
-    <div className="flex gap-6">
-      {/* Main Content */}
-      <div className="flex-1 min-w-0 flex flex-col gap-3">
+    <div className="flex flex-col w-full">
+      {/* Hero Section */}
+      <div className="w-full h-[350px] relative overflow-hidden flex-shrink-0 group bg-slate-900 border-b border-teal-900/50">
+        <div className="absolute inset-0 z-0">
+          <MoltenMetal
+            color1="#1e1b4b" // indigo-950 (deep purple)
+            color2="#a855f7" // purple-500
+            color3="#faf5ff" // purple-50
+            speed={0.35}
+            scale={4}
+            detail={3}
+            glow={1.6}
+            coreSize={0.1}
+            swirl={1}
+            fold={-0.2}
+            blackPoint={0.05}
+            brightness={1.3}
+            colorMode="molten"
+            grain={true}
+            grainIntensity={0.05}
+            mouseInteraction={true}
+            mouseStrength={0.3}
+            opacity={1.0}
+          />
+        </div>
+        
+        {/* Content Overlay */}
+        <div className="relative z-10 flex flex-col items-center text-center justify-center h-full max-w-[1080px] w-full mx-auto px-4 pointer-events-none">
+          <div className="mb-4 flex justify-center">
+            <EchoText
+              text="Ai 탈모분석"
+              echoes={12}
+              direction="diagonal"
+              tint="#a855f7"
+              color="#ffffff"
+              fontSize="3.5rem"
+              fontWeight={900}
+            />
+          </div>
+          <p className="text-xl text-teal-50 font-medium mb-8 drop-shadow-md max-w-lg leading-relaxed text-center">
+            1000만 탈모인의 선택, 지금 바로 시작하세요
+          </p>
+          <div className="pointer-events-auto flex justify-center">
+            <Link 
+              href="/diagnosis" 
+              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-white font-bold text-lg px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+            >
+              무료 분석 시작하기
+              <ChevronRight className="w-5 h-5 stroke-[3]" />
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-[1080px] w-full mx-auto py-8 px-4 flex gap-6">
+        {/* Main Content */}
+        <div className="flex-1 min-w-0 flex flex-col gap-3">
         {/* Hero Banner (main_a_1) */}
         {!bannersLoaded ? (
           <div className="w-full h-[180px] rounded-lg bg-gray-200 animate-pulse shrink-0 border border-gray-100" />
@@ -173,35 +229,7 @@ export default function PCHome() {
           <Link href={banners.main_a_1.link_url || "#"} className="relative overflow-hidden rounded-lg shadow-lg flex group w-full h-[180px] shrink-0 border border-gray-100">
             <img src={banners.main_a_1.image_url} alt={banners.main_a_1.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
           </Link>
-        ) : (
-          <section className="relative overflow-hidden rounded-lg shadow-lg flex bg-slate-950 group w-full h-[180px] shrink-0 border border-gray-100">
-            <img 
-              src="/ai_diagnosis_banner.png?v=5" 
-              alt="AI 탈모분석 배경" 
-              className="absolute inset-0 w-full h-full object-cover object-right group-hover:scale-102 transition-transform duration-700" 
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/70 to-transparent" />
-            
-            <div className="relative z-10 flex flex-col justify-center h-full pl-10 pr-6 w-full">
-              <h2 className="text-3xl font-black text-white tracking-tight drop-shadow-sm flex items-center gap-1.5">
-                <span className="bg-gradient-to-r from-teal-300 to-cyan-400 bg-clip-text text-transparent font-black">Ai</span> 
-                탈모분석
-              </h2>
-              <p className="text-gray-300 text-sm font-medium mt-1.5 drop-shadow">
-                지금 바로 분석해보세요.
-              </p>
-              <div className="mt-3">
-                <Link 
-                  href="/diagnosis" 
-                  className="inline-flex items-center gap-1.5 bg-gradient-to-r from-teal-400 to-cyan-400 hover:from-teal-300 hover:to-cyan-300 text-slate-950 font-bold text-xs px-5 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5"
-                >
-                  분석 시작하기
-                  <ChevronRight className="w-3.5 h-3.5 stroke-[3]" />
-                </Link>
-              </div>
-            </div>
-          </section>
-        )}
+        ) : null}
 
         {/* 탈모 리얼후기 + 탈모 정보 - 2열 */}
         <div className="grid grid-cols-2 gap-3">
@@ -438,6 +466,7 @@ export default function PCHome() {
 
       {/* Right Sidebar */}
       <PCSidebar />
+      </div>
     </div>
   );
 }

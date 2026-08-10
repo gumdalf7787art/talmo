@@ -6,6 +6,8 @@ import { Camera, ChevronRight, MessageCircle, X, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import PCHome from "@/components/pc/PCHome";
+import MoltenMetal from "@/components/MoltenMetal";
+import EchoText from "@/components/EchoText";
 
 export default function Home() {
   const isPC = useMediaQuery("(min-width: 1024px)");
@@ -216,62 +218,65 @@ export default function Home() {
   if (isPC) return <PCHome />;
 
   return (
-    <div className="flex flex-col gap-4 px-4 pt-2 pb-6">
-      <div className="flex flex-col gap-3">
-      {/* Dynamic Banner Area */}
-      {mounted && bannerType !== "none" && (
-        <section 
-          onClick={() => router.push('/diagnosis')}
-          className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-900 rounded-2xl aspect-[2/1] shadow-lg flex flex-col justify-end p-5 group mt-1 cursor-pointer"
-        >
-          {/* Background Image / Decoration - Using a text-less tech/medical image */}
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=800&q=80')] bg-cover bg-center opacity-40 mix-blend-overlay group-hover:scale-105 transition-transform duration-700"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-blue-900/60 to-transparent"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent"></div>
-          
-          <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-blue-500/20 rounded-full blur-3xl"></div>
-          
-          {/* Content */}
-          <div className="relative z-10 flex flex-col gap-1.5 h-full justify-center">
-            <div className="flex items-center gap-2">
-              <div className="bg-blue-600/80 p-1.5 rounded-lg backdrop-blur-md shadow-sm border border-blue-400/30">
-                <Camera className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-blue-300 text-[10px] font-bold tracking-widest uppercase">AI SCAN</span>
-            </div>
-            
-            <div className="flex flex-col mt-1">
-              <h2 className="text-xl font-black text-white leading-tight drop-shadow-md">
-                Ai 탈모분석
-              </h2>
-              <p className="text-blue-100 text-[11px] mt-1.5 font-medium leading-snug break-keep opacity-90 drop-shadow-sm">
-                Ai로 내 연령/성별 평균과 비교하기
-              </p>
-            </div>
-            
-            <div
-              className="mt-3 inline-flex items-center justify-between bg-white text-blue-950 font-bold text-[12px] px-4 py-2.5 rounded-xl transition-colors w-max shadow-md pointer-events-none group-hover:bg-gray-50"
-            >
-              <span>바로가기</span>
-              <ChevronRight className="w-4 h-4 ml-1.5" />
-            </div>
+    <div className="flex flex-col w-full">
+      {/* Mobile Hero Section */}
+      <div className="w-full h-[260px] relative overflow-hidden shrink-0 group bg-slate-900 border-b border-teal-900/50">
+        <div className="absolute inset-0 z-0">
+          <MoltenMetal
+            color1="#1e1b4b"
+            color2="#a855f7"
+            color3="#faf5ff"
+            speed={0.35}
+            scale={4}
+            detail={3}
+            glow={1.6}
+            coreSize={0.1}
+            swirl={1}
+            fold={-0.2}
+            blackPoint={0.05}
+            brightness={1.3}
+            colorMode="molten"
+            grain={true}
+            grainIntensity={0.05}
+            mouseInteraction={true}
+            mouseStrength={0.3}
+            opacity={1.0}
+          />
+        </div>
+        
+        {/* Content Overlay */}
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none bg-black/20">
+          <div className="mb-4">
+            <EchoText
+              text="Ai 탈모분석"
+              echoes={12}
+              direction="diagonal"
+              tint="#a855f7"
+              color="#ffffff"
+              fontSize="2.5rem"
+              fontWeight={900}
+            />
           </div>
-          
-          {/* Dismiss button */}
-          <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              setBannerType("none");
-            }}
-            className="absolute top-2 right-2 text-white/50 hover:text-white bg-black/20 p-1.5 rounded-full backdrop-blur-sm z-20 transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </section>
-      )}
+          <p className="text-[13px] text-teal-50 font-medium mb-5 drop-shadow-md px-4 text-center break-keep">
+            1000만 탈모인의 선택, 지금 바로 시작하세요
+          </p>
+          <div className="pointer-events-auto">
+            <Link 
+              href="/diagnosis" 
+              className="inline-flex items-center gap-1.5 bg-gradient-to-r from-teal-500 to-cyan-500 active:scale-95 text-white font-bold text-[13px] px-5 py-2.5 rounded-full shadow-lg transition-all"
+            >
+              무료 분석 시작하기
+              <ChevronRight className="w-4 h-4 stroke-[3]" />
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-4 px-4 pt-4 pb-6">
+        <div className="flex flex-col gap-3">
       
       {/* Invite Friend Banner */}
-      <section className="mt-1">
+      <section>
         <button 
           onClick={handleInvite} 
           className="w-full flex items-center justify-between bg-[#FEE500] rounded-xl py-3 px-4 shadow-sm overflow-hidden relative group text-left border border-[#F4DC00]"
@@ -666,6 +671,7 @@ export default function Home() {
         </div>
       </section>
       )}
+      </div>
     </div>
   );
 }
