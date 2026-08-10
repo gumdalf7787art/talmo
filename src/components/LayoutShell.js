@@ -71,10 +71,11 @@ export default function LayoutShell({ children }) {
   }, []);
 
   if (isPC) {
+    const isHome = pathname === "/";
     return (
       <div className="min-h-screen bg-gray-100 flex flex-col">
         <PCHeader />
-        <main className="max-w-[1080px] w-full mx-auto py-6 px-4 flex-1">
+        <main className={isHome ? "w-full flex-1 flex flex-col" : "max-w-[1080px] w-full mx-auto py-6 px-4 flex-1"}>
           {children}
         </main>
         <Footer />
