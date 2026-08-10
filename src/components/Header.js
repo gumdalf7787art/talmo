@@ -47,8 +47,11 @@ function HeaderContent() {
   if (isAdminOrHospital) return null;
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-100 flex flex-col shadow-sm" style={{ backgroundColor: '#ffffff' }}>
-      <div className="flex items-center justify-between px-3 h-14 max-w-md mx-auto w-full gap-2 bg-white" style={{ backgroundColor: '#ffffff' }}>
+    <header 
+      className="sticky top-0 z-50 w-full bg-white border-b border-gray-100 flex flex-col shadow-sm" 
+      style={{ backgroundImage: 'linear-gradient(#ffffff, #ffffff)', color: '#000000' }}
+    >
+      <div className="flex items-center justify-between px-3 h-14 max-w-md mx-auto w-full gap-2 bg-white" style={{ backgroundImage: 'linear-gradient(#ffffff, #ffffff)' }}>
         {/* 왼쪽: 로고 */}
         <Link href="/" className="flex items-center shrink-0">
           <img src="/logo-mobile.png?v=2" alt="탈모톡 로고" className="h-8 w-auto object-contain" />

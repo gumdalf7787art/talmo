@@ -59,9 +59,12 @@ function PCHeaderContent() {
   }, [pathname, searchTexts.length]);
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-200 shadow-sm flex flex-col" style={{ backgroundColor: '#ffffff' }}>
+    <header 
+      className="sticky top-0 z-50 w-full bg-white border-b border-gray-200 shadow-sm flex flex-col" 
+      style={{ backgroundImage: 'linear-gradient(#ffffff, #ffffff)', color: '#000000' }}
+    >
       {/* Top Row: Logo, Search, User Menu */}
-      <div className="max-w-[1080px] w-full mx-auto flex items-center justify-between px-6 h-20 bg-white" style={{ backgroundColor: '#ffffff' }}>
+      <div className="max-w-[1080px] w-full mx-auto flex items-center justify-between px-6 h-20 bg-white" style={{ backgroundImage: 'linear-gradient(#ffffff, #ffffff)' }}>
         
         {/* Left Side: Logo & Search */}
         <div className="flex items-center gap-8 flex-1">
