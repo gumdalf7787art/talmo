@@ -220,7 +220,7 @@ export default function Home() {
   return (
     <div className="flex flex-col w-full">
       {/* Mobile Hero Section */}
-      <div className="w-full h-[260px] relative overflow-hidden shrink-0 group bg-slate-900 border-b border-teal-900/50">
+      <div className="w-full h-[280px] relative overflow-hidden shrink-0 group bg-slate-900 border-b border-teal-900/50">
         <div className="absolute inset-0 z-0">
           <MoltenMetal
             color1="#1e1b4b"

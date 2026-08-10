@@ -167,7 +167,7 @@ export default function PCHome() {
   return (
     <div className="flex flex-col w-full">
       {/* Hero Section */}
-      <div className="w-full h-[350px] relative overflow-hidden flex-shrink-0 group bg-slate-900 border-b border-teal-900/50">
+      <div className="w-full h-[280px] relative overflow-hidden flex-shrink-0 group bg-slate-900 border-b border-teal-900/50">
         <div className="absolute inset-0 z-0">
           <MoltenMetal
             color1="#1e1b4b" // indigo-950 (deep purple)
